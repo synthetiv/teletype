@@ -54,6 +54,8 @@ static void op_ME_PERIOD_get(const void *data, scene_state_t *ss,
                              exec_state_t *es, command_state_t *cs);
 static void op_ME_PERIOD_set(const void *data, scene_state_t *ss,
                              exec_state_t *es, command_state_t *cs);
+static void op_ME_CV_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                         command_state_t *cs);
 
 static void op_LV_PRE_get(const void *data, scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs);
@@ -140,6 +142,7 @@ const tele_op_t op_ME_RES      = MAKE_GET_OP    (ME.RES     , op_ME_RES_get     
 const tele_op_t op_ME_STOP     = MAKE_GET_OP    (ME.STOP    , op_ME_STOP_get                          , 1, false);
 const tele_op_t op_ME_SCALE    = MAKE_GET_SET_OP(ME.SCALE   , op_ME_SCALE_get    , op_ME_SCALE_set    , 0, true);
 const tele_op_t op_ME_PERIOD   = MAKE_GET_SET_OP(ME.PERIOD  , op_ME_PERIOD_get   , op_ME_PERIOD_set   , 0, true);
+const tele_op_t op_ME_CV       = MAKE_GET_OP    (ME.CV      , op_ME_CV_get                            , 1, true);
 
 const tele_op_t op_LV_PRE      = MAKE_GET_SET_OP(LV.PRE     , op_LV_PRE_get      , op_LV_PRE_set      , 0, true);
 const tele_op_t op_LV_RES      = MAKE_GET_OP    (LV.RES     , op_LV_RES_get                           , 1, false);
@@ -398,6 +401,19 @@ static void op_ME_PERIOD_get(const void *NOTUSED(data),
     uint8_t d[] = { II_MP_PERIOD | II_GET, 0 };
     uint8_t addr = II_MP_ADDR;
     tele_ii_tx(addr, d, 1);
+    d[0] = 0;
+    d[1] = 0;
+    tele_ii_rx(addr, d, 2);
+    cs_push(cs, (d[0] << 8) + d[1]);
+}
+
+static void op_ME_CV_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t a = cs_pop(cs);
+    a--;
+    uint8_t d[] = { II_MP_CV | II_GET, a & 0x3 };
+    uint8_t addr = II_MP_ADDR;
+    tele_ii_tx(addr, d, 2);
     d[0] = 0;
     d[1] = 0;
     tele_ii_rx(addr, d, 2);

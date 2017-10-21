@@ -254,6 +254,7 @@
         "ME.STOP"     => { MATCH_OP(E_OP_ME_STOP); };
         "ME.SCALE"    => { MATCH_OP(E_OP_ME_SCALE); };
         "ME.PERIOD"   => { MATCH_OP(E_OP_ME_PERIOD); };
+        "ME.CV"       => { MATCH_OP(E_OP_ME_CV); };
         "LV.PRE"      => { MATCH_OP(E_OP_LV_PRE); };
         "LV.RES"      => { MATCH_OP(E_OP_LV_RES); };
         "LV.POS"      => { MATCH_OP(E_OP_LV_POS); };

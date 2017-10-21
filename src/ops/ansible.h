@@ -18,6 +18,7 @@ extern const tele_op_t op_ME_RES;
 extern const tele_op_t op_ME_STOP;
 extern const tele_op_t op_ME_SCALE;
 extern const tele_op_t op_ME_PERIOD;
+extern const tele_op_t op_ME_CV;
 
 extern const tele_op_t op_LV_PRE;
 extern const tele_op_t op_LV_RES;

@@ -213,6 +213,7 @@ typedef enum {
     E_OP_ME_STOP,
     E_OP_ME_SCALE,
     E_OP_ME_PERIOD,
+    E_OP_ME_CV,
     E_OP_LV_PRE,
     E_OP_LV_RES,
     E_OP_LV_POS,
