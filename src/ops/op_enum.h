@@ -207,6 +207,7 @@ typedef enum {
     E_OP_KR_L_ST,
     E_OP_KR_L_LEN,
     E_OP_KR_RES,
+    E_OP_KR_CV,
     E_OP_ME_PRE,
     E_OP_ME_RES,
     E_OP_ME_STOP,

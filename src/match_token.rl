@@ -248,6 +248,7 @@
         "KR.L.ST"     => { MATCH_OP(E_OP_KR_L_ST); };
         "KR.L.LEN"    => { MATCH_OP(E_OP_KR_L_LEN); };
         "KR.RES"      => { MATCH_OP(E_OP_KR_RES); };
+        "KR.CV"       => { MATCH_OP(E_OP_KR_CV); };
         "ME.PRE"      => { MATCH_OP(E_OP_ME_PRE); };
         "ME.RES"      => { MATCH_OP(E_OP_ME_RES); };
         "ME.STOP"     => { MATCH_OP(E_OP_ME_STOP); };
