@@ -249,6 +249,7 @@
         "KR.L.LEN"    => { MATCH_OP(E_OP_KR_L_LEN); };
         "KR.RES"      => { MATCH_OP(E_OP_KR_RES); };
         "KR.CV"       => { MATCH_OP(E_OP_KR_CV); };
+        "KR.MUTE"     => { MATCH_OP(E_OP_KR_MUTE); };
         "ME.PRE"      => { MATCH_OP(E_OP_ME_PRE); };
         "ME.RES"      => { MATCH_OP(E_OP_ME_RES); };
         "ME.STOP"     => { MATCH_OP(E_OP_ME_STOP); };
