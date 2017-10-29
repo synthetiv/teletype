@@ -209,6 +209,7 @@ typedef enum {
     E_OP_KR_RES,
     E_OP_KR_CV,
     E_OP_KR_MUTE,
+    E_OP_KR_TOG,
     E_OP_ME_PRE,
     E_OP_ME_RES,
     E_OP_ME_STOP,
