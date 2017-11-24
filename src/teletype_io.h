@@ -46,4 +46,7 @@ void tele_profile_script(size_t);
 void tele_profile_delay(uint8_t);
 #endif
 
+// emulate grid key press
+extern void grid_key_press(uint8_t x, int8_t y, int8_t z);
+
 #endif

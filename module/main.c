@@ -856,6 +856,11 @@ void tele_save_calibration() {
     flash_update_cal(&scene_state.cal);
 }
 
+void grid_key_press(uint8_t x, int8_t y, int8_t z) {
+    grid_process_key(&scene_state, x, y, z);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // main
 
