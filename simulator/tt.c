@@ -102,7 +102,7 @@ void tele_save_calibration() {}
 void tele_profile_script(size_t s) {}
 void tele_profile_delay(uint8_t d) {}
 
-void grid_key_press(uint8_t x, int8_t y, int8_t z) {
+void grid_key_press(uint8_t x, uint8_t y, uint8_t z) {
     printf("GRID KEY PRESS x:%" PRIu8 " y:%" PRIu8 " z:%" PRIu8, x, y, z);
     printf("\n");
 }
