@@ -126,6 +126,7 @@ static softTimer_t hidTimer = { .next = NULL, .prev = NULL };
 static softTimer_t metroTimer = { .next = NULL, .prev = NULL };
 static softTimer_t monomePollTimer = {.next = NULL, .prev = NULL };
 static softTimer_t monomeRefreshTimer = {.next = NULL, .prev = NULL };
+static softTimer_t gridFaderTimer = { .next = NULL, .prev = NULL };
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -141,6 +142,7 @@ static void hidTimer_callback(void* o);
 static void metroTimer_callback(void* o);
 static void monome_poll_timer_callback(void* obj);
 static void monome_refresh_timer_callback(void* obj);
+static void grid_fader_timer_callback(void* obj);
 
 // event handler prototypes
 static void handler_None(int32_t data);
@@ -288,6 +290,9 @@ void timers_unset_monome(void) {
     timer_remove(&monomeRefreshTimer);
 }
 
+void grid_fader_timer_callback(void* o) {
+    grid_process_fader_slew(&scene_state);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // event handlers
@@ -917,6 +922,7 @@ int main(void) {
     timer_add(&keyTimer, 71, &keyTimer_callback, NULL);
     timer_add(&adcTimer, 61, &adcTimer_callback, NULL);
     timer_add(&refreshTimer, 63, &refreshTimer_callback, NULL);
+    timer_add(&gridFaderTimer, 25, &grid_fader_timer_callback, NULL);
 
     // manually call tele_metro_updated to sync metro to scene_state
     metro_timer_enabled = false;
