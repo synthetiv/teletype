@@ -1,5 +1,5 @@
-#include "font.h"
 #include "grid.h"
+#include "font.h"
 #include "globals.h"
 #include "state.h"
 #include "teletype.h"
@@ -402,23 +402,25 @@ void grid_refresh(scene_state_t *ss) {
         for (u16 j = 0; j < size_y; j++) {
             led = j * size_x + i;
             if (led >= MONOME_MAX_LED_BYTES) continue;
-            
+
             if (SG.leds[i][j] >= 0)
                 monomeLedBuffer[led] = SG.leds[i][j];
             else if (SG.leds[i][j] == LED_DIM)
                 monomeLedBuffer[led] >>= 1;
             else if (SG.leds[i][j] == LED_BRI) {
                 monomeLedBuffer[led] <<= 1;
-                if (monomeLedBuffer[led] > 15) monomeLedBuffer[led] = 15;
-                else if (monomeLedBuffer[led] < 1) monomeLedBuffer[led] = 1;
+                if (monomeLedBuffer[led] > 15)
+                    monomeLedBuffer[led] = 15;
+                else if (monomeLedBuffer[led] < 1)
+                    monomeLedBuffer[led] = 1;
             }
-            
+
             if (monomeLedBuffer[led] < SG.dim)
                 monomeLedBuffer[led] = 0;
             else
                 monomeLedBuffer[led] -= SG.dim;
         }
-    
+
     if (SG.rotate) {
         u16 total = size_x * size_y;
         if (total > MONOME_MAX_LED_BYTES) total = MONOME_MAX_LED_BYTES;
@@ -429,39 +431,41 @@ void grid_refresh(scene_state_t *ss) {
             monomeLedBuffer[total - i - 1] = temp;
         }
     }
-    
+
     SG.grid_dirty = 0;
 }
 
 void grid_fill_area(u8 x, u8 y, u8 w, u8 h, u8 level) {
     if (level == LED_OFF) return;
-    
+
     u16 index;
     u16 x_end = min(size_x, x + w);
     u16 y_end = min(size_y, y + h);
-    
+
     if (level == LED_DIM) {
         for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y; _y < y_end; _y++) {
                 index = _x + _y * size_x;
                 if (index < MONOME_MAX_LED_BYTES) monomeLedBuffer[index] >>= 1;
             }
-
-    } else if (level == LED_BRI) {
+    }
+    else if (level == LED_BRI) {
         for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y; _y < y_end; _y++) {
                 index = _x + _y * size_x;
                 if (index < MONOME_MAX_LED_BYTES) {
-                    monomeLedBuffer[index] <<= 1; 
-                    if (monomeLedBuffer[index] > 15) monomeLedBuffer[index] = 15;
+                    monomeLedBuffer[index] <<= 1;
+                    if (monomeLedBuffer[index] > 15)
+                        monomeLedBuffer[index] = 15;
                 }
             }
-        
-    } else {
+    }
+    else {
         for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y; _y < y_end; _y++) {
                 index = _x + _y * size_x;
-                if (index < MONOME_MAX_LED_BYTES) monomeLedBuffer[index] = level;
+                if (index < MONOME_MAX_LED_BYTES)
+                    monomeLedBuffer[index] = level;
             }
     }
 }
@@ -479,13 +483,13 @@ void grid_screen_refresh(scene_state_t *ss, screen_grid_mode mode, u8 page, u8 c
             grid_screen_refresh_led(ss, 1, page, x1, y1, x2, y2);
             break;
         case GRID_MODE_OFF:
-        case GRID_MODE_LAST:
-            break;
+        case GRID_MODE_LAST: break;
     }
     SG.scr_dirty = 0;
 }
 
-void grid_screen_refresh_ctrl(scene_state_t *ss, u8 page, u8 x1, u8 y1, u8 x2, u8 y2) {
+void grid_screen_refresh_ctrl(scene_state_t *ss, u8 page, u8 x1, u8 y1, u8 x2,
+                              u8 y2) {
     grid_fill_area_scr(0, 0, GRID_MAX_DIMENSION, GRID_MAX_DIMENSION, 0, 0);
     
     u8 last_x, last_y;
@@ -556,9 +560,10 @@ void grid_screen_refresh_ctrl(scene_state_t *ss, u8 page, u8 x1, u8 y1, u8 x2, u
     return;
 }
 
-void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1, u8 y1, u8 x2, u8 y2) {
+void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1,
+                             u8 y1, u8 x2, u8 y2) {
     grid_fill_area_scr(0, 0, GRID_MAX_DIMENSION, GRID_MAX_DIMENSION, 0, 0);
-    
+
     u16 x, y;
     for (u8 i = 0; i < GRID_XYPAD_COUNT; i++) {
         if (GXYC.enabled && SG.group[GXYC.group].enabled) {
@@ -623,24 +628,27 @@ void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1, u8
                 screen[i][j] >>= 1;
             else if (l == LED_BRI) {
                 screen[i][j] <<= 1;
-                if (screen[i][j] > 15) screen[i][j] = 15;
-                else if (screen[i][j] < 1) screen[i][j] = 1;
+                if (screen[i][j] > 15)
+                    screen[i][j] = 15;
+                else if (screen[i][j] < 1)
+                    screen[i][j] = 1;
             }
         }
-    
+
     u16 _y, cell, size, left;
     if (full_grid) {
         cell = 8;
         size = 5;
         left = 0;
         for (int i = 0; i < 8; i++) region_fill(&line[i], 0);
-    } else {
+    }
+    else {
         cell = 6;
         size = 4;
         left = 10;
         for (int i = 0; i < 6; i++) region_fill(&line[i], 0);
     }
-    
+
     u8 _line;
     u16 _data;
     for (u16 x = 0; x < GRID_MAX_DIMENSION; x++)
@@ -654,7 +662,8 @@ void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1, u8
                     if (screen[x][y] == 0) {
                         if (i == 0 || i == size - 1 || j == 0 || j == size - 1)
                             line[_line].data[_data] = 1;
-                    } else
+                    }
+                    else
                         line[_line].data[_data] = screen[x][y];
                 }
             }
@@ -722,21 +731,24 @@ void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1, u8
         }
 }                
 
-static void grid_screen_refresh_info(scene_state_t *ss, u8 page, u8 x1, u8 y1, u8 x2, u8 y2) {
+static void grid_screen_refresh_info(scene_state_t *ss, u8 page, u8 x1, u8 y1,
+                                     u8 x2, u8 y2) {
     char s[32];
     u8 area_x, area_y, area_w, area_h;
 
     if (x1 < x2) {
         area_x = x1;
         area_w = x2 + 1 - x1;
-    } else {
+    }
+    else {
         area_x = x2;
         area_w = x1 + 1 - x2;
     }
     if (y1 < y2) {
         area_y = y1;
         area_h = y2 + 1 - y1;
-    } else {
+    }
+    else {
         area_y = y2;
         area_h = y1 + 1 - y2;
     }
@@ -763,9 +775,10 @@ static void grid_screen_refresh_info(scene_state_t *ss, u8 page, u8 x1, u8 y1, u
     font_string_region_clip_right(&line[4], s, 117, 0, 8, 0);
     itoa(area_h, s, 10);
     font_string_region_clip_right(&line[5], s, 117, 0, 8, 0);
-    
+
     for (u16 j = 0; j < 9; j += 2) line[j >> 3].data[119 + ((j & 7) << 7)] = 1;
-    for (u16 j = 17; j < 48; j += 2) line[j >> 3].data[119 + ((j & 7) << 7)] = 1;
+    for (u16 j = 17; j < 48; j += 2)
+        line[j >> 3].data[119 + ((j & 7) << 7)] = 1;
 
     // icons
     
@@ -822,15 +835,15 @@ void grid_fill_area_scr(u8 x, u8 y, u8 w, u8 h, u8 level, u8 page) {
             for (u16 _y = y1; _y <= y2; _y++)
                 screen[_x][_y] >>= 1;
         }
-
-    } else if (level == LED_BRI) {
+    }
+    else if (level == LED_BRI) {
         for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y1; _y <= y2; _y++) {
                 screen[_x][_y] <<= 1; 
                 if (screen[_x][_y] > 15) screen[_x][_y] = 15;
             }
-        
-    } else {
+    }
+    else {
         for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y1; _y <= y2; _y++)
                 screen[_x][_y] = level;

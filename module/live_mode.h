@@ -1,10 +1,10 @@
 #ifndef _LIVE_MODE_H_
 #define _LIVE_MODE_H_
 
-#include "stdbool.h"
-#include "stdint.h"
 #include "grid.h"
 #include "state.h"
+#include "stdbool.h"
+#include "stdint.h"
 
 void set_slew_icon(bool display);
 void set_metro_icon(bool display);

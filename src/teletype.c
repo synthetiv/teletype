@@ -284,11 +284,11 @@ process_result_t process_command(scene_state_t *ss, exec_state_t *es,
     // ---------
     // sometimes we have single value left of the stack, if so return it
     if (cs_stack_size(&cs)) {
-        process_result_t o = { .has_value = true, .value = cs_pop(&cs) };
+        process_result_t o = {.has_value = true, .value = cs_pop(&cs) };
         return o;
     }
     else {
-        process_result_t o = { .has_value = false, .value = 0 };
+        process_result_t o = {.has_value = false, .value = 0 };
         return o;
     }
 }

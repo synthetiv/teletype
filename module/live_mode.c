@@ -113,18 +113,19 @@ void set_live_mode() {
         grid_mode = GRID_MODE_EDIT;
 }
 
-void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, scene_state_t *ss) {
+void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
+                       scene_state_t *ss) {
     if (is_release) {
-        if (match_ctrl(m, k, HID_SPACEBAR) || 
+        if (match_ctrl(m, k, HID_SPACEBAR) ||
             (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_SPACEBAR))) {
             grid_process_key(ss, grid_x1, grid_y1, 0, 1);
         }
         return;
     }
-    
+
     // <down> or C-n: history next
-    if ((match_no_mod(m, k, HID_DOWN) || match_ctrl(m, k, HID_N))
-        && grid_mode != GRID_MODE_FULL) {
+    if ((match_no_mod(m, k, HID_DOWN) || match_ctrl(m, k, HID_N)) &&
+        grid_mode != GRID_MODE_FULL) {
         if (history_line > 0) {
             history_line--;
             line_editor_set_command(&le, &history[history_line]);
@@ -136,8 +137,8 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, 
         dirty |= D_INPUT;
     }
     // <up> or C-p: history previous
-    else if ((match_no_mod(m, k, HID_UP) || match_ctrl(m, k, HID_P))
-        && grid_mode != GRID_MODE_FULL) {
+    else if ((match_no_mod(m, k, HID_UP) || match_ctrl(m, k, HID_P)) &&
+             grid_mode != GRID_MODE_FULL) {
         if (history_line < history_top) {
             history_line++;
             line_editor_set_command(&le, &history[history_line]);
@@ -145,8 +146,8 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, 
         }
     }
     // C-G: toggle grid view
-    else if (match_ctrl(m, k, HID_G) || 
-        (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_G))) {
+    else if (match_ctrl(m, k, HID_G) ||
+             (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_G))) {
         if (++grid_mode == GRID_MODE_LAST) {
             grid_mode = GRID_MODE_OFF;
             set_live_mode();
@@ -160,7 +161,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, 
     }
     // C-<up>: move grid cursor
     else if (match_ctrl(m, k, HID_UP) ||
-        (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_UP))) {
+             (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_UP))) {
         grid_y1 = (grid_y1 + GRID_MAX_DIMENSION - 1) % GRID_MAX_DIMENSION;
         grid_x2 = grid_x1;
         grid_y2 = grid_y1;
@@ -168,7 +169,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, 
     }
     // C-<down>: move grid cursor
     else if (match_ctrl(m, k, HID_DOWN) ||
-        (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_DOWN))) {
+             (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_DOWN))) {
         grid_y1 = (grid_y1 + 1) % GRID_MAX_DIMENSION;
         grid_x2 = grid_x1;
         grid_y2 = grid_y1;
@@ -176,7 +177,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, 
     }
     // C-<left>: move grid cursor
     else if (match_ctrl(m, k, HID_LEFT) ||
-        (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_LEFT))) {
+             (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_LEFT))) {
         grid_x1 = (grid_x1 + GRID_MAX_DIMENSION - 1) % GRID_MAX_DIMENSION;
         grid_x2 = grid_x1;
         grid_y2 = grid_y1;
@@ -184,7 +185,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, 
     }
     // C-<right>: move grid cursor
     else if (match_ctrl(m, k, HID_RIGHT) ||
-        (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_RIGHT))) {
+             (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_RIGHT))) {
         grid_x1 = (grid_x1 + 1) % GRID_MAX_DIMENSION;
         grid_x2 = grid_x1;
         grid_y2 = grid_y1;
@@ -220,7 +221,8 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, 
     }
     // C-<space>: emulate grid press
     else if (!is_held_key && (match_ctrl(m, k, HID_SPACEBAR) ||
-        (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_SPACEBAR)))) {
+                              (grid_mode == GRID_MODE_FULL &&
+                               match_no_mod(m, k, HID_SPACEBAR)))) {
         grid_x2 = grid_x1;
         grid_y2 = grid_y1;
         grid_view_changed = true;
@@ -233,14 +235,16 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, 
         if (grid_x1 < grid_x2) {
             area_x = grid_x1;
             area_w = grid_x2 + 1 - grid_x1;
-        } else {
+        }
+        else {
             area_x = grid_x2;
             area_w = grid_x1 + 1 - grid_x2;
         }
         if (grid_y1 < grid_y2) {
             area_y = grid_y1;
             area_h = grid_y2 + 1 - grid_y1;
-        } else {
+        }
+        else {
             area_y = grid_y2;
             area_h = grid_y1 + 1 - grid_y2;
         }
@@ -248,35 +252,35 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release, 
             line_editor_process_keys(&le, HID_1, HID_MODIFIER_NONE, false);
             area_x -= 10;
         }
-        line_editor_process_keys(&le, 
-            area_x ? HID_1 + area_x - 1 : HID_0, HID_MODIFIER_NONE, false);
+        line_editor_process_keys(&le, area_x ? HID_1 + area_x - 1 : HID_0,
+                                 HID_MODIFIER_NONE, false);
         line_editor_process_keys(&le, HID_SPACEBAR, HID_MODIFIER_NONE, false);
         if (area_y > 9) {
             line_editor_process_keys(&le, HID_1, HID_MODIFIER_NONE, false);
             area_y -= 10;
         }
-        line_editor_process_keys(&le, 
-            area_y ? HID_1 + area_y - 1 : HID_0, HID_MODIFIER_NONE, false);
+        line_editor_process_keys(&le, area_y ? HID_1 + area_y - 1 : HID_0,
+                                 HID_MODIFIER_NONE, false);
         line_editor_process_keys(&le, HID_SPACEBAR, HID_MODIFIER_NONE, false);
         if (area_w > 9) {
             line_editor_process_keys(&le, HID_1, HID_MODIFIER_NONE, false);
             area_w -= 10;
         }
-        line_editor_process_keys(&le, 
-            area_w ? HID_1 + area_w - 1 : HID_0, HID_MODIFIER_NONE, false);
+        line_editor_process_keys(&le, area_w ? HID_1 + area_w - 1 : HID_0,
+                                 HID_MODIFIER_NONE, false);
         line_editor_process_keys(&le, HID_SPACEBAR, HID_MODIFIER_NONE, false);
         if (area_h > 9) {
             line_editor_process_keys(&le, HID_1, HID_MODIFIER_NONE, false);
             area_h -= 10;
         }
-        line_editor_process_keys(&le, 
-            area_h ? HID_1 + area_h - 1 : HID_0, HID_MODIFIER_NONE, false);
+        line_editor_process_keys(&le, area_h ? HID_1 + area_h - 1 : HID_0,
+                                 HID_MODIFIER_NONE, false);
         line_editor_process_keys(&le, HID_SPACEBAR, HID_MODIFIER_NONE, false);
         dirty |= D_INPUT;
     }
     // C-</>: toggle grid page
     else if (match_ctrl(m, k, HID_SLASH) ||
-        (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_SLASH))) {
+             (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_SLASH))) {
         if (++grid_page > 1) grid_page = 0;
         grid_view_changed = true;
     }
@@ -357,7 +361,7 @@ bool screen_refresh_live(scene_state_t *ss) {
             grid_page, grid_ctrl, grid_x1, grid_y1, grid_x2, grid_y2);
     }
     if (grid_mode == GRID_MODE_FULL) return true;
-    
+
     if (dirty & D_INPUT) {
         line_editor_draw(&le, '>', &line[7]);
         screen_dirty |= (1 << 7);
@@ -454,7 +458,7 @@ bool screen_refresh_live(scene_state_t *ss) {
         line[0].data[98 + 2 + 256] = slew_fg;
         line[0].data[98 + 3 + 128] = slew_fg;
         line[0].data[98 + 4 + 0] = slew_fg;
-        
+
         // delay icon
         uint8_t delay_fg = activity & A_DELAY ? 15 : 1;
         line[0].data[106 + 0 + 0] = delay_fg;
