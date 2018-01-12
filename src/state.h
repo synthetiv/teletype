@@ -35,6 +35,7 @@
 #define LED_OFF -3
 // H - horizontal, V - vertical
 // C - coarse, F - fine
+// H must be even, V must be odd
 #define FADER_CH_BAR 0
 #define FADER_CV_BAR 1
 #define FADER_CH_DOT 2
@@ -158,6 +159,11 @@ typedef struct {
     grid_common_t common;
     u8 type;
     u8 value;
+    u8 slide;
+    u8 slide_acc;
+    u8 slide_end;
+    u8 slide_delta;
+    u8 slide_dir;
 } grid_fader_t;
 
 typedef struct {
