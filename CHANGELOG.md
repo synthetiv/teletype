@@ -14,7 +14,6 @@
 - **FIX**: entered values now saturate at int16 limits
 - **FIX**: reduced flash memory consumption by not storing TEMP script
 - **FIX**: `I` now carries across `DEL` commands
-- **FIX**: removed TEMP script allocation in flash
 - **FIX** : corrected functionality of JI op for 1volt/octave tuning
 
 ## v2.1
