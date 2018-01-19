@@ -96,6 +96,7 @@ CSRCS = \
 	../src/ops/init.c					\
 	../src/ops/justfriends.c				\
 	../src/ops/maths.c					\
+	../src/ops/matrixarchate.c				\
 	../src/ops/meadowphysics.c				\
 	../src/ops/metronome.c					\
 	../src/ops/orca.c      					\

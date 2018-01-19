@@ -15,6 +15,7 @@
 #include "ops/hardware.h"
 #include "ops/init.h"
 #include "ops/justfriends.h"
+#include "ops/matrixarchate.h"
 #include "ops/maths.h"
 #include "ops/meadowphysics.h"
 #include "ops/metronome.h"
@@ -184,7 +185,12 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     &op_G_FDR_L, &op_G_FDR_X, &op_G_FDR_Y, &op_G_FDRI, &op_G_FDRV, &op_G_FDRN,
     &op_G_FDRL, &op_G_FDRX, &op_G_FDRY, &op_G_FDR_PR, &op_G_GFDR_V,
     &op_G_GFDR_N, &op_G_GFDR_L, &op_G_GFDR_RN, &op_G_XYP, &op_G_XYP_X,
-    &op_G_XYP_Y
+    &op_G_XYP_Y,
+    
+    // matrixarchate
+    &op_MA_SELECT, &op_MA_STEP, &op_MA_RESET, &op_MA_PGM, &op_MA_ON, &op_MA_PON,
+    &op_MA_OFF, &op_MA_POFF, &op_MA_SET, &op_MA_PSET, &op_MA_COL, &op_MA_PCOL,
+    &op_MA_ROW, &op_MA_PROW, &op_MA_CLR, &op_MA_PCLR    
 };
 
 /////////////////////////////////////////////////////////////////

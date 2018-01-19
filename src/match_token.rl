@@ -551,6 +551,24 @@
         "PROB"        => { MATCH_MOD(E_MOD_PROB); };
         "DEL"         => { MATCH_MOD(E_MOD_DEL); };
 
+        # matrixarchate
+        "MA.SELECT"   => { MATCH_OP(E_OP_MA_SELECT); };
+        "MA.STEP"     => { MATCH_OP(E_OP_MA_STEP); };
+        "MA.RESET"    => { MATCH_OP(E_OP_MA_RESET); };
+        "MA.PGM"      => { MATCH_OP(E_OP_MA_PGM); };
+        "MA.ON"       => { MATCH_OP(E_OP_MA_ON); };
+        "MA.PON"      => { MATCH_OP(E_OP_MA_PON); };
+        "MA.OFF"      => { MATCH_OP(E_OP_MA_OFF); };
+        "MA.POFF"     => { MATCH_OP(E_OP_MA_POFF); };
+        "MA.SET"      => { MATCH_OP(E_OP_MA_SET); };
+        "MA.PSET"     => { MATCH_OP(E_OP_MA_PSET); };
+        "MA.COL"      => { MATCH_OP(E_OP_MA_COL); };
+        "MA.PCOL"     => { MATCH_OP(E_OP_MA_PCOL); };
+        "MA.ROW"      => { MATCH_OP(E_OP_MA_ROW); };
+        "MA.PROW"     => { MATCH_OP(E_OP_MA_PROW); };
+        "MA.CLR"      => { MATCH_OP(E_OP_MA_CLR); };
+        "MA.PCLR"     => { MATCH_OP(E_OP_MA_PCLR); };
+
         # stack
         "S"           => { MATCH_MOD(E_MOD_S); };
     *|;
