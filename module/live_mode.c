@@ -339,6 +339,10 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     // tilde: show the variables
     else if (match_no_mod(m, k, HID_TILDE)) {
         show_vars = !show_vars;
+        if (grid_mode != GRID_MODE_OFF) {
+            show_vars = 1;
+            grid_mode = GRID_MODE_OFF;
+        }
         if (show_vars) dirty |= D_VARS;  // combined with this...
         dirty |= D_LIST;  // cheap flag to indicate mode just switched
     }
@@ -351,7 +355,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
 }
 
 
-bool screen_refresh_live(scene_state_t *ss) {
+uint8_t screen_refresh_live(scene_state_t *ss) {
     uint8_t screen_dirty = 0;
     
     if (grid_mode != GRID_MODE_OFF && (grid_view_changed || ss->grid.scr_dirty)) {
