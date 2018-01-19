@@ -342,6 +342,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
         if (grid_mode != GRID_MODE_OFF) {
             show_vars = 1;
             grid_mode = GRID_MODE_OFF;
+            activity_prev = 0xFF;
         }
         if (show_vars) dirty |= D_VARS;  // combined with this...
         dirty |= D_LIST;  // cheap flag to indicate mode just switched
@@ -360,11 +361,11 @@ uint8_t screen_refresh_live(scene_state_t *ss) {
     
     if (grid_mode != GRID_MODE_OFF && (grid_view_changed || ss->grid.scr_dirty)) {
         grid_view_changed = 0;
-        screen_dirty = true;
+        screen_dirty = 0b111111;
         grid_screen_refresh(ss, grid_mode, 
             grid_page, grid_ctrl, grid_x1, grid_y1, grid_x2, grid_y2);
     }
-    if (grid_mode == GRID_MODE_FULL) return true;
+    if (grid_mode == GRID_MODE_FULL) return 0b11111111;
 
     if (dirty & D_INPUT) {
         line_editor_draw(&le, '>', &line[7]);
