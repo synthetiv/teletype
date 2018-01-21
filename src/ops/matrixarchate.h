@@ -20,6 +20,4 @@ extern const tele_op_t op_MA_PROW;
 extern const tele_op_t op_MA_CLR;
 extern const tele_op_t op_MA_PCLR;
 
-#define MATRIXARCHATE 0xB8
-
 #endif

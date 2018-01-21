@@ -16,8 +16,6 @@ extern const tele_op_t op_SC_CV_SLEW;
 extern const tele_op_t op_SC_CV_SET;
 extern const tele_op_t op_SC_CV_OFF;
 
-#define ER301 0xB0
-
 void ERSend(uint8_t command, uint16_t output, int16_t value, bool set);
 void ERSet(uint8_t command, command_state_t *cs);
 void ERCommand(uint8_t command, uint16_t output);

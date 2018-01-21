@@ -6,6 +6,4 @@
 extern const tele_op_t op_FADER;
 extern const tele_op_t op_FB;
 
-#define FADER 0x80
-
 #endif
