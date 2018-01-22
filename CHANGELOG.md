@@ -1,5 +1,7 @@
 # Changelog
 
+- **IMP**: removed JI op's octave-wrapping behaviour, now returns exactly the entered ratio
+
 ## v2.2
 - **NEW**: added a cheat sheet PDF
 - **NEW**: new bitwise ops: &, |, ^, ~, BSET, BCLR, BGET

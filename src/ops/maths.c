@@ -475,6 +475,15 @@ static void op_JI_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     int16_t n = abs(cs_pop(cs));
     int16_t d = abs(cs_pop(cs));
     
+    /* code for generation of ji_const
+     
+     int16_t ji_find_prime_constant( uint16_t prime ) {
+        float r = 1638.0 * logf( (float)prime ) / log( 2.0 );
+        r *= 4.0;                       // this corresponds to the inverse of the bitshift applied at rounding & scaling
+        return( (int16_t)( r + 0.5 ) );
+     }
+     */
+    
     if (n == 0 || d == 0) {  // early return if zeroes
         cs_push(cs, 0);
         return;
