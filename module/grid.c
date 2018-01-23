@@ -833,8 +833,8 @@ void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1,
     _x1 = min(x1, x2) * cell;
     _y1 = min(y1, y2) * cell;
     if (full_grid) {
-        _x2 = _x1 + size + 1;
-        _y2 = _y1 + size + 1;
+        _x2 = (max(x1, x2) + 1) * cell - 2;
+        _y2 = (max(y1, y2) + 1) * cell - 2;
     } else {
         _x2 = (max(x1, x2) + 1) * cell - 1;
         _y2 = (max(y1, y2) + 1) * cell - 1;
