@@ -17,7 +17,7 @@
 #include "conf_usb_host.h"  // needed in order to include "usb_protocol_hid.h"
 #include "usb_protocol_hid.h"
 
-static int16_t copy_buffer;
+static int16_t value_copy_buffer;
 static uint8_t pattern;  // which pattern are we editting
 static uint8_t base;     // base + offset determine what we are editting
 static uint8_t offset;
@@ -206,7 +206,8 @@ void process_pattern_keys(uint8_t k, uint8_t m, bool is_held_key) {
     // alt-x: cut value (n.b. ctrl-x not supported)
     else if (match_alt(m, k, HID_X)) {
         editing_number = false;
-        copy_buffer = ss_get_pattern_val(&scene_state, pattern, base + offset);
+        value_copy_buffer =
+            ss_get_pattern_val(&scene_state, pattern, base + offset);
         for (int i = base + offset; i < 63; i++) {
             int16_t v = ss_get_pattern_val(&scene_state, pattern, i + 1);
             ss_set_pattern_val(&scene_state, pattern, i, v);
@@ -221,15 +222,16 @@ void process_pattern_keys(uint8_t k, uint8_t m, bool is_held_key) {
     // alt-c: copy value (n.b. ctrl-c not supported)
     else if (match_alt(m, k, HID_C)) {
         if (editing_number)
-            copy_buffer = edit_buffer;
+            value_copy_buffer = edit_buffer;
         else
-            copy_buffer =
+            value_copy_buffer =
                 ss_get_pattern_val(&scene_state, pattern, base + offset);
     }
     // alt-v: paste value (n.b. ctrl-v not supported)
     else if (match_alt(m, k, HID_V)) {
         editing_number = false;
-        ss_set_pattern_val(&scene_state, pattern, base + offset, copy_buffer);
+        ss_set_pattern_val(&scene_state, pattern, base + offset,
+                           value_copy_buffer);
         dirty = true;
     }
     // shift-alt-v: insert value
@@ -243,7 +245,8 @@ void process_pattern_keys(uint8_t k, uint8_t m, bool is_held_key) {
         if (l >= base + offset && l < 63) {
             ss_set_pattern_len(&scene_state, pattern, l + 1);
         }
-        ss_set_pattern_val(&scene_state, pattern, base + offset, copy_buffer);
+        ss_set_pattern_val(&scene_state, pattern, base + offset,
+                           value_copy_buffer);
         dirty = true;
     }
     // shift-l: set length to current position

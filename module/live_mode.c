@@ -109,8 +109,7 @@ void set_live_mode() {
     dirty = D_ALL;
     activity_prev = 0xFF;
     grid_view_changed = true;
-    if (grid_mode == GRID_MODE_FULL)
-        grid_mode = GRID_MODE_EDIT;
+    if (grid_mode == GRID_MODE_FULL) grid_mode = GRID_MODE_EDIT;
 }
 
 void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
@@ -151,7 +150,8 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
         if (++grid_mode == GRID_MODE_LAST) {
             grid_mode = GRID_MODE_OFF;
             set_live_mode();
-        } else {
+        }
+        else {
             if (grid_mode == GRID_MODE_FULL) {
                 grid_x2 = grid_x1;
                 grid_y2 = grid_y1;
@@ -178,18 +178,30 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     // C-<left>: move grid cursor
     else if (match_ctrl(m, k, HID_LEFT) ||
              (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_LEFT))) {
-        grid_x1 = (grid_x1 + GRID_MAX_DIMENSION - 1) % GRID_MAX_DIMENSION;
-        grid_x2 = grid_x1;
-        grid_y2 = grid_y1;
-        grid_view_changed = true;
+        if (grid_mode == GRID_MODE_OFF) {
+            bool processed = line_editor_process_keys(&le, k, m, is_held_key);
+            if (processed) dirty |= D_INPUT;
+        }
+        else {
+            grid_x1 = (grid_x1 + GRID_MAX_DIMENSION - 1) % GRID_MAX_DIMENSION;
+            grid_x2 = grid_x1;
+            grid_y2 = grid_y1;
+            grid_view_changed = true;
+        }
     }
     // C-<right>: move grid cursor
     else if (match_ctrl(m, k, HID_RIGHT) ||
              (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_RIGHT))) {
-        grid_x1 = (grid_x1 + 1) % GRID_MAX_DIMENSION;
-        grid_x2 = grid_x1;
-        grid_y2 = grid_y1;
-        grid_view_changed = true;
+        if (grid_mode == GRID_MODE_OFF) {
+            bool processed = line_editor_process_keys(&le, k, m, is_held_key);
+            if (processed) dirty |= D_INPUT;
+        }
+        else {
+            grid_x1 = (grid_x1 + 1) % GRID_MAX_DIMENSION;
+            grid_x2 = grid_x1;
+            grid_y2 = grid_y1;
+            grid_view_changed = true;
+        }
     }
     // C-S-<up>: expand grid area up
     else if (match_shift_ctrl(m, k, HID_UP) && grid_mode != GRID_MODE_FULL) {
@@ -230,7 +242,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     }
     // C-<PrtSc>: insert coordinates / size
     else if (!is_held_key && match_ctrl(m, k, HID_PRINTSCREEN) &&
-        grid_mode == GRID_MODE_EDIT) {
+             grid_mode == GRID_MODE_EDIT) {
         u8 area_x, area_y, area_w, area_h;
         if (grid_x1 < grid_x2) {
             area_x = grid_x1;
@@ -286,7 +298,8 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     }
     // C-<\>: toggle control view
     else if (match_ctrl(m, k, HID_BACKSLASH) ||
-        (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_BACKSLASH))) {
+             (grid_mode == GRID_MODE_FULL &&
+              match_no_mod(m, k, HID_BACKSLASH))) {
         grid_ctrl = !grid_ctrl;
         grid_view_changed = true;
     }
@@ -358,12 +371,13 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
 
 uint8_t screen_refresh_live(scene_state_t *ss) {
     uint8_t screen_dirty = 0;
-    
-    if (grid_mode != GRID_MODE_OFF && (grid_view_changed || ss->grid.scr_dirty)) {
+
+    if (grid_mode != GRID_MODE_OFF &&
+        (grid_view_changed || ss->grid.scr_dirty)) {
         grid_view_changed = 0;
         screen_dirty = 0b111111;
-        grid_screen_refresh(ss, grid_mode, 
-            grid_page, grid_ctrl, grid_x1, grid_y1, grid_x2, grid_y2);
+        grid_screen_refresh(ss, grid_mode, grid_page, grid_ctrl, grid_x1,
+                            grid_y1, grid_x2, grid_y2);
     }
     if (grid_mode == GRID_MODE_FULL) return 0b11111111;
 
@@ -407,7 +421,7 @@ uint8_t screen_refresh_live(scene_state_t *ss) {
 
     if (show_vars && ((dirty & D_VARS) || (dirty & D_LIST)) &&
         grid_mode == GRID_MODE_OFF) {
-        int16_t* vp =
+        int16_t *vp =
             &scene_state.variables
                  .a;  // 8 int16_t all in a row, point at the first one
                       // relies on variable ordering. see: src/state.h

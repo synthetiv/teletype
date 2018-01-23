@@ -222,6 +222,11 @@ const tele_command_t *ss_get_script_command(scene_state_t *ss,
     return &ss->scripts[script_idx].c[c_idx];
 }
 
+void ss_copy_script_command(tele_command_t *dest, scene_state_t *ss,
+                            script_number_t script_idx, size_t c_idx) {
+    memcpy(dest, &ss->scripts[script_idx].c[c_idx], sizeof(tele_command_t));
+}
+
 // private
 static void ss_set_script_command(scene_state_t *ss, script_number_t script_idx,
                                   size_t c_idx, const tele_command_t *cmd) {

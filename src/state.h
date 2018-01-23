@@ -53,7 +53,7 @@
 // SCENE STATE /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-//clang-format off
+// clang-format off
 typedef struct {
     // Maintaining this order allows for efficient access to the group
     // WARNING: DO NOT CHANGE THE ORDER OF VARIABLES a THROUGH t
@@ -100,7 +100,7 @@ typedef struct {
     scale_data_t param_range;
     scale_t param_scale;
 } scene_variables_t;
-//clang-format on
+// clang-format on
 
 typedef struct {
     int16_t idx;
@@ -243,6 +243,8 @@ uint8_t ss_get_script_len(scene_state_t *ss, script_number_t idx);
 const tele_command_t *ss_get_script_command(scene_state_t *ss,
                                             script_number_t script_idx,
                                             size_t c_idx);
+void ss_copy_script_command(tele_command_t *dest, scene_state_t *ss,
+                            script_number_t script_idx, size_t c_idx);
 bool ss_get_script_comment(scene_state_t *ss, script_number_t script_idx,
                            size_t c_idx);
 void ss_toggle_script_comment(scene_state_t *ss, script_number_t script_idx,

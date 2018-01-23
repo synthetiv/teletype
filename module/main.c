@@ -51,11 +51,7 @@
 #ifdef TELETYPE_PROFILE
 #include "profile.h"
 
-profile_t
-    prof_Script[SCRIPT_COUNT],
-    prof_Delay[DELAY_SIZE], 
-    prof_CV,
-    prof_ADC,
+profile_t prof_Script[SCRIPT_COUNT], prof_Delay[DELAY_SIZE], prof_CV, prof_ADC,
     prof_ScreenRefresh;
 
 void tele_profile_script(size_t s) {
@@ -87,6 +83,8 @@ region line[8] = {
     {.w = 128, .h = 8, .x = 0, .y = 32 }, {.w = 128, .h = 8, .x = 0, .y = 40 },
     {.w = 128, .h = 8, .x = 0, .y = 48 }, {.w = 128, .h = 8, .x = 0, .y = 56 }
 };
+char copy_buffer[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
+uint8_t copy_buffer_len = 0;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +122,7 @@ static softTimer_t hidTimer = {.next = NULL, .prev = NULL };
 static softTimer_t metroTimer = {.next = NULL, .prev = NULL };
 static softTimer_t monomePollTimer = {.next = NULL, .prev = NULL };
 static softTimer_t monomeRefreshTimer = {.next = NULL, .prev = NULL };
-static softTimer_t gridFaderTimer = { .next = NULL, .prev = NULL };
+static softTimer_t gridFaderTimer = {.next = NULL, .prev = NULL };
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -429,9 +427,7 @@ void handler_MscConnect(int32_t data) {
 }
 
 void handler_Trigger(int32_t data) {
-    if (!ss_get_mute(&scene_state, data)) {
-        run_script(&scene_state, data);
-    }
+    if (!ss_get_mute(&scene_state, data)) { run_script(&scene_state, data); }
 }
 
 void handler_ScreenRefresh(int32_t data) {
@@ -604,7 +600,8 @@ void set_last_mode() {
 ////////////////////////////////////////////////////////////////////////////////
 // key handling
 
-void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key, bool is_release) {
+void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key,
+                      bool is_release) {
     // reset inactivity counter
     ss_counter = 0;
     if (mode == M_SCREENSAVER) {
@@ -613,7 +610,7 @@ void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key, bool is_re
         return;
 #endif
     }
-    
+
     // release is a special case for live mode
     if (is_release) {
         if (mode == M_LIVE)
@@ -638,7 +635,8 @@ void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key, bool is_re
             process_preset_r_keys(key, mod_key, is_held_key);
             break;
         case M_HELP: process_help_keys(key, mod_key, is_held_key); break;
-        case M_SCREENSAVER: break;  // impossible
+        case M_SCREENSAVER:
+            break;  // impossible
     }
 }
 
@@ -679,7 +677,7 @@ bool process_global_keys(uint8_t k, uint8_t m, bool is_held_key) {
         return true;
     }
     // <alt>-?: help text, or return to last mode
-    else if (match_shift_alt(m, k, HID_SLASH)) {
+    else if (match_shift_alt(m, k, HID_SLASH) || match_alt(m, k, HID_H)) {
         if (mode == M_HELP)
             set_last_mode();
         else {
@@ -974,7 +972,6 @@ int main(void) {
             print_dbg_ulong(profile_delta_us(&prof_ADC));
             print_dbg("\r\nScreen Refresh:\t");
             print_dbg_ulong(profile_delta_us(&prof_ScreenRefresh));
-
         }
 #endif
     }
