@@ -10,7 +10,7 @@ These bindings work everywhere.
 | `<esc>`                      | preset read mode, or return to last mode       |
 | `alt-<esc>`                  | preset write mode                              |
 | `win-<esc>`                  | clear delays, stack and slews                  |
-| `<alt>-?`                    | help text, or return to last mode              |
+| `shift-alt-?`                | help text, or return to last mode              |
 | `<F1>` to `<F8>`             | run corresponding script                       |
 | `<F9>`                       | run metro script                               |
 | `<F10>`                      | run init script                                |

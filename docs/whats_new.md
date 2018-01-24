@@ -20,6 +20,60 @@ You now can connect up to three ER-301s via i2c and address up to 100 virtual CV
 
 The 16n Faderbank is an open-source sixteen fader controller with support for USB MIDI, standard MIDI, and i2c communication with the Teletype. It operates just like an IN or PARAM (or the TXi for that matter) in that you read values from the device. You use the operator FADER (or the alias FB) and the number of the slider you wish to poll (1-16). Know that longer cables may require that you use a powered bus board even if you only have one device on your Teletype's i2c bus. (You will know that you have a problem if your Teletype randomly hangs on reads.)
 
+## Version 2.2 
+
+Teletype version 2.2 introduces Chaos and Bitwise operators, Live mode view of variables, INIT operator, ability to calibrate CV In and Param knob and set Min/Max scale values for both, a screensaver, Random Number Generator, and a number of fixes and improvements.
+
+### Major new features
+
+#### Chaos Operators
+
+The `CHAOS` operator provides a new source of uncertainty to the Teletype via chaotic yet deterministic systems. This operator relies on various chaotic maps for the creation of randomized musical events. Chaotic maps are conducive to creating music because fractals contain a symmetry of repetition that diverges just enough to create beautiful visual structures that at times also apply to audio. In mathematics a map is considered an evolution function that uses polynomials to drive iterative procedures. The output from these functions can be assigned to control voltages. This works because chaotic maps tend to repeat with slight variations offering useful oscillations between uncertainty and predictability.
+
+#### Bitwise Operators
+
+Bitwise operators have been added to compliment the logic functions and offer the ability to maximize the use of variables available on the Teletype.
+
+Typically, when a variable is assigned a value it fully occupies that variable space; should you want to set another you’ll have to use the next available variable. In conditions where a state of on, off, or a bitwise mathematical operation can provide the data required, the inclusion of these operators give users far more choices. Each variable normally contains 16 bits and Bitwise allows you to `BSET`, `BGET`, and `BCLR` a value from a particular bit location among its 16 positions, thus supplying 16 potential flags in the same variable space. 
+
+#### INIT
+
+The new op family `INIT` features operator syntax for clearing various states from the unforgiving INIT with no parameters that clears ALL state data (be careful as there is no undo) to the ability to clear CV, variable data, patterns, scenes, scripts, time, ranges, and triggers.
+
+#### Live Mode Variable Display
+
+This helps the user to quickly check and monitor variables across the Teletype. Instead of single command line parameter checks the user is now able to simply press the `~ key` (Tilde) and have a persistent display of eight system variables.
+
+#### Screensaver
+
+Screen saver engages after 90 minutes of inactivity
+
+#### New Operators
+
+   • `IN.SCALE min max` sets the min/max values of the CV Input jack
+   • `PARAM.SCALE min max` set the min/max scale of the Parameter Knob
+   • `IN.CAL.MIN` sets the zero point when calibrating the CV Input jack
+   • `IN.CAL.MAX` sets the max point (16383) when calibrating the CV Input jack
+   • `PARAM.CAL.MIN` sets the zero point when calibrating the Parameter Kob
+   • `PARAM.CAL.MAX` sets the max point (16383) when calibrating the Parameter Kob
+   • `R` generate a random number
+   • `R.MIN` set the low end of the random number generator
+   • `R.MAX` set the upper end of the random number generator
+
+#### Fixes
+
+   • Multiply now saturates at limits (-32768 / 32767) while previous behavior returned 0 at overflow
+   • Entered values now saturate at Int16 limits which are -32768 / 32767
+   • Reduced flash memory consumption by not storing TEMP script
+   • I now carries across `DEL` commands
+   • Corrected functionality of `JI` (Just Intonation) op for 1V/Oct tuning
+   • Reduced latency of `IN` op
+
+#### Improvements
+
+   • Profiling code (optional developer feature)
+   • Screen now redraws only lines that have changed
+
 ## Version 2.1
 
 Teletype version 2.1 introduces new operators that mature the syntax and capability of the Teletype, as well as several bug fixes and enhancement features.
