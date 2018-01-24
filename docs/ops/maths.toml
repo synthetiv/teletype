@@ -231,3 +231,17 @@ short = "get or set the `R` parameter for the `CHAOS` generator"
 ["CHAOS.ALG"]
 prototype = "CHAOS.ALG x"
 short = "get or set the algorithm for the `CHAOS` generator. 0 = LOGISTIC, 1 = CUBIC, 2 = HENON, 3 = CELLULAR"
+
+[R]
+prototype = "R"
+short = "generate a random number"
+
+["R.MIN"]
+prototype = "R.MIN x"
+short = "set the lower end of the range from 0 – 32767"
+
+["R.MAX"]
+prototype = "R.MAX x"
+short = "set the upper end of the range from 0 – 32767"
+
+
