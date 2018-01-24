@@ -60,6 +60,8 @@ const tele_mod_t mod_OTHER = MAKE_MOD(OTHER, mod_OTHER_func, 0);
 
 const tele_op_t op_SCRIPT =
     MAKE_GET_SET_OP(SCRIPT, op_SCRIPT_get, op_SCRIPT_set, 0, true);
+const tele_op_t op_SYM_DOLLAR = MAKE_ALIAS_OP($, op_SCRIPT_get, op_SCRIPT_set, 0,
+    true);
 const tele_op_t op_KILL = MAKE_GET_OP(KILL, op_KILL_get, 0, false);
 const tele_op_t op_SCENE =
     MAKE_GET_SET_OP(SCENE, op_SCENE_get, op_SCENE_set, 0, true);

@@ -194,6 +194,7 @@
         "CHAOS"       => { MATCH_OP(E_OP_CHAOS); };
         "CHAOS.R"     => { MATCH_OP(E_OP_CHAOS_R); };
         "CHAOS.ALG"   => { MATCH_OP(E_OP_CHAOS_ALG); };
+        "?"           => { MATCH_OP(E_OP_TIF); };
         "+"           => { MATCH_OP(E_OP_SYM_PLUS); };
         "-"           => { MATCH_OP(E_OP_SYM_DASH); };
         "*"           => { MATCH_OP(E_OP_SYM_STAR); };
@@ -219,6 +220,7 @@
 
         # controlflow
         "SCRIPT"      => { MATCH_OP(E_OP_SCRIPT); };
+        "$"           => { MATCH_OP(E_OP_SYM_DOLLAR); };
         "KILL"        => { MATCH_OP(E_OP_KILL); };
         "SCENE"       => { MATCH_OP(E_OP_SCENE); };
         "BREAK"       => { MATCH_OP(E_OP_BREAK); };

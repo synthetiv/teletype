@@ -82,13 +82,14 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     &op_SYM_PERCENTAGE, &op_SYM_EQUAL_x2, &op_SYM_EXCLAMATION_EQUAL,
     &op_SYM_LEFT_ANGLED, &op_SYM_RIGHT_ANGLED, &op_SYM_LEFT_ANGLED_EQUAL,
     &op_SYM_RIGHT_ANGLED_EQUAL, &op_SYM_EXCLAMATION, &op_SYM_LEFT_ANGLED_x2,
-    &op_SYM_RIGHT_ANGLED_x2, &op_SYM_AMPERSAND_x2, &op_SYM_PIPE_x2,
+    &op_SYM_RIGHT_ANGLED_x2, &op_SYM_AMPERSAND_x2, &op_SYM_PIPE_x2, &op_TIF,
 
     // stack
     &op_S_ALL, &op_S_POP, &op_S_CLR, &op_S_L,
 
     // controlflow
-    &op_SCRIPT, &op_KILL, &op_SCENE, &op_BREAK, &op_BRK, &op_SYNC,
+    &op_SCRIPT, &op_SYM_DOLLAR, &op_KILL, &op_SCENE, &op_BREAK, &op_BRK,
+    &op_SYNC,
 
     // delay
     &op_DEL_CLR,

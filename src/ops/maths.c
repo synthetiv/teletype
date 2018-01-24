@@ -113,6 +113,8 @@ static void op_CHAOS_ALG_get(const void *data, scene_state_t *ss,
                              exec_state_t *es, command_state_t *cs);
 static void op_CHAOS_ALG_set(const void *data, scene_state_t *ss,
                              exec_state_t *es, command_state_t *cs);
+static void op_TIF_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                       command_state_t *cs);
 
 // clang-format off
 const tele_op_t op_ADD   = MAKE_GET_OP(ADD     , op_ADD_get     , 2, true);
@@ -163,6 +165,7 @@ const tele_op_t op_BCLR  = MAKE_GET_OP(BCLR    , op_BCLR_get    , 2, true);
 const tele_op_t op_CHAOS   = MAKE_GET_SET_OP(CHAOS,   op_CHAOS_get,   op_CHAOS_set, 0, true);
 const tele_op_t op_CHAOS_R = MAKE_GET_SET_OP(CHAOS.R, op_CHAOS_R_get, op_CHAOS_R_set, 0, true);
 const tele_op_t op_CHAOS_ALG = MAKE_GET_SET_OP(CHAOS.ALG, op_CHAOS_ALG_get, op_CHAOS_ALG_set, 0, true);
+const tele_op_t op_TIF = MAKE_GET_OP(?, op_TIF_get, 3, true);
 
 const tele_op_t op_XOR   = MAKE_ALIAS_OP(XOR, op_NE_get, NULL, 2, true);
 
@@ -676,4 +679,12 @@ static void op_CHAOS_ALG_set(const void *NOTUSED(data),
                              scene_state_t *NOTUSED(ss),
                              exec_state_t *NOTUSED(es), command_state_t *cs) {
     chaos_set_alg(cs_pop(cs));
+}
+
+static void op_TIF_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                       exec_state_t *NOTUSED(es), command_state_t *cs) {
+    s16 condition = cs_pop(cs);
+    s16 a = cs_pop(cs);
+    s16 b = cs_pop(cs);
+    cs_push(cs, condition ? a : b);
 }

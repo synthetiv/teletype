@@ -20,5 +20,6 @@ extern const tele_op_t op_BREAK;
 extern const tele_op_t op_BRK;
 extern const tele_op_t op_SYNC;
 
+extern const tele_op_t op_SYM_DOLLAR;
 
 #endif
