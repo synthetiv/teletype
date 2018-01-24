@@ -47,6 +47,7 @@ Screen saver engages after 90 minutes of inactivity
    • Reduced flash memory consumption by not storing TEMP script
    • I now carries across `DEL` commands
    • Corrected functionality of `JI` (Just Intonation) op for 1V/Oct tuning
+   • Reduced latency of `IN` op
 
 #### Improvements
 
