@@ -9,6 +9,7 @@
 #define GRID_MAX_KEY_PRESSED 10
 #define GRID_KEY_HOLD_DELAY 700
 #define GRID_KEY_REPEAT_RATE 40
+#define GRID_ON_BRIGHTNESS 13
 
 static const u8 glyph[16][6] = {
     {
@@ -161,8 +162,8 @@ static void grid_screen_refresh_ctrl(scene_state_t *ss, u8 page, u8 x1, u8 y1, u
 static void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1, u8 y1, u8 x2, u8 y2);
 static void grid_screen_refresh_info(scene_state_t *ss, u8 page, u8 x1, u8 y1, u8 x2, u8 y2);
 static bool grid_within_area(u8 x, u8 y, grid_common_t *gc);
-static void grid_fill_area(u8 x, u8 y, u8 w, u8 h, u8 level);
-static void grid_fill_area_scr(u8 x, u8 y, u8 w, u8 h, u8 level, u8 page);
+static void grid_fill_area(u8 x, u8 y, u8 w, u8 h, s8 level);
+static void grid_fill_area_scr(u8 x, u8 y, u8 w, u8 h, s8 level, u8 page);
 
 void grid_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 ignore_rotate) {
     if (timers_uninitialized) {
@@ -462,7 +463,7 @@ void grid_refresh(scene_state_t *ss) {
                 y = GXYC.y + GXY.value_y;
                 grid_fill_area(GXYC.x, y, GXYC.w, 1, GXYC.level);
                 grid_fill_area(x, GXYC.y, 1, GXYC.h, GXYC.level);
-                grid_fill_area(x, y, 1, 1, 15);
+                grid_fill_area(x, y, 1, 1, GRID_ON_BRIGHTNESS);
             }
         }
     }
@@ -472,56 +473,56 @@ void grid_refresh(scene_state_t *ss) {
         if (GFC.enabled && SG.group[GFC.group].enabled) {
             switch (GF.type) {
                 case FADER_CH_BAR:
-                    grid_fill_area(GFC.x, GFC.y, GF.value + 1, GFC.h, 15);
+                    grid_fill_area(GFC.x, GFC.y, GF.value + 1, GFC.h, GRID_ON_BRIGHTNESS);
                     grid_fill_area(GFC.x + GF.value + 1, GFC.y, GFC.w - GF.value - 1, GFC.h, GFC.level);
                     break;
                 case FADER_CV_BAR:
                     grid_fill_area(GFC.x, GFC.y, GFC.w, GFC.h - GF.value - 1, GFC.level);
-                    grid_fill_area(GFC.x, GFC.y + GFC.h - GF.value - 1, GFC.w, GF.value + 1, 15);
+                    grid_fill_area(GFC.x, GFC.y + GFC.h - GF.value - 1, GFC.w, GF.value + 1, GRID_ON_BRIGHTNESS);
                     break;
                 case FADER_CH_DOT:
-                    grid_fill_area(GFC.x + GF.value, GFC.y, 1, GFC.h, 15);
+                    grid_fill_area(GFC.x + GF.value, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS);
                     break;
                 case FADER_CV_DOT:
-                    grid_fill_area(GFC.x, GFC.y + GFC.h - GF.value - 1, GFC.w, 1, 15);
+                    grid_fill_area(GFC.x, GFC.y + GFC.h - GF.value - 1, GFC.w, 1, GRID_ON_BRIGHTNESS);
                     break;
                 case FADER_FH_BAR:
                     fv = (((GFC.w - 2) << 4) * GF.value) / GFC.level;
                     ff = fv >> 4;
                     fp = fv & 15;
-                    grid_fill_area(GFC.x, GFC.y, ff + 1, GFC.h, 15);
+                    grid_fill_area(GFC.x, GFC.y, ff + 1, GFC.h, GRID_ON_BRIGHTNESS);
                     if (fp) grid_fill_area(GFC.x + ff + 1, GFC.y, 1, GFC.h, fp);
-                    grid_fill_area(GFC.x + GFC.w - 1, GFC.y, 1, GFC.h, 15);
+                    grid_fill_area(GFC.x + GFC.w - 1, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS);
                     break;
                 case FADER_FV_BAR:
                     fv = (((GFC.h - 2) << 4) * GF.value) / GFC.level;
                     ff = fv >> 4;
                     fp = fv & 15;
-                    grid_fill_area(GFC.x, GFC.y + GFC.h - ff - 1, GFC.w, ff + 1, 15);
+                    grid_fill_area(GFC.x, GFC.y + GFC.h - ff - 1, GFC.w, ff + 1, GRID_ON_BRIGHTNESS);
                     if (fp) grid_fill_area(GFC.x, GFC.y + GFC.h - ff - 2, GFC.w, 1, fp);
-                    grid_fill_area(GFC.x, GFC.y, GFC.w, 1, 15);
+                    grid_fill_area(GFC.x, GFC.y, GFC.w, 1, GRID_ON_BRIGHTNESS);
                     break;
                 case FADER_FH_DOT:
-                    grid_fill_area(GFC.x, GFC.y, 1, GFC.h, 15);
-                    grid_fill_area(GFC.x + GFC.w - 1, GFC.y, 1, GFC.h, 15);
+                    grid_fill_area(GFC.x, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS);
+                    grid_fill_area(GFC.x + GFC.w - 1, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS);
                     fv = (((GFC.w - 2) << 4) * GF.value) / GFC.level;
                     ff = fv >> 4;
                     fp = fv & 15;
                     if (fp)
                         grid_fill_area(GFC.x + ff + 1, GFC.y, 1, GFC.h, fp);
                     else if (ff)
-                        grid_fill_area(GFC.x + ff, GFC.y, 1, GFC.h, 15);
+                        grid_fill_area(GFC.x + ff, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS);
                     break;
                 case FADER_FV_DOT:
-                    grid_fill_area(GFC.x, GFC.y + GFC.h - 1, GFC.w, 1, 15);
-                    grid_fill_area(GFC.x, GFC.y, GFC.w, 1, 15);
+                    grid_fill_area(GFC.x, GFC.y + GFC.h - 1, GFC.w, 1, GRID_ON_BRIGHTNESS);
+                    grid_fill_area(GFC.x, GFC.y, GFC.w, 1, GRID_ON_BRIGHTNESS);
                     fv = (((GFC.h - 2) << 4) * GF.value) / GFC.level;
                     ff = fv >> 4;
                     fp = fv & 15;
                     if (fp)
                         grid_fill_area(GFC.x, GFC.y + GFC.h - ff - 2, GFC.w, 1, fp);
                     else if (ff)
-                        grid_fill_area(GFC.x, GFC.y + GFC.h - ff - 1, GFC.w, 1, 15);
+                        grid_fill_area(GFC.x, GFC.y + GFC.h - ff - 1, GFC.w, 1, GRID_ON_BRIGHTNESS);
                     break;
             }
         }
@@ -529,7 +530,7 @@ void grid_refresh(scene_state_t *ss) {
 
     for (u16 i = 0; i < GRID_BUTTON_COUNT; i++)
         if (GBC.enabled && SG.group[GBC.group].enabled)
-            grid_fill_area(GBC.x, GBC.y, GBC.w, GBC.h, GB.state ? 15 : GBC.level);
+            grid_fill_area(GBC.x, GBC.y, GBC.w, GBC.h, GB.state ? GRID_ON_BRIGHTNESS : GBC.level);
     
     u16 led;
     for (u16 i = 0; i < size_x; i++)
@@ -539,14 +540,17 @@ void grid_refresh(scene_state_t *ss) {
 
             if (SG.leds[i][j] >= 0)
                 monomeLedBuffer[led] = SG.leds[i][j];
-            else if (SG.leds[i][j] == LED_DIM)
-                monomeLedBuffer[led] >>= 1;
+            else if (SG.leds[i][j] == LED_DIM) {
+                if (monomeLedBuffer[led] > 3)
+                    monomeLedBuffer[led] -= 3;
+                else
+                    monomeLedBuffer[led] = 0;
+            }
             else if (SG.leds[i][j] == LED_BRI) {
-                monomeLedBuffer[led] <<= 1;
-                if (monomeLedBuffer[led] > 15)
+                if (monomeLedBuffer[led] > 12)
                     monomeLedBuffer[led] = 15;
-                else if (monomeLedBuffer[led] < 1)
-                    monomeLedBuffer[led] = 1;
+                else
+                    monomeLedBuffer[led] += 3;
             }
 
             if (monomeLedBuffer[led] < SG.dim)
@@ -569,7 +573,7 @@ void grid_refresh(scene_state_t *ss) {
     SG.grid_dirty = 0;
 }
 
-void grid_fill_area(u8 x, u8 y, u8 w, u8 h, u8 level) {
+void grid_fill_area(u8 x, u8 y, u8 w, u8 h, s8 level) {
     if (level == LED_OFF) return;
 
     u16 index;
@@ -580,7 +584,12 @@ void grid_fill_area(u8 x, u8 y, u8 w, u8 h, u8 level) {
         for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y; _y < y_end; _y++) {
                 index = _x + _y * size_x;
-                if (index < MONOME_MAX_LED_BYTES) monomeLedBuffer[index] >>= 1;
+                if (index < MONOME_MAX_LED_BYTES) {
+                    if (monomeLedBuffer[index] > 3)
+                        monomeLedBuffer[index] -= 3;
+                    else
+                        monomeLedBuffer[index] = 0;
+                }
             }
     }
     else if (level == LED_BRI) {
@@ -588,9 +597,10 @@ void grid_fill_area(u8 x, u8 y, u8 w, u8 h, u8 level) {
             for (u16 _y = y; _y < y_end; _y++) {
                 index = _x + _y * size_x;
                 if (index < MONOME_MAX_LED_BYTES) {
-                    monomeLedBuffer[index] <<= 1;
-                    if (monomeLedBuffer[index] > 15)
+                    if (monomeLedBuffer[index] > 12)
                         monomeLedBuffer[index] = 15;
+                    else
+                        monomeLedBuffer[index] += 3;
                 }
             }
     }
@@ -706,7 +716,7 @@ void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1,
                 y = GXYC.y + GXY.value_y;
                 grid_fill_area_scr(GXYC.x, y, GXYC.w, 1, GXYC.level, page);
                 grid_fill_area_scr(x, GXYC.y, 1, GXYC.h, GXYC.level, page);
-                grid_fill_area_scr(x, y, 1, 1, 15, page);
+                grid_fill_area_scr(x, y, 1, 1, GRID_ON_BRIGHTNESS, page);
             }
         }
     }
@@ -716,56 +726,56 @@ void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1,
         if (GFC.enabled && SG.group[GFC.group].enabled) {
             switch (GF.type) {
                 case FADER_CH_BAR:
-                    grid_fill_area_scr(GFC.x, GFC.y, GF.value + 1, GFC.h, 15, page);
+                    grid_fill_area_scr(GFC.x, GFC.y, GF.value + 1, GFC.h, GRID_ON_BRIGHTNESS, page);
                     grid_fill_area_scr(GFC.x + GF.value + 1, GFC.y, GFC.w - GF.value - 1, GFC.h, GFC.level, page);
                     break;
                 case FADER_CV_BAR:
                     grid_fill_area_scr(GFC.x, GFC.y, GFC.w, GFC.h - GF.value - 1, GFC.level, page);
-                    grid_fill_area_scr(GFC.x, GFC.y + GFC.h - GF.value - 1, GFC.w, GF.value + 1, 15, page);
+                    grid_fill_area_scr(GFC.x, GFC.y + GFC.h - GF.value - 1, GFC.w, GF.value + 1, GRID_ON_BRIGHTNESS, page);
                     break;
                 case FADER_CH_DOT:
-                    grid_fill_area_scr(GFC.x + GF.value, GFC.y, 1, GFC.h, 15, page);
+                    grid_fill_area_scr(GFC.x + GF.value, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS, page);
                     break;
                 case FADER_CV_DOT:
-                    grid_fill_area_scr(GFC.x, GFC.y + GFC.h - GF.value - 1, GFC.w, 1, 15, page);
+                    grid_fill_area_scr(GFC.x, GFC.y + GFC.h - GF.value - 1, GFC.w, 1, GRID_ON_BRIGHTNESS, page);
                     break;
                 case FADER_FH_BAR:
                     fv = (((GFC.w - 2) << 4) * GF.value) / GFC.level;
                     ff = fv >> 4;
                     fp = fv & 15;
-                    grid_fill_area_scr(GFC.x, GFC.y, ff + 1, GFC.h, 15, page);
+                    grid_fill_area_scr(GFC.x, GFC.y, ff + 1, GFC.h, GRID_ON_BRIGHTNESS, page);
                     if (fp) grid_fill_area_scr(GFC.x + ff + 1, GFC.y, 1, GFC.h, fp, page);
-                    grid_fill_area_scr(GFC.x + GFC.w - 1, GFC.y, 1, GFC.h, 15, page);
+                    grid_fill_area_scr(GFC.x + GFC.w - 1, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS, page);
                     break;
                 case FADER_FV_BAR:
                     fv = (((GFC.h - 2) << 4) * GF.value) / GFC.level;
                     ff = fv >> 4;
                     fp = fv & 15;
-                    grid_fill_area_scr(GFC.x, GFC.y + GFC.h - ff - 1, GFC.w, ff + 1, 15, page);
+                    grid_fill_area_scr(GFC.x, GFC.y + GFC.h - ff - 1, GFC.w, ff + 1, GRID_ON_BRIGHTNESS, page);
                     if (fp) grid_fill_area_scr(GFC.x, GFC.y + GFC.h - ff - 2, GFC.w, 1, fp, page);
-                    grid_fill_area_scr(GFC.x, GFC.y, GFC.w, 1, 15, page);
+                    grid_fill_area_scr(GFC.x, GFC.y, GFC.w, 1, GRID_ON_BRIGHTNESS, page);
                     break;
                 case FADER_FH_DOT:
-                    grid_fill_area_scr(GFC.x, GFC.y, 1, GFC.h, 15, page);
-                    grid_fill_area_scr(GFC.x + GFC.w - 1, GFC.y, 1, GFC.h, 15, page);
+                    grid_fill_area_scr(GFC.x, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS, page);
+                    grid_fill_area_scr(GFC.x + GFC.w - 1, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS, page);
                     fv = (((GFC.w - 2) << 4) * GF.value) / GFC.level;
                     ff = fv >> 4;
                     fp = fv & 15;
                     if (fp)
                         grid_fill_area_scr(GFC.x + ff + 1, GFC.y, 1, GFC.h, fp, page);
                     else if (ff)
-                        grid_fill_area_scr(GFC.x + ff, GFC.y, 1, GFC.h, 15, page);
+                        grid_fill_area_scr(GFC.x + ff, GFC.y, 1, GFC.h, GRID_ON_BRIGHTNESS, page);
                     break;
                 case FADER_FV_DOT:
-                    grid_fill_area_scr(GFC.x, GFC.y + GFC.h - 1, GFC.w, 1, 15, page);
-                    grid_fill_area_scr(GFC.x, GFC.y, GFC.w, 1, 15, page);
+                    grid_fill_area_scr(GFC.x, GFC.y + GFC.h - 1, GFC.w, 1, GRID_ON_BRIGHTNESS, page);
+                    grid_fill_area_scr(GFC.x, GFC.y, GFC.w, 1, GRID_ON_BRIGHTNESS, page);
                     fv = (((GFC.h - 2) << 4) * GF.value) / GFC.level;
                     ff = fv >> 4;
                     fp = fv & 15;
                     if (fp)
                         grid_fill_area_scr(GFC.x, GFC.y + GFC.h - ff - 2, GFC.w, 1, fp, page);
                     else if (ff)
-                        grid_fill_area_scr(GFC.x, GFC.y + GFC.h - ff - 1, GFC.w, 1, 15, page);
+                        grid_fill_area_scr(GFC.x, GFC.y + GFC.h - ff - 1, GFC.w, 1, GRID_ON_BRIGHTNESS, page);
                     break;
             }
         }
@@ -773,7 +783,7 @@ void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1,
 
     for (u16 i = 0; i < GRID_BUTTON_COUNT; i++)
         if (GBC.enabled && SG.group[GBC.group].enabled)
-            grid_fill_area_scr(GBC.x, GBC.y, GBC.w, GBC.h, GB.state ? 15 : GBC.level, page);
+            grid_fill_area_scr(GBC.x, GBC.y, GBC.w, GBC.h, GB.state ? GRID_ON_BRIGHTNESS : GBC.level, page);
     
     u16 pd = page ? 8 : 0;
     s8 l;
@@ -782,14 +792,17 @@ void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1,
             l = SG.leds[i][j + pd];
             if (l >= 0)
                 screen[i][j] = l;
-            else if (l == LED_DIM)
-                screen[i][j] >>= 1;
+            else if (l == LED_DIM) {
+                if (screen[i][j] > 3)
+                    screen[i][j] -= 3;
+                else
+                    screen[i][j] = 0;
+            }
             else if (l == LED_BRI) {
-                screen[i][j] <<= 1;
-                if (screen[i][j] > 15)
+                if (screen[i][j] > 12)
                     screen[i][j] = 15;
-                else if (screen[i][j] < 1)
-                    screen[i][j] = 1;
+                else
+                    screen[i][j] += 3;
             }
         }
 
@@ -970,7 +983,7 @@ static void grid_screen_refresh_info(scene_state_t *ss, u8 page, u8 x1, u8 y1,
     line[1].data[2 + 512] = l;
 }
 
-void grid_fill_area_scr(u8 x, u8 y, u8 w, u8 h, u8 level, u8 page) {
+void grid_fill_area_scr(u8 x, u8 y, u8 w, u8 h, s8 level, u8 page) {
     if (level == LED_OFF) return;
 
     u16 x_end = min(GRID_MAX_DIMENSION, x + w);
@@ -989,17 +1002,20 @@ void grid_fill_area_scr(u8 x, u8 y, u8 w, u8 h, u8 level, u8 page) {
     }
     
     if (level == LED_DIM) {
-        for (u16 _x = x; _x < x_end; _x++) {
+        for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y1; _y <= y2; _y++)
-                screen[_x][_y] >>= 1;
-        }
+                if (screen[_x][_y] > 3)
+                    screen[_x][_y] -= 3;
+                else
+                    screen[_x][_y] = 0;
     }
     else if (level == LED_BRI) {
         for (u16 _x = x; _x < x_end; _x++)
-            for (u16 _y = y1; _y <= y2; _y++) {
-                screen[_x][_y] <<= 1; 
-                if (screen[_x][_y] > 15) screen[_x][_y] = 15;
-            }
+            for (u16 _y = y1; _y <= y2; _y++)
+                if (screen[_x][_y] > 12)
+                    screen[_x][_y] = 15;
+                else
+                    screen[_x][_y] += 3;
     }
     else {
         for (u16 _x = x; _x < x_end; _x++)

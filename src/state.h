@@ -138,7 +138,7 @@ typedef struct {
     u8 group;
     u8 x, y;
     u8 w, h;
-    u8 level;
+    s8 level;
     s8 script;
 } grid_common_t;
 

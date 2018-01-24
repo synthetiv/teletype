@@ -932,7 +932,8 @@ static void op_G_FDR_L_set(const void *NOTUSED(data), scene_state_t *ss,
     if (i < (s16)0 || i >= (s16)GRID_FADER_COUNT) return;
     
     level = grid_fader_clamp_level(level, GF.type, GFC.w, GFC.h);
-    GF.value = scale(0, GFC.level, 0, level, GF.value);
+    if (GF.type > FADER_COARSE)
+        GF.value = scale(0, GFC.level, 0, level, GF.value);
     GFC.level = level;
     SG.scr_dirty = SG.grid_dirty = 1;
 }
@@ -1036,7 +1037,8 @@ static void op_G_FDRL_set(const void *NOTUSED(data), scene_state_t *ss, exec_sta
     u16 i = SG.latest_fader;
     
     level = grid_fader_clamp_level(level, GF.type, GFC.w, GFC.h);
-    GF.value = scale(0, GFC.level, 0, level, GF.value);
+    if (GF.type > FADER_COARSE)
+        GF.value = scale(0, GFC.level, 0, level, GF.value);
     GFC.level = level;
     
     SG.scr_dirty = SG.grid_dirty = 1;
@@ -1164,7 +1166,8 @@ static void op_G_GFDR_L_get(const void *NOTUSED(data), scene_state_t *ss,
     for (u16 i = 0; i < GRID_FADER_COUNT; i++)
         if (GFC.group == group) {
             level = grid_fader_clamp_level(is_odd ? odd : even, GF.type, GFC.w, GFC.h);
-            GF.value = scale(0, GFC.level, 0, level, GF.value);
+            if (GF.type > FADER_COARSE)
+                GF.value = scale(0, GFC.level, 0, level, GF.value);
             GFC.level = level;
             is_odd = !is_odd;
         }
