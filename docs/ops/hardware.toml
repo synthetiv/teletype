@@ -56,7 +56,7 @@ Get the value of the PARAM knob. This returns a valuue in the range 0-16383.
 prototype = "PARAM.SCALE min max"
 short = "Set static scaling of the PARAM knob to between `min` and `max`."
 
-["IN.CAL.MIN]
+["IN.CAL.MIN"]
 prototype = "IN.CAL.MIN"
 short = "Reads the input CV and assigns the voltage to the zero point"
 description = """
