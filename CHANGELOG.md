@@ -15,7 +15,8 @@
 - **FIX**: reduced flash memory consumption by not storing TEMP script
 - **FIX**: `I` now carries across `DEL` commands
 - **FIX**: removed TEMP script allocation in flash
-- **FIX** : corrected functionality of JI op for 1volt/octave tuning and removed octave-wrapping behaviour (now returns exactly the entered ratio)
+- **FIX**: corrected functionality of JI op for 1volt/octave tuning and removed octave-wrapping behaviour (now returns exactly the entered ratio)
+- **FIX**: reduced latency of `IN` op
 
 ## v2.1
 - **BREAKING**: the `I` variable is now scoped to the `L` loop, and does not exist outside of an execution context.  Scripts using `I` as a general-purpose variable will be broken. 
