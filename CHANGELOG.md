@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.NEXT
+- **FIX**: I now accessible to child SCRIPTS
+
 ## v2.2
 - **NEW**: added a cheat sheet PDF
 - **NEW**: new bitwise ops: &, |, ^, ~, BSET, BCLR, BGET
