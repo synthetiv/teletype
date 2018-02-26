@@ -41,6 +41,17 @@ If `x` is not zero execute command
                        (see example 2)
     ```
 
+  5. Dependent scripts
+
+    ```text
+    SCRIPT 1:
+    IF 0: TR.P 1    => do nothing
+    SCRIPT 2        => will pulse output 2
+
+    SCRIPT 2:
+    ELSE: TR.P 2    => will not pulse output 2 if called directly,
+                       but will if called from script 1
+    ```
 """
 
 [ELIF]
@@ -176,3 +187,59 @@ short = "clears stack, clears delays, cancels pulses, cancels slews, disables me
 prototype = "BREAK"
 aliases = ["BRK"]
 short = "halts execution of the current script"
+
+[INIT]
+prototype = "INIT"
+short = "clears all state data"
+description = """
+
+**WARNING**: You will lose all settings when you initialize using `INIT` - there is NO undo!
+"""
+
+["INIT.CV"]
+prototype = "INIT.CV x"
+short = "clears all parameters on CV associated with output x"
+
+["INIT.CV.ALL"]
+prototype = "INIT.CV.ALL"
+short = "clears all parameters on all CV's"
+
+["INIT.DATA"]
+prototype = "INIT.DATA"
+short = "clears all data held in all variables"
+description = """
+
+Clears the following variables and resets them to default values: A, B, C, D, CV slew, Drunk min/max, M, O, Q, R, T, TR, CV input, and the Paramter knob
+"""
+
+["INIT.P"]
+prototype = "INIT.P x"
+short = "clears pattern associated with pattern number x"
+
+["INIT.P.ALL"]
+prototype = "INIT.P.ALL"
+short = "clears all patterns"
+
+["INIT.SCENE"]
+prototype = "INIT.SCENE"
+short = "loads a blank scene"
+
+["INIT.SCRIPT"]
+prototype = "INIT.SCRIPT x"
+short = "clear script number x"
+
+["INIT.SCRIPT.ALL"]
+prototype = "INIT.SCRIPT.ALL"
+short = "clear all scripts"
+
+["INIT.TIME"]
+prototype = "INIT.TIME x"
+short = "clear time on trigger x"
+
+["INIT.TR"]
+prototype = "INIT.TR x"
+short = "clear all parameters on trigger associated with TR x"
+
+["INIT.TR.ALL"]
+prototype = "INIT.TR.ALL"
+short = "clear all triggers"

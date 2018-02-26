@@ -12,6 +12,7 @@ short = "subtract `y` from `x`"
 prototype = "MUL x y"
 aliases = ["*"]
 short = "multiply `x` and `y` together"
+description = "returns `x` times `y`, bounded to integer limits"
 
 [DIV]
 prototype = "DIV x y"
@@ -108,6 +109,34 @@ prototype = "RSH x y"
 aliases = [">>"]
 short = "right shift `x` by `y` bits, in effect divide by `2` to the power of `x`"
 
+["|"]
+prototype = "| x y"
+short = "bitwise or `x` | `y`"
+
+["&"]
+prototype = "& x y"
+short = "bitwise and `x` & `y`"
+
+["^"]
+prototype = "^ x y"
+short = "bitwise xor `x` ^ `y`"
+
+["~"]
+prototype = "~ x"
+short = "bitwise not, i.e.: inversion of `x`"
+
+[BSET]
+prototype = "BSET x y"
+short = "set bit `y` in value `x`"
+
+[BGET]
+prototype = "BGET x y"
+short = "get bit `y` in value `x`"
+
+[BCLR]
+prototype = "BCLR x y"
+short = "clear bit `y` in value `x`"
+
 [ABS]
 prototype = "ABS x"
 short = "absolute value of `x`"
@@ -190,3 +219,29 @@ short = "converts a voltage to a value usable by the CV outputs (`x` between `0`
 [EXP]
 prototype = "EXP x"
 short = "exponentiation table lookup. `0-16383` range (V `0-10`)"
+
+[CHAOS]
+prototype = "CHAOS x"
+short = "get next value from chaos generator, or set the current value"
+
+["CHAOS.R"]
+prototype = "CHAOS.R x"
+short = "get or set the `R` parameter for the `CHAOS` generator"
+
+["CHAOS.ALG"]
+prototype = "CHAOS.ALG x"
+short = "get or set the algorithm for the `CHAOS` generator. 0 = LOGISTIC, 1 = CUBIC, 2 = HENON, 3 = CELLULAR"
+
+[R]
+prototype = "R"
+short = "generate a random number"
+
+["R.MIN"]
+prototype = "R.MIN x"
+short = "set the lower end of the range from 0 – 32767"
+
+["R.MAX"]
+prototype = "R.MAX x"
+short = "set the upper end of the range from 0 – 32767"
+
+

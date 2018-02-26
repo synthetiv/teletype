@@ -144,6 +144,9 @@ process_result_t run_script(scene_state_t *ss, size_t script_no) {
 // context is required for proper operation of DEL, THIS, L, W, IF
 process_result_t run_script_with_exec_state(scene_state_t *ss, exec_state_t *es,
                                             size_t script_no) {
+#ifdef TELETYPE_PROFILE
+    tele_profile_script(script_no);
+#endif
     process_result_t result = { .has_value = false, .value = 0 };
 
     es_set_script_number(es, script_no);
@@ -167,6 +170,10 @@ process_result_t run_script_with_exec_state(scene_state_t *ss, exec_state_t *es,
 
     es_variables(es)->breaking = false;
     ss_update_script_last(ss, script_no);
+
+#ifdef TELETYPE_PROFILE
+    tele_profile_script(script_no);
+#endif
     return result;
 }
 
@@ -307,6 +314,9 @@ void tele_tick(scene_state_t *ss, uint8_t time) {
         if (ss->delay.time[i]) {
             ss->delay.time[i] -= time;
             if (ss->delay.time[i] <= 0) {
+#ifdef TELETYPE_PROFILE
+                tele_profile_delay(i);
+#endif
                 // Workaround for issue #80. (0 is the signifier for "empty")
                 // Setting delay.time[i] to 1 prevents delayed delay commands
                 //     from seeing a perfectly-timed delay slot as empty
@@ -332,13 +342,17 @@ void tele_tick(scene_state_t *ss, uint8_t time) {
                 // The delay flag is required to protect the script number
                 // TODO: investigate delayed nested SCRIPTs
                 es_variables(&es)->delayed = true;
-                es_variables(&es)->script_number = ss->delay.origin[i];
+                es_variables(&es)->script_number = ss->delay.origin_script[i];
+                es_variables(&es)->i = ss->delay.origin_i[i];
 
                 run_script_with_exec_state(ss, &es, TEMP_SCRIPT);
 
                 ss->delay.time[i] = 0;
                 ss->delay.count--;
                 if (ss->delay.count == 0) tele_has_delays(false);
+#ifdef TELETYPE_PROFILE
+                tele_profile_delay(i);
+#endif
             }
         }
     }

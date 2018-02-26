@@ -35,6 +35,7 @@ static bool show_welcome_message;
 static const uint8_t D_INPUT = 1 << 0;
 static const uint8_t D_LIST = 1 << 1;
 static const uint8_t D_MESSAGE = 1 << 2;
+static const uint8_t D_VARS = 1 << 3;
 static const uint8_t D_ALL = 0xFF;
 static uint8_t dirty;
 
@@ -45,6 +46,10 @@ static const uint8_t A_STACK = 1 << 3;
 static const uint8_t A_MUTES = 1 << 4;
 static uint8_t activity_prev;
 static uint8_t activity;
+static bool show_vars = false;
+static int16_t vars_prev[8];
+char var_names[] = { 'A', 0, 'X', 0, 'B', 0, 'Y', 0,
+                     'C', 0, 'Z', 0, 'D', 0, 'T', 0 };
 
 // teletype_io.h
 void tele_has_delays(bool has_delays) {
@@ -80,6 +85,10 @@ void set_metro_icon(bool display) {
         activity &= ~A_METRO;
 }
 
+void set_vars_updated() {
+    dirty |= D_VARS;
+}
+
 // main mode functions
 void init_live_mode() {
     status = E_OK;
@@ -88,6 +97,7 @@ void init_live_mode() {
     activity_prev = 0xFF;
     history_top = -1;
     history_line = -1;
+    show_vars = false;
 }
 
 void set_live_mode() {
@@ -164,6 +174,12 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key) {
              match_no_mod(m, k, HID_CLOSE_BRACKET)) {
         set_mode(M_EDIT);
     }
+    // tilde: show the variables
+    else if (match_no_mod(m, k, HID_TILDE)) {
+        show_vars = !show_vars;
+        if (show_vars) dirty |= D_VARS;  // combined with this...
+        dirty |= D_LIST;  // cheap flag to indicate mode just switched
+    }
     else {  // pass the key though to the line editor
         bool processed = line_editor_process_keys(&le, k, m, is_held_key);
         if (processed) dirty |= D_INPUT;
@@ -171,16 +187,17 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key) {
 }
 
 
-bool screen_refresh_live() {
-    bool screen_dirty = false;
+uint8_t screen_refresh_live() {
+    uint8_t screen_dirty = 0;
+
     if (dirty & D_INPUT) {
         line_editor_draw(&le, '>', &line[7]);
-        screen_dirty = true;
+        screen_dirty |= (1 << 7);
         dirty &= ~D_INPUT;
     }
 
     if (dirty & D_MESSAGE) {
-        char s[32];
+        char s[36];
         if (status != E_OK) {
             strcpy(s, tele_error(status));
             if (error_msg[0]) {
@@ -196,8 +213,8 @@ bool screen_refresh_live() {
             output.has_value = false;
         }
         else if (show_welcome_message) {
-            strcpy(s, TELETYPE_VERSION ": ");
-            strcat(s, git_version);
+            strcpy(s, "TELETYPE: ");
+            strncat(s, git_version, 35 - strlen(s));
             show_welcome_message = false;
         }
         else {
@@ -207,14 +224,54 @@ bool screen_refresh_live() {
         region_fill(&line[6], 0);
         font_string_region_clip(&line[6], s, 0, 0, 0x4, 0);
 
-        screen_dirty = true;
+        screen_dirty |= (1 << 6);
         dirty &= ~D_MESSAGE;
     }
 
-    if (dirty & D_LIST) {
-        for (int i = 0; i < 6; i++) region_fill(&line[i], 0);
+    if (show_vars && ((dirty & D_VARS) || (dirty & D_LIST))) {
+        int16_t* vp =
+            &scene_state.variables
+                 .a;  // 8 int16_t all in a row, point at the first one
+                      // relies on variable ordering. see: src/state.h
+        bool changed = dirty & D_LIST;
+        char s[8];
 
-        screen_dirty = true;
+        if (changed) {
+            region_fill(&line[1], 0);
+            screen_dirty |= (1 << 1);
+        }
+
+        for (size_t i = 0; i < 8; i += 2)
+            if (changed || (vp[i] != vars_prev[i]) ||
+                (vp[i + 1] != vars_prev[i + 1])) {
+                region_fill(&line[i / 2 + 2], 0);
+                vars_prev[i] = vp[i];
+                vars_prev[i + 1] = vp[i + 1];
+                itoa(vp[i], s, 10);
+                font_string_region_clip_right(&line[i / 2 + 2], s, 11 * 4, 0,
+                                              0xf, 0);
+                font_string_region_clip_right(
+                    &line[i / 2 + 2], var_names + (i * 2), 14 * 4, 0, 0x1, 0);
+                itoa(vp[i + 1], s, 10);
+                font_string_region_clip_right(&line[i / 2 + 2], s, 25 * 4, 0,
+                                              0xf, 0);
+                font_string_region_clip_right(&line[i / 2 + 2],
+                                              var_names + ((i + 1) * 2), 28 * 4,
+                                              0, 0x1, 0);
+                screen_dirty |= (1 << (i / 2 + 2));
+                for (int row = 1; row < 9; row += 2) {
+                    line[i / 2 + 2].data[row * 128 + 12 * 4 - 1] = 0x1;
+                    line[i / 2 + 2].data[row * 128 + 26 * 4 - 1] = 0x1;
+                }
+            }
+        dirty &= ~D_VARS;
+        dirty &= ~D_LIST;
+    }
+
+    if (dirty & D_LIST) {
+        for (int i = 1; i < 6; i++) region_fill(&line[i], 0);
+
+        screen_dirty |= 0x3E;
         dirty &= ~D_LIST;
     }
 
@@ -288,7 +345,7 @@ bool screen_refresh_live() {
         }
 
         activity_prev = activity;
-        screen_dirty = true;
+        screen_dirty |= 0x1;
         activity &= ~A_MUTES;
     }
 

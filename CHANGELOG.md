@@ -1,7 +1,25 @@
 # Changelog
 
-## vNEXT
+## v2.NEXT
+- **FIX**: I now accessible to child SCRIPTS
+
+## v2.2
 - **NEW**: added a cheat sheet PDF
+- **NEW**: new bitwise ops: &, |, ^, ~, BSET, BCLR, BGET
+- **NEW**: new ops `PARAM.SCALE min max` and `IN.SCALE min max` to add static scaling to inputs
+- **NEW**: blanking screensaver after 90 minutes of keyboard inactivity, any key to wake
+- **NEW**: new op: CHAOS chaotic sequence generator.  Control with CHAOS.ALG and CHAOS.R
+- **NEW**: new op family: `INIT`, to clear device state
+- **NEW**: new ops: `R`, `R.MIN`, `R.MAX` programmable RNG
+- **IMP**: profiling code (optional, dev feature)
+- **IMP**: screen now redraws only lines that have changed
+- **FIX**: multiply now saturates at limits, previous behaviour returned 0 at overflow
+- **FIX**: entered values now saturate at int16 limits
+- **FIX**: reduced flash memory consumption by not storing TEMP script
+- **FIX**: `I` now carries across `DEL` commands
+- **FIX**: removed TEMP script allocation in flash
+- **FIX**: corrected functionality of JI op for 1volt/octave tuning and removed octave-wrapping behaviour (now returns exactly the entered ratio)
+- **FIX**: reduced latency of `IN` op
 
 ## v2.1
 - **BREAKING**: the `I` variable is now scoped to the `L` loop, and does not exist outside of an execution context.  Scripts using `I` as a general-purpose variable will be broken. 

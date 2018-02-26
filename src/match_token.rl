@@ -41,6 +41,20 @@
         "X"           => { MATCH_OP(E_OP_X); };
         "Y"           => { MATCH_OP(E_OP_Y); };
         "Z"           => { MATCH_OP(E_OP_Z); };
+
+        # init
+        "INIT"            => { MATCH_OP(E_OP_INIT); };
+        "INIT.SCENE"      => { MATCH_OP(E_OP_INIT_SCENE); };
+        "INIT.SCRIPT"     => { MATCH_OP(E_OP_INIT_SCRIPT); };
+        "INIT.SCRIPT.ALL" => { MATCH_OP(E_OP_INIT_SCRIPT_ALL); };
+        "INIT.P"          => { MATCH_OP(E_OP_INIT_P); };
+        "INIT.P.ALL"      => { MATCH_OP(E_OP_INIT_P_ALL); };
+        "INIT.CV"         => { MATCH_OP(E_OP_INIT_CV); };
+        "INIT.CV.ALL"     => { MATCH_OP(E_OP_INIT_CV_ALL); };
+        "INIT.TR"         => { MATCH_OP(E_OP_INIT_TR); };
+        "INIT.TR.ALL"     => { MATCH_OP(E_OP_INIT_TR_ALL); };
+        "INIT.DATA"       => { MATCH_OP(E_OP_INIT_DATA); };
+        "INIT.TIME"       => { MATCH_OP(E_OP_INIT_TIME); };
         
         # turtle
         "@"           => { MATCH_OP(E_OP_TURTLE); };
@@ -106,7 +120,15 @@
         "CV.OFF"      => { MATCH_OP(E_OP_CV_OFF); };
         "CV.SLEW"     => { MATCH_OP(E_OP_CV_SLEW); };
         "IN"          => { MATCH_OP(E_OP_IN); };
+        "IN.SCALE"    => { MATCH_OP(E_OP_IN_SCALE); };
+        "IN.CAL.MIN"  => { MATCH_OP(E_OP_IN_CAL_MIN); };
+        "IN.CAL.MAX"  => { MATCH_OP(E_OP_IN_CAL_MAX); };
+        "IN.CAL.RESET" => { MATCH_OP(E_OP_IN_CAL_RESET); };
         "PARAM"       => { MATCH_OP(E_OP_PARAM); };
+        "PARAM.SCALE" => { MATCH_OP(E_OP_PARAM_SCALE); };
+        "PARAM.CAL.MIN"  => { MATCH_OP(E_OP_PARAM_CAL_MIN); };
+        "PARAM.CAL.MAX"  => { MATCH_OP(E_OP_PARAM_CAL_MAX); };
+        "PARAM.CAL.RESET" => { MATCH_OP(E_OP_PARAM_CAL_RESET); };
         "PRM"         => { MATCH_OP(E_OP_PRM); };
         "TR"          => { MATCH_OP(E_OP_TR); };
         "TR.POL"      => { MATCH_OP(E_OP_TR_POL); };
@@ -126,6 +148,9 @@
         "MOD"         => { MATCH_OP(E_OP_MOD); };
         "RAND"        => { MATCH_OP(E_OP_RAND); };
         "RRAND"       => { MATCH_OP(E_OP_RRAND); };
+        "R"           => { MATCH_OP(E_OP_R); };
+        "R.MIN"       => { MATCH_OP(E_OP_R_MIN); };
+        "R.MAX"       => { MATCH_OP(E_OP_R_MAX); };
         "TOSS"        => { MATCH_OP(E_OP_TOSS); };
         "MIN"         => { MATCH_OP(E_OP_MIN); };
         "MAX"         => { MATCH_OP(E_OP_MAX); };
@@ -154,7 +179,17 @@
         "VV"          => { MATCH_OP(E_OP_VV); };
         "ER"          => { MATCH_OP(E_OP_ER); };
         "BPM"         => { MATCH_OP(E_OP_BPM);; };
+        "|"           => { MATCH_OP(E_OP_BIT_OR);; };
+        "&"           => { MATCH_OP(E_OP_BIT_AND);; };
+        "~"           => { MATCH_OP(E_OP_BIT_NOT);; };
+        "^"           => { MATCH_OP(E_OP_BIT_XOR);; };
+        "BSET"        => { MATCH_OP(E_OP_BSET);; };
+        "BGET"        => { MATCH_OP(E_OP_BGET);; };
+        "BCLR"        => { MATCH_OP(E_OP_BCLR);; };
         "XOR"         => { MATCH_OP(E_OP_XOR); };
+        "CHAOS"       => { MATCH_OP(E_OP_CHAOS); };
+        "CHAOS.R"     => { MATCH_OP(E_OP_CHAOS_R); };
+        "CHAOS.ALG"   => { MATCH_OP(E_OP_CHAOS_ALG); };
         "+"           => { MATCH_OP(E_OP_SYM_PLUS); };
         "-"           => { MATCH_OP(E_OP_SYM_DASH); };
         "*"           => { MATCH_OP(E_OP_SYM_STAR); };
@@ -440,11 +475,14 @@
 // these are our macros that are inserted into the code when Ragel finds a match
 #define MATCH_OP(op) { out->tag = OP; out->value = op; no_of_tokens++; }
 #define MATCH_MOD(mod) { out->tag = MOD; out->value = mod; no_of_tokens++; }
-#define MATCH_NUMBER()                       \
-    {                                        \
-        out->tag = NUMBER;                   \
-        out->value = strtol(token, NULL, 0); \
-        no_of_tokens++;                      \
+#define MATCH_NUMBER()                           \
+    {                                            \
+        out->tag = NUMBER;                       \
+        int32_t val = strtol(token, NULL, 0);    \
+        val = val > INT16_MAX ? INT16_MAX : val; \
+        val = val < INT16_MIN ? INT16_MIN : val; \
+        out->value = val;                        \
+        no_of_tokens++;                          \
     }
 
 // matches a single token, out contains the token, return value indicates

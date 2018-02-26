@@ -72,6 +72,7 @@ CSRCS = \
 	../module/preset_r_mode.c   				\
 	../module/preset_w_mode.c   				\
 	../module/usb_disk_mode.c   				\
+	../module/screensaver_mode.c   				\
 	../src/command.c					\
 	../src/every.c					\
 	../src/helpers.c					\
@@ -81,12 +82,14 @@ CSRCS = \
 	../src/table.c						\
 	../src/teletype.c					\
 	../src/turtle.c					\
+	../src/chaos.c					\
 	../src/ops/op.c						\
 	../src/ops/ansible.c					\
 	../src/ops/controlflow.c				\
 	../src/ops/delay.c					\
 	../src/ops/earthsea.c					\
 	../src/ops/hardware.c					\
+	../src/ops/init.c					\
 	../src/ops/justfriends.c				\
 	../src/ops/maths.c					\
 	../src/ops/meadowphysics.c				\

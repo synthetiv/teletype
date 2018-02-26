@@ -36,6 +36,11 @@ void tele_cv_slew(uint8_t i, int16_t v) {
     printf("\n");
 }
 
+void tele_update_in(void) {
+    printf("UPDATE IN");
+    printf("\n");
+}
+
 void tele_has_delays(bool i) {
     printf("DELAY  i:%s", i ? "true" : "false");
     printf("\n");
@@ -58,6 +63,8 @@ void tele_ii_tx(uint8_t addr, uint8_t *data, uint8_t l) {
         printf("[%" PRIuPTR "] = %" PRIu8 "\n", i, data[i]);
     }
 }
+
+void tele_vars_updated() {}
 
 void tele_ii_rx(uint8_t addr, uint8_t *data, uint8_t l) {
     printf("II_rx  addr:%" PRIu8 " l:%" PRIu8, addr, l);
@@ -89,6 +96,11 @@ bool tele_get_input_state(uint8_t n) {
     printf("\n");
     return false;
 }
+
+void tele_save_calibration() {}
+
+void tele_profile_script(size_t s) {}
+void tele_profile_delay(uint8_t d) {}
 
 int main() {
     char *in;

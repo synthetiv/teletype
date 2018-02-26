@@ -36,12 +36,18 @@ void ss_variables_init(scene_state_t *ss) {
         .o_max = 63,
         .o_wrap = 1,
         .q_n = 1,
+        .r_min = 0,
+        .r_max = 16383,
         .time_act = 1,
         .tr_pol = { 1, 1, 1, 1 },
-        .tr_time = { 100, 100, 100, 100 }
+        .tr_time = { 100, 100, 100, 100 },
+        .in_range = { 0, 16383 },
+        .param_range = { 0, 16383 },
     };
 
     memcpy(&ss->variables, &default_variables, sizeof(default_variables));
+    ss_update_param_scale(ss);
+    ss_update_in_scale(ss);
 }
 
 void ss_patterns_init(scene_state_t *ss) {
@@ -60,7 +66,7 @@ void ss_pattern_init(scene_state_t *ss, size_t pattern_no) {
     for (size_t i = 0; i < PATTERN_LENGTH; i++) { p->val[i] = 0; }
 }
 
-// external variable setting
+// Hardware
 
 void ss_set_in(scene_state_t *ss, int16_t value) {
     ss->variables.in = value;
@@ -248,7 +254,7 @@ void ss_delete_script_command(scene_state_t *ss, script_number_t script_idx,
 }
 
 void ss_clear_script(scene_state_t *ss, size_t script_idx) {
-    ss_set_script_len(ss, script_idx, 0);
+    memset(&ss->scripts[script_idx], 0, sizeof(scene_script_t));
 }
 
 scene_script_t *ss_scripts_ptr(scene_state_t *ss) {
@@ -319,9 +325,94 @@ void ss_turtle_set(scene_state_t *ss, scene_turtle_t *ts) {
     ss->turtle = *ts;  // structs shallow copy with value assignment
 }
 
-
 scene_turtle_t *ss_turtle_get(scene_state_t *ss) {
     return &ss->turtle;
+}
+
+void ss_update_param_scale(scene_state_t *ss) {
+    ss->variables.param_scale = scale_init(ss->cal.p_min, ss->cal.p_max,
+                                           ss->variables.param_range.out_min,
+                                           ss->variables.param_range.out_max);
+}
+
+void ss_update_in_scale(scene_state_t *ss) {
+    ss->variables.in_scale =
+        scale_init(ss->cal.i_min, ss->cal.i_max, ss->variables.in_range.out_min,
+                   ss->variables.in_range.out_max);
+}
+
+void ss_set_param_scale(scene_state_t *ss, int16_t min, int16_t max) {
+    ss->variables.param_range.out_min = min;
+    ss->variables.param_range.out_max = max;
+    ss_update_param_scale(ss);
+}
+
+void ss_set_in_scale(scene_state_t *ss, int16_t min, int16_t max) {
+    ss->variables.in_range.out_min = min;
+    ss->variables.in_range.out_max = max;
+    ss_update_in_scale(ss);
+}
+
+int16_t ss_get_param(scene_state_t *ss) {
+    return scale_get(ss->variables.param_scale, ss->variables.param);
+}
+
+int16_t ss_get_in(scene_state_t *ss) {
+    return scale_get(ss->variables.in_scale, ss->variables.in);
+}
+
+int16_t ss_get_param_min(scene_state_t *ss) {
+    return ss->cal.p_min;
+}
+
+int16_t ss_get_param_max(scene_state_t *ss) {
+    return ss->cal.p_max;
+}
+
+void ss_set_param_min(scene_state_t *ss, int16_t min) {
+    ss->cal.p_min = min;
+    ss_update_param_scale(ss);
+    tele_save_calibration();
+}
+
+void ss_set_param_max(scene_state_t *ss, int16_t max) {
+    ss->cal.p_max = max;
+    ss_update_param_scale(ss);
+    tele_save_calibration();
+}
+
+void ss_reset_param_cal(scene_state_t *ss) {
+    ss->cal.p_max = 16383;
+    ss->cal.p_min = 0;
+    ss_update_param_scale(ss);
+    tele_save_calibration();
+}
+
+int16_t ss_get_in_min(scene_state_t *ss) {
+    return ss->cal.i_min;
+}
+
+int16_t ss_get_in_max(scene_state_t *ss) {
+    return ss->cal.i_max;
+}
+
+void ss_set_in_min(scene_state_t *ss, int16_t min) {
+    ss->cal.i_min = min;
+    ss_update_in_scale(ss);
+    tele_save_calibration();
+}
+
+void ss_set_in_max(scene_state_t *ss, int16_t max) {
+    ss->cal.i_max = max;
+    ss_update_in_scale(ss);
+    tele_save_calibration();
+}
+
+void ss_reset_in_cal(scene_state_t *ss) {
+    ss->cal.i_max = 16383;
+    ss->cal.i_min = 0;
+    ss_update_in_scale(ss);
+    tele_save_calibration();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -343,8 +434,16 @@ size_t es_push(exec_state_t *es) {
         es->variables[es->exec_depth].delayed = false;
         es->variables[es->exec_depth].while_depth = 0;
         es->variables[es->exec_depth].while_continue = false;
-        es->variables[es->exec_depth].if_else_condition = true;
-        es->variables[es->exec_depth].i = 0;
+        if (es->exec_depth > 0) {
+            es->variables[es->exec_depth].if_else_condition =
+                es->variables[es->exec_depth - 1].if_else_condition;
+            es->variables[es->exec_depth].i = 
+                es->variables[es->exec_depth - 1].i;
+        }
+        else {
+            es->variables[es->exec_depth].if_else_condition = true;
+            es->variables[es->exec_depth].i = 0;
+        }
         es->variables[es->exec_depth].breaking = false;
         es->exec_depth += 1;  // exec_depth = 1 at the root
     }

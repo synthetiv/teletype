@@ -40,12 +40,57 @@ description = """
 Get the value of the IN jack. This returns a valuue in the range 0-16383.
 """
 
+["IN.SCALE"]
+prototype = "IN.SCALE min max"
+short = "Set static scaling of the `IN` CV to between `min` and `max`."
+
 ["PARAM"]
 prototype = "PARAM"
 aliases = ["PRM"]
 short = "Get the value of PARAM knob (0-16383)"
 description = """
 Get the value of the PARAM knob. This returns a valuue in the range 0-16383.
+"""
+
+["PARAM.SCALE"]
+prototype = "PARAM.SCALE min max"
+short = "Set static scaling of the PARAM knob to between `min` and `max`."
+
+["IN.CAL.MIN"]
+prototype = "IN.CAL.MIN"
+short = "Reads the input CV and assigns the voltage to the zero point"
+description = """
+    1. Connect a patch cable from a calibrated voltage source
+    2. Set the voltage source to 0 volts
+    3. Execute IN.CAL.MIN from the live terminal
+    4. Call IN and confirm the 0 result
+"""
+
+["IN.CAL.MAX"]
+prototype = "IN.CAL.MAX"
+short = "Reads the input CV and assigns the voltage to the max point"
+description = """
+    5. Set the voltage source to target maximum voltage (10V)
+    6. Execute IN.CAL.MAX from the live terminal
+    7. Call IN and confirm that the result is 16383
+"""
+
+["PARAM.CAL.MIN"]
+prototype = "PARAM.CAL.MIN"
+short = "Reads the Parameter Knob minimum position and assigns a zero value"
+description = """
+    1. Turn the PARAM knob all the way to the left
+    2. Execute PARAM.CAL.MIN from the live terminal
+    3. Call PARAM and confirm the 0 result
+"""
+
+["PARAM.CAL.MAX"]
+prototype = "PARAM.CAL.MAX"
+short = "Reads the Paramter Knob maximum position and assigns the maximum point"
+description = """
+    4. Turn the knob all the way to the right
+    5. Execute PARAM.CAL.MAX from the live terminal
+    6. Call PARAM and verify that the result is 16383
 """
 
 ["TR"]

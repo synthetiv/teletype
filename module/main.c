@@ -30,6 +30,7 @@
 #include "util.h"
 
 // this
+#include "chaos.h"
 #include "conf_board.h"
 #include "edit_mode.h"
 #include "flash.h"
@@ -40,10 +41,30 @@
 #include "pattern_mode.h"
 #include "preset_r_mode.h"
 #include "preset_w_mode.h"
+#include "screensaver_mode.h"
 #include "teletype.h"
 #include "teletype_io.h"
 #include "usb_disk_mode.h"
 
+#ifdef TELETYPE_PROFILE
+#include "profile.h"
+
+profile_t
+    prof_Script[SCRIPT_COUNT],
+    prof_Delay[DELAY_SIZE], 
+    prof_CV,
+    prof_ADC,
+    prof_ScreenRefresh;
+
+void tele_profile_script(size_t s) {
+    profile_update(&prof_Script[s]);
+}
+
+void tele_profile_delay(uint8_t d) {
+    profile_update(&prof_Delay[d]);
+}
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // constants
@@ -73,6 +94,7 @@ region line[8] = { { .w = 128, .h = 8, .x = 0, .y = 0 },
 
 static tele_mode_t mode = M_LIVE;
 static tele_mode_t last_mode = M_LIVE;
+static uint32_t ss_counter = 0;
 
 static uint16_t adc[4];
 
@@ -90,6 +112,7 @@ static aout_t aout[4];
 static bool metro_timer_enabled;
 static uint8_t front_timer;
 static uint8_t mod_key = 0, hold_key, hold_key_count = 0;
+static uint64_t last_in_tick = 0;
 
 // timers
 static softTimer_t clockTimer = { .next = NULL, .prev = NULL };
@@ -145,6 +168,9 @@ static void render_init(void);
 // timer callbacks
 
 void cvTimer_callback(void* o) {
+#ifdef TELETYPE_PROFILE
+    profile_update(&prof_CV);
+#endif
     bool updated = false;
     bool slewing = false;
 
@@ -189,6 +215,9 @@ void cvTimer_callback(void* o) {
         spi_write(DAC_SPI, a1 << 4);
         spi_unselectChip(DAC_SPI, DAC_SPI_NPCS);
     }
+#ifdef TELETYPE_PROFILE
+    profile_update(&prof_CV);
+#endif
 }
 
 void clockTimer_callback(void* o) {
@@ -228,6 +257,11 @@ void metroTimer_callback(void* o) {
 void handler_None(int32_t data) {}
 
 void handler_Front(int32_t data) {
+    ss_counter = 0;
+    if (mode == M_SCREENSAVER) {
+        set_last_mode();
+        return;
+    }
     if (data == 0) {
         if (mode != M_PRESET_R) {
             front_timer = 0;
@@ -243,10 +277,22 @@ void handler_Front(int32_t data) {
     }
 }
 
+
 void handler_PollADC(int32_t data) {
+#ifdef TELETYPE_PROFILE
+    profile_update(&prof_ADC);
+#endif
+    static int16_t last_knob = 0;
+
     adc_convert(&adc);
 
     ss_set_in(&scene_state, adc[0] << 2);
+
+    if (mode == M_SCREENSAVER && (adc[1] >> 8 != last_knob >> 8)) {
+        ss_counter = 0;
+        set_last_mode();
+    }
+    last_knob = adc[1];
 
     if (mode == M_PATTERN) {
         process_pattern_knob(adc[1], mod_key);
@@ -258,6 +304,9 @@ void handler_PollADC(int32_t data) {
     else {
         ss_set_param(&scene_state, adc[1] << 2);
     }
+#ifdef TELETYPE_PROFILE
+    profile_update(&prof_ADC);
+#endif
 }
 
 void handler_KeyTimer(int32_t data) {
@@ -337,11 +386,16 @@ void handler_MscConnect(int32_t data) {
 }
 
 void handler_Trigger(int32_t data) {
-    if (!ss_get_mute(&scene_state, data)) { run_script(&scene_state, data); }
+    if (!ss_get_mute(&scene_state, data)) {
+        run_script(&scene_state, data);
+    }
 }
 
 void handler_ScreenRefresh(int32_t data) {
-    bool screen_dirty = false;
+#ifdef TELETYPE_PROFILE
+    profile_update(&prof_ScreenRefresh);
+#endif
+    uint8_t screen_dirty = 0;
 
     switch (mode) {
         case M_PATTERN: screen_dirty = screen_refresh_pattern(); break;
@@ -350,14 +404,19 @@ void handler_ScreenRefresh(int32_t data) {
         case M_HELP: screen_dirty = screen_refresh_help(); break;
         case M_LIVE: screen_dirty = screen_refresh_live(); break;
         case M_EDIT: screen_dirty = screen_refresh_edit(); break;
+        case M_SCREENSAVER: screen_dirty = screen_refresh_screensaver(); break;
     }
 
-    if (screen_dirty) {
-        for (size_t i = 0; i < 8; i++) { region_draw(&line[i]); }
-    }
+    for (size_t i = 0; i < 8; i++)
+        if (screen_dirty & (1 << i)) { region_draw(&line[i]); }
+#ifdef TELETYPE_PROFILE
+    profile_update(&prof_ScreenRefresh);
+#endif
 }
 
 void handler_EventTimer(int32_t data) {
+    ss_counter++;
+    if (ss_counter > SS_TIMEOUT) set_mode(M_SCREENSAVER);
     tele_tick(&scene_state, RATE_CLOCK);
 }
 
@@ -417,6 +476,7 @@ void check_events(void) {
 
 // defined in globals.h
 void set_mode(tele_mode_t m) {
+    if (m == mode && m == M_SCREENSAVER) return;
     last_mode = mode;
     switch (m) {
         case M_LIVE:
@@ -443,6 +503,10 @@ void set_mode(tele_mode_t m) {
             set_help_mode();
             mode = M_HELP;
             break;
+        case M_SCREENSAVER:
+            set_screensaver_mode();
+            mode = M_SCREENSAVER;
+            break;
     }
 }
 
@@ -450,7 +514,10 @@ void set_mode(tele_mode_t m) {
 void set_last_mode() {
     if (mode == last_mode) return;
 
-    if (last_mode == M_LIVE || last_mode == M_EDIT || last_mode == M_PATTERN)
+    if (mode == M_SCREENSAVER)
+        set_mode(last_mode);
+    else if (last_mode == M_LIVE || last_mode == M_EDIT ||
+             last_mode == M_PATTERN)
         set_mode(last_mode);
     else
         set_mode(M_LIVE);
@@ -461,8 +528,18 @@ void set_last_mode() {
 // key handling
 
 void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key) {
+    // reset inactivity counter
+    ss_counter = 0;
+    if (mode == M_SCREENSAVER) {
+        set_last_mode();
+#if SS_DROP_KEYSTROKE
+        return;
+#endif
+    }
+
     // first try global keys
     if (process_global_keys(key, mod_key, is_held_key)) return;
+
 
     switch (mode) {
         case M_EDIT: process_edit_keys(key, mod_key, is_held_key); break;
@@ -475,6 +552,7 @@ void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key) {
             process_preset_r_keys(key, mod_key, is_held_key);
             break;
         case M_HELP: process_help_keys(key, mod_key, is_held_key); break;
+        case M_SCREENSAVER: break;  // impossible
     }
 }
 
@@ -659,6 +737,13 @@ void tele_cv_off(uint8_t i, int16_t v) {
     aout[i].off = v;
 }
 
+void tele_update_in(void) {
+    if (get_ticks() == last_in_tick) return;
+    last_in_tick = get_ticks();
+    adc_convert(&adc);
+    ss_set_in(&scene_state, adc[0] << 2);
+}
+
 void tele_ii_tx(uint8_t addr, uint8_t* data, uint8_t l) {
     i2c_master_tx(addr, data, l);
 }
@@ -679,11 +764,17 @@ void tele_kill() {
     }
 }
 
-
 bool tele_get_input_state(uint8_t n) {
     return gpio_get_pin_value(A00 + n) > 0;
 }
 
+void tele_vars_updated() {
+    set_vars_updated();
+}
+
+void tele_save_calibration() {
+    flash_update_cal(&scene_state.cal);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // main
@@ -708,12 +799,17 @@ int main(void) {
     init_oled();
     init_i2c_master();
 
-    print_dbg("\r\n\n// teletype! //////////////////////////////// ");
+    print_dbg("\r\n\r\n// teletype! //////////////////////////////// ");
 
     ss_init(&scene_state);
 
     // prepare flash (if needed)
     flash_prepare();
+
+    // load calibration data from flash
+    flash_get_cal(&scene_state.cal);
+    ss_update_param_scale(&scene_state);
+    ss_update_in_scale(&scene_state);
 
     // load preset from flash
     preset_select = flash_last_saved_scene();
@@ -740,6 +836,8 @@ int main(void) {
     metro_timer_enabled = false;
     tele_metro_updated();
 
+    // init chaos generator
+    chaos_init();
     clear_delays(&scene_state);
 
     aout[0].slew = 1;
@@ -757,5 +855,34 @@ int main(void) {
     run_script(&scene_state, INIT_SCRIPT);
     scene_state.initializing = false;
 
-    while (true) { check_events(); }
+#ifdef TELETYPE_PROFILE
+    uint32_t count = 0;
+#endif
+    while (true) {
+        check_events();
+#ifdef TELETYPE_PROFILE
+        count = (count + 1) % (FCPU_HZ / 10);
+        if (count == 0) {
+            print_dbg("\r\n\r\nProfile Data (us)");
+            for (uint8_t i = 0; i < SCRIPT_COUNT - 1; i++) {
+                print_dbg("\r\nScript ");
+                print_dbg_ulong(i);
+                print_dbg(":\t");
+                print_dbg_ulong(profile_delta_us(&prof_Script[i]));
+            }
+            uint32_t total = 0;
+            for (uint8_t i = 0; i < DELAY_SIZE; i++)
+                total += profile_delta_us(&prof_Delay[i]);
+            print_dbg("\r\nDelays (total):\t");
+            print_dbg_ulong(total);
+            print_dbg("\r\nCV Write:\t");
+            print_dbg_ulong(profile_delta_us(&prof_CV));
+            print_dbg("\r\nADC Read:\t");
+            print_dbg_ulong(profile_delta_us(&prof_ADC));
+            print_dbg("\r\nScreen Refresh:\t");
+            print_dbg_ulong(profile_delta_us(&prof_ScreenRefresh));
+
+        }
+#endif
+    }
 }

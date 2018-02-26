@@ -13,7 +13,7 @@
 
 // NVRAM data structure located in the flash array.
 typedef const struct {
-    scene_script_t scripts[SCRIPT_COUNT];
+    scene_script_t scripts[SCRIPT_COUNT - 1]; // Exclude TEMP script
     scene_pattern_t patterns[PATTERN_COUNT];
     char text[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
 } nvram_scene_t;
@@ -22,7 +22,9 @@ typedef const struct {
     nvram_scene_t scenes[SCENE_SLOTS];
     uint8_t last_scene;
     uint8_t fresh;
+    cal_data_t cal;
 } nvram_data_t;
+
 
 static __attribute__((__section__(".flash_nvram"))) nvram_data_t f;
 
@@ -42,6 +44,9 @@ void flash_prepare() {
     memset(text, 0, SCENE_TEXT_LINES * SCENE_TEXT_CHARS);
 
     for (uint8_t i = 0; i < SCENE_SLOTS; i++) { flash_write(i, &scene, &text); }
+
+    cal_data_t cal = { 0, 16383, 0, 16383 };
+    flashc_memcpy((void *)&f.cal, &cal, sizeof(cal), true);
     flash_update_last_saved_scene(0);
     flashc_memset8((void *)&f.fresh, FIRSTRUN_KEY, 1, true);
 }
@@ -49,7 +54,8 @@ void flash_prepare() {
 void flash_write(uint8_t preset_no, scene_state_t *scene,
                  char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS]) {
     flashc_memcpy((void *)&f.scenes[preset_no].scripts, ss_scripts_ptr(scene),
-                  ss_scripts_size(), true);
+                  // Exclude TEMP script from flash storage by subtracting one
+                  ss_scripts_size() - sizeof(scene_script_t), true);
     flashc_memcpy((void *)&f.scenes[preset_no].patterns, ss_patterns_ptr(scene),
                   ss_patterns_size(), true);
     flashc_memcpy((void *)&f.scenes[preset_no].text, text,
@@ -59,7 +65,8 @@ void flash_write(uint8_t preset_no, scene_state_t *scene,
 void flash_read(uint8_t preset_no, scene_state_t *scene,
                 char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS]) {
     memcpy(ss_scripts_ptr(scene), &f.scenes[preset_no].scripts,
-           ss_scripts_size());
+           // Exclude size of TEMP script as above
+           ss_scripts_size() - sizeof(scene_script_t));
     memcpy(ss_patterns_ptr(scene), &f.scenes[preset_no].patterns,
            ss_patterns_size());
     memcpy(text, &f.scenes[preset_no].text,
@@ -76,4 +83,12 @@ void flash_update_last_saved_scene(uint8_t preset_no) {
 
 const char *flash_scene_text(uint8_t preset_no, size_t line) {
     return f.scenes[preset_no].text[line];
+}
+
+void flash_update_cal(cal_data_t *cal) {
+    flashc_memcpy((void *)&f.cal, cal, sizeof(cal_data_t), true);
+}
+
+void flash_get_cal(cal_data_t *cal) {
+    *cal = f.cal;
 }

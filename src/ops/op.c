@@ -10,6 +10,7 @@
 #include "ops/delay.h"
 #include "ops/earthsea.h"
 #include "ops/hardware.h"
+#include "ops/init.h"
 #include "ops/justfriends.h"
 #include "ops/maths.h"
 #include "ops/meadowphysics.h"
@@ -35,6 +36,11 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     &op_DRUNK_WRAP, &op_FLIP, &op_I, &op_O, &op_O_INC, &op_O_MAX, &op_O_MIN,
     &op_O_WRAP, &op_T, &op_TIME, &op_TIME_ACT, &op_LAST, &op_X, &op_Y, &op_Z,
 
+    // init
+    &op_INIT, &op_INIT_SCENE, &op_INIT_SCRIPT, &op_INIT_SCRIPT_ALL, &op_INIT_P,
+    &op_INIT_P_ALL, &op_INIT_CV, &op_INIT_CV_ALL, &op_INIT_TR, &op_INIT_TR_ALL,
+    &op_INIT_DATA, &op_INIT_TIME,
+
     // turtle
     &op_TURTLE, &op_TURTLE_X, &op_TURTLE_Y, &op_TURTLE_MOVE, &op_TURTLE_F,
     &op_TURTLE_FX1, &op_TURTLE_FY1, &op_TURTLE_FX2, &op_TURTLE_FY2,
@@ -55,21 +61,24 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     &op_Q, &op_Q_AVG, &op_Q_N,
 
     // hardware
-    &op_CV, &op_CV_OFF, &op_CV_SLEW, &op_IN, &op_PARAM, &op_PRM, &op_TR,
+    &op_CV, &op_CV_OFF, &op_CV_SLEW, &op_IN, &op_IN_SCALE, &op_PARAM,
+    &op_PARAM_SCALE, &op_IN_CAL_MIN, &op_IN_CAL_MAX, &op_IN_CAL_RESET,
+    &op_PARAM_CAL_MIN, &op_PARAM_CAL_MAX, &op_PARAM_CAL_RESET, &op_PRM, &op_TR,
     &op_TR_POL, &op_TR_TIME, &op_TR_TOG, &op_TR_PULSE, &op_TR_P, &op_CV_SET,
     &op_MUTE, &op_STATE,
 
     // maths
-    &op_ADD, &op_SUB, &op_MUL, &op_DIV, &op_MOD, &op_RAND, &op_RRAND, &op_TOSS,
+    &op_ADD, &op_SUB, &op_MUL, &op_DIV, &op_MOD, &op_RAND, &op_RRAND, &op_R, &op_R_MIN, &op_R_MAX, &op_TOSS,
     &op_MIN, &op_MAX, &op_LIM, &op_WRAP, &op_QT, &op_AVG, &op_EQ, &op_NE,
     &op_LT, &op_GT, &op_LTE, &op_GTE, &op_NZ, &op_EZ, &op_RSH, &op_LSH, &op_EXP,
     &op_ABS, &op_AND, &op_OR, &op_JI, &op_SCALE, &op_N, &op_V, &op_VV, &op_ER,
-    &op_BPM, &op_XOR, &op_SYM_PLUS, &op_SYM_DASH, &op_SYM_STAR,
-    &op_SYM_FORWARD_SLASH, &op_SYM_PERCENTAGE, &op_SYM_EQUAL_x2,
-    &op_SYM_EXCLAMATION_EQUAL, &op_SYM_LEFT_ANGLED, &op_SYM_RIGHT_ANGLED,
-    &op_SYM_LEFT_ANGLED_EQUAL, &op_SYM_RIGHT_ANGLED_EQUAL, &op_SYM_EXCLAMATION,
-    &op_SYM_LEFT_ANGLED_x2, &op_SYM_RIGHT_ANGLED_x2, &op_SYM_AMPERSAND_x2,
-    &op_SYM_PIPE_x2,
+    &op_BPM, &op_BIT_OR, &op_BIT_AND, &op_BIT_NOT, &op_BIT_XOR, &op_BSET,
+    &op_BGET, &op_BCLR, &op_XOR, &op_CHAOS, &op_CHAOS_R, &op_CHAOS_ALG,
+    &op_SYM_PLUS, &op_SYM_DASH, &op_SYM_STAR, &op_SYM_FORWARD_SLASH,
+    &op_SYM_PERCENTAGE, &op_SYM_EQUAL_x2, &op_SYM_EXCLAMATION_EQUAL,
+    &op_SYM_LEFT_ANGLED, &op_SYM_RIGHT_ANGLED, &op_SYM_LEFT_ANGLED_EQUAL,
+    &op_SYM_RIGHT_ANGLED_EQUAL, &op_SYM_EXCLAMATION, &op_SYM_LEFT_ANGLED_x2,
+    &op_SYM_RIGHT_ANGLED_x2, &op_SYM_AMPERSAND_x2, &op_SYM_PIPE_x2,
 
     // stack
     &op_S_ALL, &op_S_POP, &op_S_CLR, &op_S_L,
@@ -186,6 +195,7 @@ void op_poke_i16(const void *data, scene_state_t *ss, exec_state_t *NOTUSED(es),
     size_t offset = (size_t)data;
     int16_t *ptr = (int16_t *)(base + offset);
     *ptr = cs_pop(cs);
+    tele_vars_updated();
 }
 
 void op_simple_i2c(const void *data, scene_state_t *NOTUSED(ss),

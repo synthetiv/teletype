@@ -17,7 +17,7 @@
 
 #define HELP_PAGES 8
 
-#define HELP1_LENGTH 46
+#define HELP1_LENGTH 47
 const char* help1[HELP1_LENGTH] = { "1/8 HELP",
                                     "[ ] NAVIGATE HELP PAGES",
                                     "UP/DOWN TO SCROLL",
@@ -40,6 +40,7 @@ const char* help1[HELP1_LENGTH] = { "1/8 HELP",
                                     "ENTER|EXECUTE",
                                     "UP|PREVIOUS",
                                     "SH-BSP|CLEAR",
+                                    "~|TOGGLE VARS",
                                     " ",
                                     "// EDIT",
                                     "[ ]|PREV, NEXT SCRIPT",
@@ -116,12 +117,16 @@ const char* help4[HELP4_LENGTH] = { "4/8 DATA AND TABLES",
                                     "VV 0-1000|V WITH 2 DECIMALS",
                                     "BPM 2-MAX|MS PER BPM" };
 
-#define HELP5_LENGTH 35
+#define HELP5_LENGTH 46
 const char* help5[HELP5_LENGTH] = { "5/8 OPERATORS",
                                     " ",
                                     "RAND A|RANDOM 0 - A",
                                     "RRAND A B|RANDOM A - B",
                                     "TOSS|RANDOM 0 OR 1",
+                                    " ",
+                                    "CHAOS|CHAOTIC NUMBER",
+                                    "CHAOS.R|CHAOS PARAMETER",
+                                    "CHAOS.ALG|CHAOS ALGORITHM",
                                     " ",
                                     "AVG A B|AVERAGE OF INS",
                                     "MIN A B|LESSER OF INS",
@@ -144,6 +149,13 @@ const char* help5[HELP5_LENGTH] = { "5/8 OPERATORS",
                                     " ",
                                     "RSH A B|BITSHIFT A RIGHT B",
                                     "LSH A B|BITSHIFT A LEFT B",
+                                    "| A B|BITWISE A OR B",
+                                    "& A B|BITWISE A AND B",
+                                    "^ A B|BITWISE A XOR B",
+                                    "~ A|BITWISE NOT A",
+                                    "BSET A B|SET BIT B OF A",
+                                    "BGET A B|GET BIT B OF A",
+                                    "BCLR A B|CLEAR BIT B OF A",
                                     " ",
                                     "LIM A B C|CLAMP A WITHIN B-C",
                                     "WRAP A B C|WRAP A AROUND B-C",
@@ -289,8 +301,8 @@ void process_help_keys(uint8_t k, uint8_t m, bool is_held_key) {
     }
 }
 
-bool screen_refresh_help() {
-    if (!dirty) { return false; }
+uint8_t screen_refresh_help() {
+    if (!dirty) { return 0; }
 
     // clamp value of page_no
     if (page_no >= HELP_PAGES) page_no = HELP_PAGES - 1;
@@ -306,5 +318,5 @@ bool screen_refresh_help() {
     }
 
     dirty = false;
-    return true;
+    return 0xFF;
 };

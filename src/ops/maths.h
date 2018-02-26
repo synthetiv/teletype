@@ -10,6 +10,9 @@ extern const tele_op_t op_DIV;
 extern const tele_op_t op_MOD;
 extern const tele_op_t op_RAND;
 extern const tele_op_t op_RRAND;
+extern const tele_op_t op_R;
+extern const tele_op_t op_R_MIN;
+extern const tele_op_t op_R_MAX;
 extern const tele_op_t op_TOSS;
 extern const tele_op_t op_MIN;
 extern const tele_op_t op_MAX;
@@ -38,6 +41,16 @@ extern const tele_op_t op_V;
 extern const tele_op_t op_VV;
 extern const tele_op_t op_ER;
 extern const tele_op_t op_BPM;
+extern const tele_op_t op_BIT_OR;
+extern const tele_op_t op_BIT_AND;
+extern const tele_op_t op_BIT_NOT;
+extern const tele_op_t op_BIT_XOR;
+extern const tele_op_t op_BSET;
+extern const tele_op_t op_BGET;
+extern const tele_op_t op_BCLR;
+extern const tele_op_t op_CHAOS;
+extern const tele_op_t op_CHAOS_R;
+extern const tele_op_t op_CHAOS_ALG;
 
 extern const tele_op_t op_XOR;  // XOR alias NE
 

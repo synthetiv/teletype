@@ -7,6 +7,7 @@
 
 #include "command.h"
 #include "every.h"
+#include "scale.h"
 #include "turtle.h"
 
 #define STACK_SIZE 8
@@ -30,14 +31,22 @@
 // SCENE STATE /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+//clang-format off
 typedef struct {
+    // Maintaining this order allows for efficient access to the group
+    // WARNING: DO NOT CHANGE THE ORDER OF VARIABLES a THROUGH t
     int16_t a;
+    int16_t x;
     int16_t b;
+    int16_t y;
     int16_t c;
+    int16_t z;
+    int16_t d;
+    int16_t t;
+    // END WARNING SECTION
     int16_t cv[CV_COUNT];
     int16_t cv_off[CV_COUNT];
     int16_t cv_slew[CV_COUNT];
-    int16_t d;
     int16_t drunk;
     int16_t drunk_max;
     int16_t drunk_min;
@@ -46,7 +55,7 @@ typedef struct {
     int16_t in;
     int16_t m;
     bool m_act;
-    bool mutes[TRIGGER_INPUTS];
+    bool mutes[TRIGGER_INPUTS];  // TODO: replace with uint8_t bits
     int16_t o;
     int16_t o_inc;
     int16_t o_min;
@@ -56,17 +65,20 @@ typedef struct {
     int16_t param;
     int16_t q[Q_LENGTH];
     int16_t q_n;
+    int16_t r_min;
+    int16_t r_max;
     int16_t scene;
-    int16_t t;
     int16_t time;
     int16_t time_act;
     int16_t tr[TR_COUNT];
     int16_t tr_pol[TR_COUNT];
     int16_t tr_time[TR_COUNT];
-    int16_t x;
-    int16_t y;
-    int16_t z;
+    scale_data_t in_range;
+    scale_t in_scale;
+    scale_data_t param_range;
+    scale_t param_scale;
 } scene_variables_t;
+//clang-format on
 
 typedef struct {
     int16_t idx;
@@ -81,7 +93,8 @@ typedef struct {
     // TODO add a delay variables struct?
     tele_command_t commands[DELAY_SIZE];
     int16_t time[DELAY_SIZE];
-    uint8_t origin[DELAY_SIZE];
+    uint8_t origin_script[DELAY_SIZE];
+    int16_t origin_i[DELAY_SIZE];
     uint8_t count;
 } scene_delay_t;
 
@@ -108,6 +121,7 @@ typedef struct {
     scene_script_t scripts[SCRIPT_COUNT];
     scene_turtle_t turtle;
     bool every_last;
+    cal_data_t cal;
 } scene_state_t;
 
 extern void ss_init(scene_state_t *ss);
@@ -170,6 +184,25 @@ scene_turtle_t *ss_turtle_get(scene_state_t *);
 void ss_turtle_set(scene_state_t *, scene_turtle_t *);
 int16_t ss_turtle_get_val(scene_state_t *, scene_turtle_t *);
 void ss_turtle_set_val(scene_state_t *, scene_turtle_t *, int16_t);
+
+void ss_set_param_scale(scene_state_t *, int16_t, int16_t);
+void ss_set_in_scale(scene_state_t *, int16_t, int16_t);
+void ss_update_in_scale(scene_state_t *);
+void ss_update_param_scale(scene_state_t *);
+int16_t ss_get_param(scene_state_t *);
+int16_t ss_get_in(scene_state_t *);
+
+
+int16_t ss_get_in_min(scene_state_t *);
+int16_t ss_get_in_max(scene_state_t *);
+void ss_set_in_min(scene_state_t *, int16_t);
+void ss_set_in_max(scene_state_t *, int16_t);
+void ss_reset_in_cal(scene_state_t *);
+int16_t ss_get_param_min(scene_state_t *);
+int16_t ss_get_param_max(scene_state_t *);
+void ss_set_param_min(scene_state_t *, int16_t);
+void ss_set_param_max(scene_state_t *, int16_t);
+void ss_reset_param_cal(scene_state_t *);
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXEC STATE //////////////////////////////////////////////////////////////////

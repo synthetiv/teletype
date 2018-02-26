@@ -17,6 +17,8 @@ extern void tele_tr(uint8_t i, int16_t v);
 extern void tele_cv(uint8_t i, int16_t v, uint8_t s);
 extern void tele_cv_slew(uint8_t i, int16_t v);
 
+extern void tele_update_in(void);
+
 // inform target if there are delays
 extern void tele_has_delays(bool has_delays);
 
@@ -31,8 +33,17 @@ extern void tele_scene(uint8_t i);
 // called when a pattern is updated
 extern void tele_pattern_updated(void);
 
+extern void tele_vars_updated(void);
+
 extern void tele_kill(void);
 extern void tele_mute(void);
 extern bool tele_get_input_state(uint8_t);
+
+void tele_save_calibration(void);
+
+#ifdef TELETYPE_PROFILE
+void tele_profile_script(size_t);
+void tele_profile_delay(uint8_t);
+#endif
 
 #endif

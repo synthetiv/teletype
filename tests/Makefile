@@ -8,14 +8,14 @@ tests: main.o \
 	turtle_tests.o \
 	../src/teletype.o ../src/command.o ../src/helpers.o \
 	../src/every.o ../src/match_token.o ../src/scanner.o \
-	../src/state.o ../src/table.o ../src/turtle.o \
+	../src/state.o ../src/table.o ../src/turtle.o ../src/chaos.o \
 	../src/ops/op.o ../src/ops/ansible.c ../src/ops/controlflow.o \
 	../src/ops/delay.o ../src/ops/earthsea.o ../src/ops/hardware.o \
 	../src/ops/justfriends.o ../src/ops/meadowphysics.o \
 	../src/ops/metronome.o ../src/ops/maths.o ../src/ops/orca.o \
 	../src/ops/patterns.o ../src/ops/queue.o ../src/ops/stack.o \
 	../src/ops/telex.o ../src/ops/variables.o  ../src/ops/whitewhale.c \
-	../src/ops/turtle.o \
+	../src/ops/turtle.o ../src/ops/init.o \
 	../libavr32/src/euclidean/data.o ../libavr32/src/euclidean/euclidean.o \
 	../libavr32/src/util.o
 	$(CC) -o $@ $^ $(CFLAGS)

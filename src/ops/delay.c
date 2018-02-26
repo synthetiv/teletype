@@ -30,8 +30,8 @@ static void mod_DEL_func(scene_state_t *ss, exec_state_t *es,
     if (i < DELAY_SIZE) {
         ss->delay.count++;
         ss->delay.time[i] = a;
-        ss->delay.origin[i] = es_variables(es)->script_number;
-
+        ss->delay.origin_script[i] = es_variables(es)->script_number;
+        ss->delay.origin_i[i] = es_variables(es)->i;
         copy_command(&ss->delay.commands[i], post_command);
         tele_has_delays(ss->delay.count > 0);
     }

@@ -8,8 +8,8 @@
 #include "command.h"
 #include "state.h"
 
-#define TELETYPE_VERSION "TELETYPE 2.1.0"
 #define TELE_ERROR_MSG_LENGTH 16
+// #define TELETYPE_PROFILE // un-comment this line to enable profiling
 
 typedef enum {
     E_OK,
@@ -49,6 +49,5 @@ void tele_tick(scene_state_t *ss, uint8_t);
 void clear_delays(scene_state_t *ss);
 
 const char *tele_error(error_t);
-
 
 #endif
