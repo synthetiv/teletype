@@ -41,7 +41,9 @@ static void op_KR_MUTE_get(const void *data, scene_state_t *ss, exec_state_t *es
                          command_state_t *cs);
 static void op_KR_MUTE_set(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
-static void op_KR_TOG_get(const void *data, scene_state_t *ss, exec_state_t *es,
+static void op_KR_TMUTE_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                         command_state_t *cs);
+static void op_KR_CLK_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
 
 
@@ -144,7 +146,8 @@ const tele_op_t op_KR_L_LEN    = MAKE_GET_SET_OP(KR.L.LEN   , op_KR_L_LEN_get   
 const tele_op_t op_KR_RES      = MAKE_GET_OP    (KR.RES     , op_KR_RES_get                           , 2, false);
 const tele_op_t op_KR_CV       = MAKE_GET_OP    (KR.CV      , op_KR_CV_get                            , 1, true);
 const tele_op_t op_KR_MUTE     = MAKE_GET_SET_OP(KR.MUTE    , op_KR_MUTE_get     , op_KR_MUTE_set     , 1, true);
-const tele_op_t op_KR_TOG      = MAKE_GET_OP    (KR.TOG     , op_KR_TOG_get                           , 1, false);
+const tele_op_t op_KR_TMUTE      = MAKE_GET_OP    (KR.TMUTE     , op_KR_TMUTE_get                           , 1, false);
+const tele_op_t op_KR_CLK      = MAKE_GET_OP    (KR.CLK     , op_KR_CLK_get                           , 1, false);
 
 const tele_op_t op_ME_PRE      = MAKE_GET_SET_OP(ME.PRE     , op_ME_PRE_get      , op_ME_PRE_set      , 0, true);
 const tele_op_t op_ME_RES      = MAKE_GET_OP    (ME.RES     , op_ME_RES_get                           , 1, false);
@@ -364,10 +367,17 @@ static void op_KR_MUTE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss)
     cs_push(cs, d[0]);
 }
 
-static void op_KR_TOG_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+static void op_KR_TMUTE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a = cs_pop(cs);
-    uint8_t d[] = { II_KR_TOG, a };
+    uint8_t d[] = { II_KR_TMUTE, a };
+    tele_ii_tx(II_KR_ADDR, d, 2);
+}
+
+static void op_KR_CLK_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t a = cs_pop(cs);
+    uint8_t d[] = { II_KR_CLK, a };
     tele_ii_tx(II_KR_ADDR, d, 2);
 }
 
