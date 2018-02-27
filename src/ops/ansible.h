@@ -11,12 +11,17 @@ extern const tele_op_t op_KR_POS;
 extern const tele_op_t op_KR_L_ST;
 extern const tele_op_t op_KR_L_LEN;
 extern const tele_op_t op_KR_RES;
+extern const tele_op_t op_KR_CV;
+extern const tele_op_t op_KR_MUTE;
+extern const tele_op_t op_KR_TMUTE;
+extern const tele_op_t op_KR_CLK;
 
 extern const tele_op_t op_ME_PRE;
 extern const tele_op_t op_ME_RES;
 extern const tele_op_t op_ME_STOP;
 extern const tele_op_t op_ME_SCALE;
 extern const tele_op_t op_ME_PERIOD;
+extern const tele_op_t op_ME_CV;
 
 extern const tele_op_t op_LV_PRE;
 extern const tele_op_t op_LV_RES;

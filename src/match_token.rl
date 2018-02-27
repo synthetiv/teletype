@@ -283,11 +283,16 @@
         "KR.L.ST"     => { MATCH_OP(E_OP_KR_L_ST); };
         "KR.L.LEN"    => { MATCH_OP(E_OP_KR_L_LEN); };
         "KR.RES"      => { MATCH_OP(E_OP_KR_RES); };
+        "KR.CV"       => { MATCH_OP(E_OP_KR_CV); };
+        "KR.MUTE"     => { MATCH_OP(E_OP_KR_MUTE); };
+        "KR.TMUTE"    => { MATCH_OP(E_OP_KR_TMUTE); };
+        "KR.CLK"      => { MATCH_OP(E_OP_KR_CLK); };
         "ME.PRE"      => { MATCH_OP(E_OP_ME_PRE); };
         "ME.RES"      => { MATCH_OP(E_OP_ME_RES); };
         "ME.STOP"     => { MATCH_OP(E_OP_ME_STOP); };
         "ME.SCALE"    => { MATCH_OP(E_OP_ME_SCALE); };
         "ME.PERIOD"   => { MATCH_OP(E_OP_ME_PERIOD); };
+        "ME.CV"       => { MATCH_OP(E_OP_ME_CV); };
         "LV.PRE"      => { MATCH_OP(E_OP_LV_PRE); };
         "LV.RES"      => { MATCH_OP(E_OP_LV_RES); };
         "LV.POS"      => { MATCH_OP(E_OP_LV_POS); };
