@@ -2,6 +2,7 @@
 
 ## v2.NEXT
 - **FIX**: I now accessible to child SCRIPTS
+- **NEW**: new ops for Ansible: KR.CV, KR.MUTE, KR.TMUTE, KR.CLK, ME.CV
 
 ## v2.2
 - **NEW**: added a cheat sheet PDF

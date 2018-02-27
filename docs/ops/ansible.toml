@@ -52,6 +52,23 @@ short = "get length of track `x`, parameter `y` / set to `z`"
 prototype = "KR.RES x y"
 short = "reset position to loop start for track `x`, parameter `y`"
 
+["KR.CV"]
+prototype = "KR.CV x "
+short = "get the current CV value for channel `x`"
+
+["KR.MUTE"]
+prototype = "KR.MUTE x"
+prototype_set = "KR.MUTE x y"
+short = "get/set mute state for channel `x` (`1` = muted, `0` = unmuted)"
+
+["KR.TMUTE"]
+prototype = "KR.TMUTE x"
+short = "toggle mute state for channel `x`"
+
+["KR.CLK"]
+prototype = "KR.CLK x"
+short = "advance the clock for channel `x` (channel must have teletype clocking enabled)"
+
 ["ME.PRE"]
 prototype = "ME.PRE"
 prototype_set = "ME.PRE x"
@@ -74,6 +91,10 @@ short = "stop channel `x` (`0` = all)"
 ["ME.RES"]
 prototype = "ME.RES x"
 short = "reset channel `x` (`0` = all), also used as \"start\""
+
+["ME.CV"]
+prototype = "ME.CV x"
+short = "get the current CV value for channel `x`"
 
 ["LV.PRE"]
 prototype = "LV.PRE"
