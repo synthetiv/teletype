@@ -721,7 +721,6 @@ static void op_G_BTN_PR_get(const void *NOTUSED(data), scene_state_t *ss,
     s16 action = cs_pop(cs);
 
     if (i < (s16)0 || i >= (s16)GRID_BUTTON_COUNT) return;
-    if (!GBC.enabled || !SG.group[GBC.group].enabled) return;
 
     GB.state = GB.latch ? !GB.state : action != 0;
     SG.latest_button = i;
@@ -1094,7 +1093,6 @@ static void op_G_FDR_PR_get(const void *NOTUSED(data), scene_state_t *ss,
     s16 value = cs_pop(cs) - 1;
 
     if (i < (s16)0 || i >= (s16)GRID_FADER_COUNT) return;
-    if (!GFC.enabled || !SG.group[GFC.group].enabled) return;
 
     s16 maxvalue = grid_fader_max_value(ss, i);
     if (value < (s16)0) value = 0;
