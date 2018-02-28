@@ -25,5 +25,6 @@ extern void grid_screen_refresh(scene_state_t *ss, screen_grid_mode mode,
 extern void grid_process_key(scene_state_t *ss, u8 x, u8 y, u8 z,
     u8 ignore_rotate);
 extern void grid_process_fader_slew(scene_state_t *ss);
+extern void grid_clear_held_keys(void);
 
 #endif

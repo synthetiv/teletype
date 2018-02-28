@@ -34,6 +34,7 @@ static bool show_welcome_message;
 static screen_grid_mode grid_mode = GRID_MODE_OFF;
 static uint8_t grid_page = 0, grid_ctrl = 0, grid_view_changed = 0;
 static uint8_t grid_x1 = 0, grid_y1 = 0, grid_x2 = 0, grid_y2 = 0;
+static uint8_t grid_pressed = 0;
 
 static const uint8_t D_INPUT = 1 << 0;
 static const uint8_t D_LIST = 1 << 1;
@@ -112,15 +113,19 @@ void set_live_mode() {
     if (grid_mode == GRID_MODE_FULL) grid_mode = GRID_MODE_EDIT;
 }
 
+static void emulate_grid_release(scene_state_t *ss) {
+    grid_process_key(ss, grid_x1, grid_y1, 0, 1);
+    if (grid_x1 != grid_x2 || grid_y1 != grid_y2)
+        grid_process_key(ss, grid_x2, grid_y2, 0, 1);
+    grid_pressed = 0;
+}
+
 void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
                        scene_state_t *ss) {
     if (is_release) {
         if (match_alt(m, k, HID_SPACEBAR) ||
-            (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_SPACEBAR))) {
-            grid_process_key(ss, grid_x1, grid_y1, 0, 1);
-            if (grid_x1 != grid_x2 || grid_y1 != grid_y2)
-                grid_process_key(ss, grid_x2, grid_y2, 0, 1);
-        }
+            (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_SPACEBAR)))
+            emulate_grid_release(ss);
         return;
     }
 
@@ -158,6 +163,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     // A-<up>: move grid cursor
     else if (match_alt(m, k, HID_UP) ||
              (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_UP))) {
+        if (grid_pressed) emulate_grid_release(ss);
         grid_y1 = (grid_y1 + GRID_MAX_DIMENSION - 1) % GRID_MAX_DIMENSION;
         grid_x2 = grid_x1;
         grid_y2 = grid_y1;
@@ -166,6 +172,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     // A-<down>: move grid cursor
     else if (match_alt(m, k, HID_DOWN) ||
              (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_DOWN))) {
+        if (grid_pressed) emulate_grid_release(ss);
         grid_y1 = (grid_y1 + 1) % GRID_MAX_DIMENSION;
         grid_x2 = grid_x1;
         grid_y2 = grid_y1;
@@ -174,6 +181,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     // A-<left>: move grid cursor
     else if (match_alt(m, k, HID_LEFT) ||
              (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_LEFT))) {
+        if (grid_pressed) emulate_grid_release(ss);
         grid_x1 = (grid_x1 + GRID_MAX_DIMENSION - 1) % GRID_MAX_DIMENSION;
         grid_x2 = grid_x1;
         grid_y2 = grid_y1;
@@ -182,6 +190,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     // A-<right>: move grid cursor
     else if (match_alt(m, k, HID_RIGHT) ||
              (grid_mode == GRID_MODE_FULL && match_no_mod(m, k, HID_RIGHT))) {
+        if (grid_pressed) emulate_grid_release(ss);
         grid_x1 = (grid_x1 + 1) % GRID_MAX_DIMENSION;
         grid_x2 = grid_x1;
         grid_y2 = grid_y1;
@@ -191,6 +200,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     else if (match_shift_alt(m, k, HID_UP) ||
              (grid_mode == GRID_MODE_FULL && match_shift(m, k, HID_UP))) {
         if (grid_y2 > 0) {
+            if (grid_pressed) emulate_grid_release(ss);
             grid_y2--;
             grid_view_changed = true;
         }
@@ -199,6 +209,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     else if (match_shift_alt(m, k, HID_DOWN) ||
              (grid_mode == GRID_MODE_FULL && match_shift(m, k, HID_DOWN))) {
         if (grid_y2 < GRID_MAX_DIMENSION - 1) {
+            if (grid_pressed) emulate_grid_release(ss);
             grid_y2++;
             grid_view_changed = true;
         }
@@ -207,6 +218,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     else if (match_shift_alt(m, k, HID_LEFT) ||
              (grid_mode == GRID_MODE_FULL && match_shift(m, k, HID_LEFT))) {
         if (grid_x2 > 0) {
+            if (grid_pressed) emulate_grid_release(ss);
             grid_x2--;
             grid_view_changed = true;
         }
@@ -215,6 +227,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     else if (match_shift_alt(m, k, HID_RIGHT) ||
              (grid_mode == GRID_MODE_FULL && match_shift(m, k, HID_RIGHT))) {
         if (grid_x2 < GRID_MAX_DIMENSION - 1) {
+            if (grid_pressed) emulate_grid_release(ss);
             grid_x2++;
             grid_view_changed = true;
         }
@@ -226,6 +239,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
         grid_process_key(ss, grid_x1, grid_y1, 1, 1);
         if (grid_x1 != grid_x2 || grid_y1 != grid_y2)
             grid_process_key(ss, grid_x2, grid_y2, 1, 1);
+        grid_pressed = 1;
     }
     // A-<PrtSc>: insert coordinates / size
     else if (!is_held_key && match_alt(m, k, HID_PRINTSCREEN) &&
@@ -296,6 +310,7 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
         dirty |= D_INPUT;
 
         tele_command_t command;
+        command.comment = false;
 
         status = parse(line_editor_get(&le), &command, error_msg);
         if (status != E_OK)

@@ -480,6 +480,7 @@ static void handler_FtdiDisconnect(s32 data) {
 static void handler_MonomeConnect(s32 data) {
     timers_set_monome();
     scene_state.grid.grid_dirty = 1;
+    grid_clear_held_keys();
 }
 
 static void handler_MonomePoll(s32 data) {

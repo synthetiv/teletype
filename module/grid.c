@@ -445,6 +445,13 @@ void grid_process_fader_slew(scene_state_t *ss) {
     if (refresh) SG.grid_dirty = SG.scr_dirty = 1;
 }
 
+void grid_clear_held_keys() {
+    for (u8 i = 0; i < GRID_MAX_KEY_PRESSED; i++) {
+        held_keys[i].used = 0;
+        timer_remove(&held_keys[i].timer);
+    }
+}
+
 bool grid_within_area(u8 x, u8 y, grid_common_t *gc) {
     return x >= gc->x && x < (gc->x + gc->w) && y >= gc->y && y < (gc->y + gc->h);
 }
