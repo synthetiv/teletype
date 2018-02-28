@@ -494,8 +494,16 @@ size_t es_push(exec_state_t *es) {
         es->variables[es->exec_depth].delayed = false;
         es->variables[es->exec_depth].while_depth = 0;
         es->variables[es->exec_depth].while_continue = false;
-        es->variables[es->exec_depth].if_else_condition = true;
-        es->variables[es->exec_depth].i = 0;
+        if (es->exec_depth > 0) {
+            es->variables[es->exec_depth].if_else_condition =
+                es->variables[es->exec_depth - 1].if_else_condition;
+            es->variables[es->exec_depth].i = 
+                es->variables[es->exec_depth - 1].i;
+        }
+        else {
+            es->variables[es->exec_depth].if_else_condition = true;
+            es->variables[es->exec_depth].i = 0;
+        }
         es->variables[es->exec_depth].breaking = false;
         es->exec_depth += 1;  // exec_depth = 1 at the root
     }

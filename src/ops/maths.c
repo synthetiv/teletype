@@ -472,36 +472,42 @@ static void op_OR_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
 
 static void op_JI_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                       exec_state_t *NOTUSED(es), command_state_t *cs) {
-    const uint8_t prime[5] = { 3, 5, 7, 11, 13 };
-    const int16_t ji_const[5] = { 15331, 8437, 21159, 12041, 18357 };
-    int32_t result;
+    const uint8_t prime[6] = {2, 3, 5, 7, 11, 13 };
+    const int16_t ji_const[6] = { 6554, 10388, 15218, 18399, 22673, 24253 };
+    int32_t result = 0;
     int16_t n = abs(cs_pop(cs));
     int16_t d = abs(cs_pop(cs));
-
+    
+    /* code for generation of ji_const
+     
+     int16_t ji_find_prime_constant( uint16_t prime ) {
+        float r = 1638.0 * logf( (float)prime ) / log( 2.0 );
+        r *= 4.0;                       // this corresponds to the inverse of the bitshift applied at rounding & scaling
+        return( (int16_t)( r + 0.5 ) );
+     }
+     */
+    
     if (n == 0 || d == 0) {  // early return if zeroes
         cs_push(cs, 0);
         return;
     }
-
-    while (!(n & 1)) { n >>= 1; }  // factors of 2 ignored
-    while (!(d & 1)) { d >>= 1; }
-
-    for (uint8_t p = 0; p <= 5; p++) {  // find num factors
-        if (n <= 2) { break; }          // succeed if all primes found
-        if (p == 5) {                   // failed to find solution
+    
+    for (uint8_t p = 0; p <= 6; p++) {  // find num factors
+        if (n == 1) { break; }          // succeed if all primes found
+        if (p == 6) {                   // failed to find solution
             cs_push(cs, 0);
             return;
         }
         int32_t quotient = n / prime[p];
         while (n == quotient * prime[p]) {  // match
-            result += ji_const[p];
+            result += ji_const[p];          // ADD for numerator
             n = quotient;
             quotient = n / prime[p];
         }
     }
-    for (uint8_t p = 0; p <= 5; p++) {  // denom
-        if (d <= 2) { break; }          // succeed if all primes found
-        if (p == 5) {
+    for (uint8_t p = 0; p <= 6; p++) {  // denom
+        if (d == 1) { break; }          // succeed if all primes found
+        if (p == 6) {                   // failed to find solution
             cs_push(cs, 0);
             return;
         }
@@ -512,9 +518,7 @@ static void op_JI_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
             quotient = d / prime[p];
         }
     }
-    result = (result + 8) >> 4;                 // round & scale
-    while (result >= 1638) { result -= 1638; }  // normalize `V 0` to `V 1`
-    while (result < 0) { result += 1638; }
+    result = ( result + 2 ) >> 2; // round & scale
     cs_push(cs, result);
 }
 

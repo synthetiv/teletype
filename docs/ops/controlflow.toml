@@ -41,6 +41,17 @@ If `x` is not zero execute command
                        (see example 2)
     ```
 
+  5. Dependent scripts
+
+    ```text
+    SCRIPT 1:
+    IF 0: TR.P 1    => do nothing
+    SCRIPT 2        => will pulse output 2
+
+    SCRIPT 2:
+    ELSE: TR.P 2    => will not pulse output 2 if called directly,
+                       but will if called from script 1
+    ```
 """
 
 [ELIF]
