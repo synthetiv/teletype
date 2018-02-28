@@ -274,6 +274,7 @@ process_result_t process_command(scene_state_t *ss, exec_state_t *es,
             }
             else if (word_type == MOD) {
                 tele_command_t post_command;
+                post_command.comment = false;
                 copy_post_command(&post_command, c);
                 tele_mods[word_value]->func(ss, es, &cs, &post_command);
             }

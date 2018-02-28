@@ -302,6 +302,7 @@ void tele_usb_disk() {
                             if (c == '\n') {
                                 if (p && l < SCRIPT_MAX_COMMANDS) {
                                     tele_command_t temp;
+                                    temp.comment = false;
                                     error_t status;
                                     char error_msg[TELE_ERROR_MSG_LENGTH];
                                     status = parse(input, &temp, error_msg);

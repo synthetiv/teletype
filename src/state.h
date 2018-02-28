@@ -128,7 +128,6 @@ typedef struct {
 typedef struct {
     uint8_t l;
     tele_command_t c[SCRIPT_MAX_COMMANDS];
-    bool comment[SCRIPT_MAX_COMMANDS];
     every_count_t every[SCRIPT_MAX_COMMANDS];
     int16_t last_time;
 } scene_script_t;
