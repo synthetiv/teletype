@@ -102,12 +102,12 @@ short = "`x` is not `0`"
 [LSH]
 prototype = "LSH x y"
 aliases = ["<<"]
-short = "left shift `x` by `y` bits, in effect multiply by `2` to the power of `x`"
+short = "left shift `x` by `y` bits, in effect multiply `x` by `2` to the power of `y`"
 
 [RSH]
 prototype = "RSH x y"
 aliases = [">>"]
-short = "right shift `x` by `y` bits, in effect divide by `2` to the power of `x`"
+short = "right shift `x` by `y` bits, in effect divide `x` by `2` to the power of `y`"
 
 ["|"]
 prototype = "| x y"
