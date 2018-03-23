@@ -101,6 +101,7 @@ CSRCS = \
 	../src/ops/telex.c					\
 	../src/ops/variables.c					\
 	../src/ops/whitewhale.c					\
+	../src/ops/wslash.c					\
 	../src/ops/turtle.c					\
 	../libavr32/src/adc.c					\
 	../libavr32/src/events.c				\
