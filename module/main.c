@@ -93,6 +93,8 @@ uint8_t copy_buffer_len = 0;
 static tele_mode_t mode = M_LIVE;
 static tele_mode_t last_mode = M_LIVE;
 static uint32_t ss_counter = 0;
+static u8 grid_connected = 0;
+static u8 grid_control_mode = 0;
 
 static uint16_t adc[4];
 
@@ -303,6 +305,12 @@ void handler_Front(int32_t data) {
         return;
     }
     if (data == 0) {
+        if (grid_connected) {
+            grid_control_mode = !grid_control_mode;
+            grid_set_control_mode(grid_control_mode);
+            return;
+        }
+        
         if (mode != M_PRESET_R) {
             front_timer = 0;
             set_preset_r_mode(adc[1]);
@@ -351,7 +359,7 @@ void handler_PollADC(int32_t data) {
 
 void handler_KeyTimer(int32_t data) {
     if (front_timer) {
-        if (front_timer == 1) {
+        if (front_timer == 1 && !grid_connected) {
             if (mode == M_PRESET_R) { process_preset_r_long_front(); }
             front_timer = 0;
         }
@@ -475,9 +483,11 @@ static void handler_FtdiConnect(s32 data) {
 }
 static void handler_FtdiDisconnect(s32 data) {
     timers_unset_monome();
+    grid_connected = 0;
 }
 
 static void handler_MonomeConnect(s32 data) {
+    grid_connected = 1;
     timers_set_monome();
     scene_state.grid.grid_dirty = 1;
     grid_clear_held_keys();
@@ -486,6 +496,7 @@ static void handler_MonomeConnect(s32 data) {
 static void handler_MonomePoll(s32 data) {
     monome_read_serial();
 }
+
 static void handler_MonomeRefresh(s32 data) {
     grid_refresh(&scene_state);
     monomeFrameDirty = 0b1111;

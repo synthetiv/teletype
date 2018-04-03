@@ -151,13 +151,17 @@ typedef struct {
     softTimer_t timer;
 } hold_repeat_info;
 
+static u8 control_mode = 0;
+static tele_mode_t tt_mode = M_LIVE;
 static u16 size_x = 16, size_y = 8;
 static u8 screen[GRID_MAX_DIMENSION][GRID_MAX_DIMENSION/2];
 static hold_repeat_info held_keys[GRID_MAX_KEY_PRESSED];
 static u8 timers_uninitialized = 1;
 
+static void grid_control_refresh(void);
+static void grid_control_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 from_held);
 static void hold_repeat_timer_callback(void* o);
-static void grid_process_key_hold_repeat(scene_state_t *ss, u8 x, u8 y, u8 is_hold);
+static void grid_process_key_hold_repeat(scene_state_t *ss, u8 x, u8 y);
 static void grid_screen_refresh_ctrl(scene_state_t *ss, u8 page, u8 x1, u8 y1, u8 x2, u8 y2);
 static void grid_screen_refresh_led(scene_state_t *ss, u8 full_grid, u8 page, u8 x1, u8 y1, u8 x2, u8 y2);
 static void grid_screen_refresh_info(scene_state_t *ss, u8 page, u8 x1, u8 y1, u8 x2, u8 y2);
@@ -165,37 +169,60 @@ static bool grid_within_area(u8 x, u8 y, grid_common_t *gc);
 static void grid_fill_area(u8 x, u8 y, u8 w, u8 h, s8 level);
 static void grid_fill_area_scr(u8 x, u8 y, u8 w, u8 h, s8 level, u8 page);
 
-void grid_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 ignore_rotate) {
+void grid_set_control_mode(u8 control) {
+    control_mode = control;
+    grid_clear_held_keys();
+}
+
+void grid_control_refresh(void) {
+    
+}
+
+static void grid_control_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 from_held) {
+}
+
+void grid_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 emulated) {
     if (timers_uninitialized) {
         timers_uninitialized = 0;
         for (u8 i = 0; i < GRID_MAX_KEY_PRESSED; i++)
             held_keys[i].used = 0;
     }
     
-    u8 x = SG.rotate && !ignore_rotate ? monome_size_x() - _x - 1 : _x;
-    u8 y = SG.rotate && !ignore_rotate ? monome_size_y() - _y - 1 : _y;
+    size_x = monome_size_x();
+    size_y = monome_size_y();
+    u8 x = SG.rotate && !emulated ? size_x - _x - 1 : _x;
+    u8 y = SG.rotate && !emulated ? size_y - _y - 1 : _y;
 
-    u8 key = (y << 4) | x;
-    if (z) {
-        for (u8 i = 0; i < GRID_MAX_KEY_PRESSED; i++)
-            if (!held_keys[i].used || held_keys[i].key == key) {
-                held_keys[i].used = 1;
-                held_keys[i].key = key;
-                held_keys[i].x = x;
-                held_keys[i].y = y;
-                held_keys[i].ss = ss;
-                timer_add(&held_keys[i].timer, GRID_KEY_HOLD_DELAY,
-                    &hold_repeat_timer_callback, (void *)&held_keys[i]);
-                break;
-            }
-    } else {
-        for (u8 i = 0; i < GRID_MAX_KEY_PRESSED; i++)
-            if (held_keys[i].key == key) {
-                timer_remove(&held_keys[i].timer);
-                held_keys[i].used = 0;
-            }
+    if (control_mode ? !emulated : true) {
+        u8 key = (y << 4) | x;
+        if (z) {
+            for (u8 i = 0; i < GRID_MAX_KEY_PRESSED; i++)
+                if (!held_keys[i].used || held_keys[i].key == key) {
+                    held_keys[i].used = 1;
+                    held_keys[i].key = key;
+                    held_keys[i].x = x;
+                    held_keys[i].y = y;
+                    held_keys[i].ss = ss;
+                    timer_add(&held_keys[i].timer, GRID_KEY_HOLD_DELAY,
+                        &hold_repeat_timer_callback, (void *)&held_keys[i]);
+                    break;
+                }
+        } else {
+            for (u8 i = 0; i < GRID_MAX_KEY_PRESSED; i++)
+                if (held_keys[i].key == key) {
+                    timer_remove(&held_keys[i].timer);
+                    held_keys[i].used = 0;
+                }
+        }
     }
 
+    if (control_mode) {
+        if (!emulated && (size_x <= 8 || tt_mode != M_LIVE || x > 7)) {
+            grid_control_process_key(ss, x, y, z, 0);
+            return;
+        }
+    }
+    
     u8 refresh = 0;
     u8 scripts[SCRIPT_COUNT];
     for (u8 i = 0; i < SCRIPT_COUNT; i++) scripts[i] = 0;
@@ -359,7 +386,14 @@ void grid_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 ignore_rotate) {
     if (refresh) SG.grid_dirty = SG.scr_dirty = 1;
 }
 
-void grid_process_key_hold_repeat(scene_state_t *ss, u8 x, u8 y, u8 is_hold) {
+void grid_process_key_hold_repeat(scene_state_t *ss, u8 x, u8 y) {
+    if (control_mode) {
+        if (size_x <= 8 || tt_mode != M_LIVE || x > 7) {
+            grid_control_process_key(ss, x, y, 1, 1);
+            return;
+        }
+    }
+    
     u8 refresh = 0;
     u8 scripts[SCRIPT_COUNT];
     for (u8 i = 0; i < SCRIPT_COUNT; i++) scripts[i] = 0;
@@ -409,7 +443,7 @@ void hold_repeat_timer_callback(void* o) {
         timer_set(&hr->timer, GRID_KEY_REPEAT_RATE);
         hr->used = 2;
     }
-    grid_process_key_hold_repeat(hr->ss, hr->x, hr->y, is_hold);
+    grid_process_key_hold_repeat(hr->ss, hr->x, hr->y);
 }
 
 void grid_process_fader_slew(scene_state_t *ss) {
@@ -461,7 +495,12 @@ void grid_refresh(scene_state_t *ss) {
     size_y = monome_size_y();
 
     grid_fill_area(0, 0, size_x, size_y, 0);
-
+    
+    if (control_mode) {
+        grid_control_refresh();
+        return;
+    }
+    
     u16 x, y;
     for (u8 i = 0; i < GRID_XYPAD_COUNT; i++) {
         if (GXYC.enabled && SG.group[GXYC.group].enabled) {
