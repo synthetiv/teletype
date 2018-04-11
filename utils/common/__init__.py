@@ -1,5 +1,6 @@
 from os import path
 import re
+import subprocess
 
 _THIS_FILE = path.realpath(__file__)
 _THIS_DIR = path.dirname(_THIS_FILE)
@@ -105,3 +106,12 @@ def validate_toml(ops):
         for k in keys - {"prototype", "prototype_set", "aliases",
                          "short", "description"}:
             print(f" - WARNING: {name} - unknown entry - {k}")
+
+
+def get_tt_version():
+    tag = subprocess.check_output(["git", "describe", "--tags"]) \
+                    .decode("utf-8").split("-")[0]
+    hash = subprocess.check_output(["git", "describe",
+                                    "--always", "--dirty"]) \
+                     .decode("utf-8")[:-1].upper()
+    return {'tag': tag, 'hash': hash}

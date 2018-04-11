@@ -8,7 +8,7 @@ import jinja2
 import pypandoc
 import pytoml as toml
 
-from common import validate_toml
+from common import validate_toml, get_tt_version
 
 if (sys.version_info.major, sys.version_info.minor) < (3, 6):
     raise Exception("need Python 3.6 or later")
@@ -19,6 +19,9 @@ TEMPLATE_DIR = ROOT_DIR / "utils" / "templates"
 DOCS_DIR = ROOT_DIR / "docs"
 OP_DOCS_DIR = DOCS_DIR / "ops"
 FONTS_DIR = ROOT_DIR / "utils" / "fonts"
+_VERSION_ = get_tt_version()
+_VERSION_STR_ = "Teletype " + \
+              _VERSION_["tag"] + " " + _VERSION_["hash"] + " Cheatsheet"
 
 
 # We want to run inject_latex in parallel as it's quite slow, and we must run
@@ -78,7 +81,7 @@ def cheatsheet_tex():
     print(f"Using ops docs directory: {OP_DOCS_DIR}")
     print()
 
-    output = ""
+    output = _VERSION_STR_ + "\n\n"
     for (section, title, new_page) in OPS_SECTIONS:
         toml_file = Path(OP_DOCS_DIR, section + ".toml")
         if toml_file.exists() and toml_file.is_file():
