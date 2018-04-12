@@ -1,5 +1,5 @@
 ---
-title: Teletype Documentation
+title: {{title}}
 documentclass: report
 geometry: margin=1in
 links-as-notes: true
