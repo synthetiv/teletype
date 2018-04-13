@@ -35,6 +35,7 @@ typedef enum {
 
 void set_mode(tele_mode_t mode);
 void set_last_mode(void);
+void clear_delays_and_slews(scene_state_t *ss);
 
 // global copy buffer
 extern char copy_buffer[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];

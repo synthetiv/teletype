@@ -98,13 +98,17 @@ static void op_INIT_SCRIPT_ALL_get(const void *NOTUSED(data), scene_state_t *ss,
 static void op_INIT_P_get(const void *NOTUSED(data), scene_state_t *ss,
                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t v = cs_pop(cs);
-    if (v >= 0 && v < 4) ss_pattern_init(ss, v);
+    if (v >= 0 && v < 4) {
+        ss_pattern_init(ss, v);
+        tele_pattern_updated();
+    }
 }
 
 static void op_INIT_P_ALL_get(const void *NOTUSED(data), scene_state_t *ss,
                               exec_state_t *NOTUSED(es),
                               command_state_t *NOTUSED(cs)) {
     ss_patterns_init(ss);
+    tele_pattern_updated();
 }
 
 static void op_INIT_CV_get(const void *NOTUSED(data), scene_state_t *ss,

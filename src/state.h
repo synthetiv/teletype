@@ -246,6 +246,8 @@ void ss_copy_script_command(tele_command_t *dest, scene_state_t *ss,
                             script_number_t script_idx, size_t c_idx);
 bool ss_get_script_comment(scene_state_t *ss, script_number_t script_idx,
                            size_t c_idx);
+void ss_set_script_comment(scene_state_t *ss, script_number_t script_idx,
+                           size_t c_idx, uint8_t on);
 void ss_toggle_script_comment(scene_state_t *ss, script_number_t script_idx,
                               size_t c_idx);
 void ss_overwrite_script_command(scene_state_t *ss, script_number_t script_idx,

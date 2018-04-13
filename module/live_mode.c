@@ -32,9 +32,11 @@ static error_t status;
 static char error_msg[TELE_ERROR_MSG_LENGTH];
 static bool show_welcome_message;
 static screen_grid_mode grid_mode = GRID_MODE_OFF;
-static uint8_t grid_page = 0, grid_ctrl = 0, grid_view_changed = 0;
+static uint8_t grid_view_changed = 0;
 static uint8_t grid_x1 = 0, grid_y1 = 0, grid_x2 = 0, grid_y2 = 0;
 static uint8_t grid_pressed = 0;
+uint8_t grid_page = 0;
+uint8_t grid_show_controls = 0;
 
 static const uint8_t D_INPUT = 1 << 0;
 static const uint8_t D_LIST = 1 << 1;
@@ -113,6 +115,89 @@ void set_live_mode() {
     if (grid_mode == GRID_MODE_FULL) grid_mode = GRID_MODE_EDIT;
 }
 
+void set_live_submode(u8 submode) {
+    line_editor_set(&le, "");
+    history_line = -1;
+    if (submode == 0) {
+        show_vars = 0;
+        grid_mode = GRID_MODE_OFF;
+    } else if (submode == 1) {
+        show_vars = 1;
+        grid_mode = GRID_MODE_OFF;
+    } else if (submode == 2) {
+        show_vars = 0;
+        grid_mode = GRID_MODE_EDIT;
+    } else if (submode == 3) {
+        show_vars = 0;
+        grid_mode = GRID_MODE_FULL;
+    } else return;
+    dirty = D_ALL;
+    activity_prev = 0xFF;
+    grid_view_changed = true;
+}
+
+void history_next() {
+    if (history_line > 0) {
+        history_line--;
+        line_editor_set_command(&le, &history[history_line]);
+    }
+    else {
+        history_line = -1;
+        line_editor_set(&le, "");
+    }
+    dirty |= D_INPUT;
+}
+
+void history_prev() {
+    if (history_line < history_top) {
+        history_line++;
+        line_editor_set_command(&le, &history[history_line]);
+        dirty |= D_INPUT;
+    }
+}
+
+void execute_line() {
+    dirty |= D_MESSAGE;  // something will definitely happen
+    dirty |= D_INPUT;
+
+    tele_command_t command;
+    command.comment = false;
+
+    status = parse(line_editor_get(&le), &command, error_msg);
+    if (status != E_OK)
+        return;  // quit, screen_refresh_live will display the error message
+
+    status = validate(&command, error_msg);
+    if (status != E_OK)
+        return;  // quit, screen_refresh_live will display the error message
+
+    if (command.length) {
+        // increase history_size up to a maximum
+        history_top++;
+        if (history_top >= MAX_HISTORY_SIZE)
+            history_top = MAX_HISTORY_SIZE - 1;
+
+        // shuffle the history up
+        // should really use some sort of ring buffer
+        for (size_t i = history_top; i > 0; i--) {
+            memcpy(&history[i], &history[i - 1], sizeof(command));
+        }
+        memcpy(&history[0], &command, sizeof(command));
+
+        ss_clear_script(&scene_state, TEMP_SCRIPT);
+        ss_overwrite_script_command(&scene_state, TEMP_SCRIPT, 0, &command);
+        exec_state_t es;
+        es_init(&es);
+        es_push(&es);
+        es_variables(&es)->script_number = TEMP_SCRIPT;
+
+        output = run_script_with_exec_state(&scene_state, &es, TEMP_SCRIPT);
+    }
+
+    history_line = -1;
+    line_editor_set(&le, "");
+}
+
 static void emulate_grid_release(scene_state_t *ss) {
     grid_process_key(ss, grid_x1, grid_y1, 0, 1);
     if (grid_x1 != grid_x2 || grid_y1 != grid_y2)
@@ -132,24 +217,12 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     // <down> or C-n: history next
     if ((match_no_mod(m, k, HID_DOWN) || match_ctrl(m, k, HID_N)) &&
         grid_mode != GRID_MODE_FULL) {
-        if (history_line > 0) {
-            history_line--;
-            line_editor_set_command(&le, &history[history_line]);
-        }
-        else {
-            history_line = -1;
-            line_editor_set(&le, "");
-        }
-        dirty |= D_INPUT;
+        history_next();
     }
     // <up> or C-p: history previous
     else if ((match_no_mod(m, k, HID_UP) || match_ctrl(m, k, HID_P)) &&
              grid_mode != GRID_MODE_FULL) {
-        if (history_line < history_top) {
-            history_line++;
-            line_editor_set_command(&le, &history[history_line]);
-            dirty |= D_INPUT;
-        }
+        history_prev();
     }
     // A-G: toggle grid view
     else if (match_alt(m, k, HID_G) ||
@@ -301,50 +374,12 @@ void process_live_keys(uint8_t k, uint8_t m, bool is_held_key, bool is_release,
     else if (match_alt(m, k, HID_BACKSLASH) ||
              (grid_mode == GRID_MODE_FULL &&
               match_no_mod(m, k, HID_BACKSLASH))) {
-        grid_ctrl = !grid_ctrl;
+        grid_show_controls = !grid_show_controls;
         grid_view_changed = true;
     }
     // <enter>: execute command
     else if (match_no_mod(m, k, HID_ENTER) && grid_mode != GRID_MODE_FULL) {
-        dirty |= D_MESSAGE;  // something will definitely happen
-        dirty |= D_INPUT;
-
-        tele_command_t command;
-        command.comment = false;
-
-        status = parse(line_editor_get(&le), &command, error_msg);
-        if (status != E_OK)
-            return;  // quit, screen_refresh_live will display the error message
-
-        status = validate(&command, error_msg);
-        if (status != E_OK)
-            return;  // quit, screen_refresh_live will display the error message
-
-        if (command.length) {
-            // increase history_size up to a maximum
-            history_top++;
-            if (history_top >= MAX_HISTORY_SIZE)
-                history_top = MAX_HISTORY_SIZE - 1;
-
-            // shuffle the history up
-            // should really use some sort of ring buffer
-            for (size_t i = history_top; i > 0; i--) {
-                memcpy(&history[i], &history[i - 1], sizeof(command));
-            }
-            memcpy(&history[0], &command, sizeof(command));
-
-            ss_clear_script(&scene_state, TEMP_SCRIPT);
-            ss_overwrite_script_command(&scene_state, TEMP_SCRIPT, 0, &command);
-            exec_state_t es;
-            es_init(&es);
-            es_push(&es);
-            es_variables(&es)->script_number = TEMP_SCRIPT;
-
-            output = run_script_with_exec_state(&scene_state, &es, TEMP_SCRIPT);
-        }
-
-        history_line = -1;
-        line_editor_set(&le, "");
+        execute_line();
     }
     // [ or ]: switch to edit mode
     else if (match_no_mod(m, k, HID_OPEN_BRACKET) ||
@@ -378,7 +413,7 @@ uint8_t screen_refresh_live(scene_state_t *ss) {
         (grid_view_changed || ss->grid.scr_dirty)) {
         grid_view_changed = 0;
         screen_dirty = 0b111111;
-        grid_screen_refresh(ss, grid_mode, grid_page, grid_ctrl, grid_x1,
+        grid_screen_refresh(ss, grid_mode, grid_page, grid_show_controls, grid_x1,
                             grid_y1, grid_x2, grid_y2);
     }
     if (grid_mode == GRID_MODE_FULL) return 0b11111111;

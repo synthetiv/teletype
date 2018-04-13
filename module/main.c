@@ -307,13 +307,13 @@ void handler_Front(int32_t data) {
     if (data == 0) {
         if (grid_connected) {
             grid_control_mode = !grid_control_mode;
-            grid_set_control_mode(grid_control_mode);
+            grid_set_control_mode(grid_control_mode, &scene_state);
             return;
         }
         
         if (mode != M_PRESET_R) {
             front_timer = 0;
-            set_preset_r_mode(adc[1]);
+            set_preset_r_mode(adc[1] >> 7);
             set_mode(M_PRESET_R);
         }
         else
@@ -346,8 +346,8 @@ void handler_PollADC(int32_t data) {
         process_pattern_knob(adc[1], mod_key);
         ss_set_param(&scene_state, adc[1] << 2);
     }
-    else if (mode == M_PRESET_R) {
-        process_preset_r_knob(adc[1], mod_key);
+    else if (mode == M_PRESET_R && !(grid_connected && grid_control_mode)) {
+        process_preset_r_preset(adc[1] >> 7);
     }
     else {
         ss_set_param(&scene_state, adc[1] << 2);
@@ -360,7 +360,7 @@ void handler_PollADC(int32_t data) {
 void handler_KeyTimer(int32_t data) {
     if (front_timer) {
         if (front_timer == 1 && !grid_connected) {
-            if (mode == M_PRESET_R) { process_preset_r_long_front(); }
+            if (mode == M_PRESET_R) { process_preset_r_load(); }
             front_timer = 0;
         }
         else
@@ -454,8 +454,11 @@ void handler_ScreenRefresh(int32_t data) {
         case M_SCREENSAVER: screen_dirty = screen_refresh_screensaver(); break;
     }
 
+    u8 grid = 0;
     for (size_t i = 0; i < 8; i++)
-        if (screen_dirty & (1 << i)) { region_draw(&line[i]); }
+        if (screen_dirty & (1 << i)) { grid = 1; region_draw(&line[i]); }
+    if (grid_connected && grid_control_mode && grid)
+        scene_state.grid.grid_dirty = 1;
 #ifdef TELETYPE_PROFILE
     profile_update(&prof_ScreenRefresh);
 #endif
@@ -473,6 +476,8 @@ void handler_AppCustom(int32_t data) {
     if (ss_get_script_len(&scene_state, METRO_SCRIPT)) {
         set_metro_icon(true);
         run_script(&scene_state, METRO_SCRIPT);
+        if (grid_connected && grid_control_mode)
+            grid_metro_triggered(&scene_state);
     }
     else
         set_metro_icon(false);
@@ -581,7 +586,7 @@ void set_mode(tele_mode_t m) {
             mode = M_PRESET_W;
             break;
         case M_PRESET_R:
-            set_preset_r_mode(adc[1]);
+            set_preset_r_mode(adc[1] >> 7);
             mode = M_PRESET_R;
             break;
         case M_HELP:
@@ -608,6 +613,11 @@ void set_last_mode() {
         set_mode(M_LIVE);
 }
 
+// defined in globals.h
+void clear_delays_and_slews(scene_state_t *ss) {
+    clear_delays(ss);
+    for (int i = 0; i < 4; i++) { aout[i].step = 1; }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // key handling
@@ -682,10 +692,7 @@ bool process_global_keys(uint8_t k, uint8_t m, bool is_held_key) {
     }
     // win-<esc>: clear delays, stack and slews
     else if (match_win(m, k, HID_ESCAPE)) {
-        if (!is_held_key) {
-            clear_delays(&scene_state);
-            for (int i = 0; i < 4; i++) { aout[i].step = 1; }
-        }
+        if (!is_held_key) clear_delays_and_slews(&scene_state);
         return true;
     }
     // <alt>-?: help text, or return to last mode
@@ -713,13 +720,13 @@ bool process_global_keys(uint8_t k, uint8_t m, bool is_held_key) {
         return true;
     }
     // ctrl-<F1> through ctrl-<F8> mute triggers
-    // ctrl-<F9> toggle metro
     else if (mod_only_ctrl(m) && k >= HID_F1 && k <= HID_F8) {
         bool muted = ss_get_mute(&scene_state, (k - HID_F1));
         ss_set_mute(&scene_state, (k - HID_F1), !muted);
         screen_mutes_updated();
         return true;
     }
+    // ctrl-<F9> toggle metro
     else if (mod_only_ctrl(m) && k == HID_F9) {
         scene_state.variables.m_act = !scene_state.variables.m_act;
         tele_metro_updated();
@@ -790,10 +797,15 @@ void tele_metro_updated() {
         set_metro_icon(true);
     else
         set_metro_icon(false);
+    
+    if (grid_connected && grid_control_mode) scene_state.grid.grid_dirty = 1;
 }
 
 void tele_metro_reset() {
-    if (metro_timer_enabled) { timer_reset(&metroTimer); }
+    if (metro_timer_enabled) {
+        timer_reset(&metroTimer);
+        if (grid_connected && grid_control_mode) scene_state.grid.grid_dirty = 1;
+    }
 }
 
 void tele_tr(uint8_t i, int16_t v) {
@@ -953,7 +965,7 @@ int main(void) {
 
     // wait 50ms before running the init script to allow for any i2c devices to
     // fully initalise
-    delay_ms(50);
+    delay_ms(1500);
 
     run_script(&scene_state, INIT_SCRIPT);
     scene_state.initializing = false;

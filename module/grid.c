@@ -3,13 +3,27 @@
 #include "globals.h"
 #include "state.h"
 #include "teletype.h"
+#include "teletype_io.h"
 #include "timers.h"
 #include "util.h"
+#include "edit_mode.h"
+#include "live_mode.h"
+#include "preset_r_mode.h"
+#include "flash.h"
 
 #define GRID_MAX_KEY_PRESSED 10
 #define GRID_KEY_HOLD_DELAY 700
 #define GRID_KEY_REPEAT_RATE 40
 #define GRID_ON_BRIGHTNESS 13
+
+typedef enum {
+    G_LIVE_V,
+    G_LIVE_G,
+    G_LIVE_GF,
+    G_EDIT,
+    G_TRACKER,
+    G_PRESET
+} grid_control_mode_t;
 
 static const u8 glyph[16][6] = {
     {
@@ -151,15 +165,23 @@ typedef struct {
     softTimer_t timer;
 } hold_repeat_info;
 
-static u8 control_mode = 0;
-static tele_mode_t tt_mode = M_LIVE;
+typedef struct {
+    u8 on;
+    scene_state_t *ss;
+    softTimer_t timer;
+} script_trigger_info;
+
+static grid_control_mode_t tt_mode = G_LIVE_V, tt_last_mode = G_LIVE_V;
+static u8 control_mode_on = 0, tt_script = 0, variable_edit = 0;
+static u8 preset_write = 0;
 static u16 size_x = 16, size_y = 8;
 static u8 screen[GRID_MAX_DIMENSION][GRID_MAX_DIMENSION/2];
 static hold_repeat_info held_keys[GRID_MAX_KEY_PRESSED];
 static u8 timers_uninitialized = 1;
+static script_trigger_info script_triggers[11];
 
-static void grid_control_refresh(void);
-static void grid_control_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 from_held);
+static void grid_control_refresh(scene_state_t *ss);
+static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_held);
 static void hold_repeat_timer_callback(void* o);
 static void grid_process_key_hold_repeat(scene_state_t *ss, u8 x, u8 y);
 static void grid_screen_refresh_ctrl(scene_state_t *ss, u8 page, u8 x1, u8 y1, u8 x2, u8 y2);
@@ -169,16 +191,411 @@ static bool grid_within_area(u8 x, u8 y, grid_common_t *gc);
 static void grid_fill_area(u8 x, u8 y, u8 w, u8 h, s8 level);
 static void grid_fill_area_scr(u8 x, u8 y, u8 w, u8 h, s8 level, u8 page);
 
-void grid_set_control_mode(u8 control) {
-    control_mode = control;
+void grid_set_control_mode(u8 control, scene_state_t *ss) {
+    control_mode_on = control;
     grid_clear_held_keys();
+    ss->grid.grid_dirty = 1;
 }
 
-void grid_control_refresh(void) {
+void grid_control_refresh(scene_state_t *ss) {
+    u16 d = size_y == 16 ? 128 : 0;
+    if (size_x == 16) d += 8;
+
+    u8 l = 4;
+    u8 m = 6;
+    u8 b = 8;
+    u8 h = 15;
+
+    for (u16 i = 0; i < 8; i++)
+        for (u16 j = 0; j < 8; j++)
+            monomeLedBuffer[d+i+size_x*j] = 0;
     
+    if (tt_mode == G_TRACKER) {
+        // TODO finish tracker view
+        monomeLedBuffer[d+6] = h;
+        return;
+    }
+    
+    // mode selection
+    monomeLedBuffer[d] = tt_mode == G_EDIT && tt_script == 8 ? h : m;
+    monomeLedBuffer[d+1] = tt_mode == G_EDIT && tt_script == 9 ? h : m;
+    monomeLedBuffer[d+3] = tt_mode == G_LIVE_V ? h : m;
+    monomeLedBuffer[d+4] = tt_mode == G_LIVE_G || tt_mode == G_LIVE_GF ? h : m;
+    monomeLedBuffer[d+7] = tt_mode == G_PRESET ? h : m;
+    d += size_x;
+    for (u16 i = 0; i < 7; i++)
+        monomeLedBuffer[d+i] = tt_mode == G_EDIT && tt_script == i ? h : m;
+    d += size_x;
+    
+    if (tt_mode == G_PRESET) {
+        monomeLedBuffer[d+6] = h;
+        for (u8 j = 0; j < 25; j += 8) {
+            for (u16 i = 0; i < 7; i++)
+                monomeLedBuffer[d+i] = i + j == preset_select ? h : l;
+            d += size_x;
+        }
+        
+        monomeLedBuffer[d+7] = m;
+        d += size_x;
+        monomeLedBuffer[d+2] = b;
+        monomeLedBuffer[d+4] = b;
+        monomeLedBuffer[d+7] = m;
+        return;
+        
+    } else if (tt_mode == G_LIVE_V) {
+        monomeLedBuffer[d+3] = variable_edit == 1 ? h : l;
+        monomeLedBuffer[d+4] = variable_edit == 2 ? h : l;
+        d += size_x;
+        monomeLedBuffer[d] = ss->variables.m_act ? l : b;
+        monomeLedBuffer[d+1] = script_triggers[10].on ? h : b;
+        monomeLedBuffer[d+3] = variable_edit == 3 ? h : l;
+        monomeLedBuffer[d+4] = variable_edit == 4 ? h : l;
+        monomeLedBuffer[d+6] = m;
+        d += size_x;
+        monomeLedBuffer[d] = script_triggers[8].on ? h : m;
+        monomeLedBuffer[d+1] = script_triggers[9].on ? h : m;
+        monomeLedBuffer[d+3] = variable_edit == 5 ? h : l;
+        monomeLedBuffer[d+4] = variable_edit == 6 ? h : l;
+        monomeLedBuffer[d+6] = m;
+        monomeLedBuffer[d+7] = b;
+        d += size_x;
+        monomeLedBuffer[d+3] = variable_edit == 7 ? h : l;
+        monomeLedBuffer[d+4] = variable_edit == 8 ? h : l;
+        
+    } else if (tt_mode == G_LIVE_G || tt_mode == G_LIVE_GF) {
+        d += size_x;
+        monomeLedBuffer[d] = ss_get_mute(ss, 8) ? b : l;
+        monomeLedBuffer[d+1] = script_triggers[10].on ? h : b;
+        monomeLedBuffer[d+3] = grid_page == 1 ? b : l;
+        monomeLedBuffer[d+7] = m;
+        d += size_x;
+        monomeLedBuffer[d] = script_triggers[8].on ? h : m;
+        monomeLedBuffer[d+1] = script_triggers[9].on ? h : m;
+        monomeLedBuffer[d+3] = grid_page == 2 ? b : l;
+        monomeLedBuffer[d+5] = grid_show_controls ? b : l;
+        monomeLedBuffer[d+7] = m;
+        d += size_x;
+        
+    } else if (tt_mode == G_EDIT) {
+        d += size_x;
+        monomeLedBuffer[d] = ss_get_mute(ss, 8) ? b : l;
+        monomeLedBuffer[d+1] = script_triggers[10].on ? h : b;
+        monomeLedBuffer[d+3] = ss_get_script_comment(ss, tt_script, 0) ? b : l;
+        monomeLedBuffer[d+4] = ss_get_script_comment(ss, tt_script, 1) ? b : l;
+        monomeLedBuffer[d+5] = ss_get_script_comment(ss, tt_script, 2) ? b : l;
+        monomeLedBuffer[d+7] = m;
+        d += size_x;
+        monomeLedBuffer[d] = script_triggers[8].on ? h : m;
+        monomeLedBuffer[d+1] = script_triggers[9].on ? h : m;
+        monomeLedBuffer[d+3] = ss_get_script_comment(ss, tt_script, 3) ? b : l;
+        monomeLedBuffer[d+4] = ss_get_script_comment(ss, tt_script, 4) ? b : l;
+        monomeLedBuffer[d+5] = ss_get_script_comment(ss, tt_script, 5) ? b : l;
+        monomeLedBuffer[d+7] = m;
+        d += size_x;
+
+    } 
+    d += size_x;
+    
+    // script mutes
+    for (u16 i = 0; i < 8; i++) 
+        monomeLedBuffer[d+i] = ss_get_mute(ss, i) ? b : l;
+    d += size_x;
+    
+    // triggered scripts
+    for (u16 i = 0; i < 8; i++)
+        monomeLedBuffer[d+i] = script_triggers[i].on ? h : m;
+    
+    if (variable_edit) {
+        s16 *v = &(ss->variables.a) - sizeof(s16);
+        if (size_x == 8) {
+            if (v[variable_edit] < 0 || v[variable_edit] > 8)
+                for (u16 i = 0; i < 8; i++)
+                    monomeLedBuffer[d+i] = l;
+            else
+                for (u16 i = 0; i < 8; i++)
+                    monomeLedBuffer[d+i] = i < v[variable_edit] ? b : l;
+        } else {
+            d -= 8;
+            if (v[variable_edit] < 0 || v[variable_edit] > 16)
+                for (u16 i = 0; i < 16; i++)
+                    monomeLedBuffer[d+i] = l;
+            else
+                for (u16 i = 0; i < 16; i++)
+                    monomeLedBuffer[d+i] = i < v[variable_edit] ? b : l;
+        }
+    }
 }
 
-static void grid_control_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 from_held) {
+static void script_triggers_callback(void* o) {
+    script_trigger_info* st = o;
+    timer_remove(&st->timer);
+    st->on = 0;
+    st->ss->grid.grid_dirty = 1;
+}
+
+void grid_metro_triggered(scene_state_t *ss) {
+    script_triggers[8].on = 1;
+    script_triggers[8].ss = ss;
+    timer_add(&script_triggers[8].timer, 50,
+        &script_triggers_callback, (void *)&script_triggers[8]);
+    ss->grid.grid_dirty = 1;
+}
+
+static void restore_last_mode(scene_state_t *ss) {
+    tt_mode = tt_last_mode;
+    if (tt_mode == G_EDIT) {
+        set_edit_mode_script(tt_script);
+        set_mode(M_EDIT);
+    } else if (tt_mode == G_PRESET) {
+        set_mode(M_PRESET_R);
+    } else if (tt_mode == G_LIVE_V) {
+        set_mode(M_LIVE);
+        set_live_submode(1);
+    } else if (tt_mode == G_LIVE_G) {
+        set_mode(M_LIVE);
+        set_live_submode(2);
+    } else if (tt_mode == G_LIVE_GF) {
+        set_mode(M_LIVE);
+        set_live_submode(3);
+    }
+    ss->grid.grid_dirty = 1;
+}
+
+static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_held) {
+    if (size_y == 16) {
+        if (y < 8) return 0;
+        y -= 8;
+    }
+
+    if (variable_edit && y == 7) {
+        if (!z || from_held) return 1;
+
+        s16 *v = &(ss->variables.a) - 1;
+        v[variable_edit] = v[variable_edit] == x + 1 ? 0 : x + 1;
+        set_vars_updated();
+        ss->grid.grid_dirty = 1;
+        return 1;
+    }
+
+    if (size_x == 16) {
+        if (x < 8) return 0;
+        x -= 8;
+    }
+    
+    if (tt_mode == G_TRACKER) {
+        // TODO tracker
+        if (x == 7 && y == 0 && !from_held && z) restore_last_mode(ss);
+        return 1;
+    }
+    
+    // select page
+    if (y == 0) {
+        if (!z || from_held) return 1;
+        
+        switch (x) {
+            case 0:
+            case 1:
+                tt_mode = G_EDIT;
+                tt_script = x + 8;
+                set_edit_mode_script(tt_script);
+                set_mode(M_EDIT);
+                ss->grid.grid_dirty = 1;
+                break;
+            case 3:
+                if (tt_mode != G_LIVE_V) {
+                    tt_mode = G_LIVE_V;
+                    set_mode(M_LIVE);
+                    set_live_submode(1);
+                    ss->grid.grid_dirty = 1;
+                }
+                break;
+            case 4:
+                tt_mode = tt_mode == G_LIVE_G ? G_LIVE_GF : G_LIVE_G;
+                set_mode(M_LIVE);
+                set_live_submode(tt_mode == G_LIVE_G ? 2 : 3);
+                ss->grid.grid_dirty = 1;
+                break;
+            case 6:
+                tt_last_mode = tt_mode;
+                tt_mode = G_TRACKER;
+                set_mode(M_PATTERN);
+                ss->grid.grid_dirty = 1;
+                break;
+            case 7:
+                tt_last_mode = tt_mode;
+                tt_mode = G_PRESET;
+                set_mode(M_PRESET_R);
+                ss->grid.grid_dirty = 1;
+                break;
+            default:
+                break;
+        }
+        return 1;
+    }
+
+    // scripts
+    if (y == 1) {
+        if (!z || from_held) return 1;
+        tt_mode = G_EDIT;
+        tt_script = x;
+        set_edit_mode_script(tt_script);
+        set_mode(M_EDIT);
+        ss->grid.grid_dirty = 1;
+        return 1;
+    }
+
+    // presets
+    if (tt_mode == G_PRESET) {
+        if (!z) return 1;
+        if (y > 1 && y < 6 && !from_held) {
+            if (preset_write) {
+                preset_write = 0;
+                set_mode(M_PRESET_R);
+            }
+            process_preset_r_preset(x + ((y - 2) << 3));
+            ss->grid.grid_dirty = 1;
+        } else if (y == 6 && x == 7) {
+            if (preset_write) {
+                preset_write = 0;
+                set_mode(M_PRESET_R);
+            }
+            preset_line_up();
+            ss->grid.grid_dirty = 1;
+        } else if (y == 7 && x == 7) {
+            if (preset_write) {
+                preset_write = 0;
+                set_mode(M_PRESET_R);
+            }
+            preset_line_down();
+            ss->grid.grid_dirty = 1;
+        } else if (y == 7 && x == 2 && !from_held) {
+            if (preset_write) {
+                preset_write = 0;
+                set_mode(M_PRESET_R);
+            } else {
+                process_preset_r_load();
+                set_mode(M_PRESET_R);
+                restore_last_mode(ss);
+            }
+            ss->grid.grid_dirty = 1;
+        } else if (y == 7 && x == 4 && !from_held) {
+            if (preset_write) {
+                flash_write(preset_select, ss, &scene_text);
+                flash_update_last_saved_scene(preset_select);
+                preset_write = 0;
+                restore_last_mode(ss);
+            } else {
+                set_mode(M_PRESET_W);
+                preset_write = 1;
+            }
+            ss->grid.grid_dirty = 1;
+        } else {
+            preset_write = 0;
+            set_mode(M_PRESET_R);
+        }
+        return 1;
+    }
+    
+    // mutes
+    if (y == 6) {
+        if (!z || from_held) return 1;
+        bool muted = ss_get_mute(ss, x);
+        ss_set_mute(ss, x, !muted);
+        screen_mutes_updated();
+        ss->grid.grid_dirty = 1;
+        return 1;
+    }
+
+    // trigger scripts
+    if (y == 7) {
+        if (!z) return 1;
+        script_triggers[x].on = 1;
+        script_triggers[x].ss = ss;
+        timer_add(&script_triggers[x].timer, 50,
+            &script_triggers_callback, (void *)&script_triggers[x]);
+        ss->grid.grid_dirty = 1;
+        run_script(ss, x);
+        return 1;
+    }
+    
+    // live variables
+    if (tt_mode == G_LIVE_V) {
+        if (y > 1 && y < 6 && x > 10 && x <13 && !from_held) {
+            variable_edit = z ? x - 2 + ((y - 2) << 1) : 0;
+            ss->grid.grid_dirty = 1;
+            return 1;
+        }
+        
+        if (!z) return 1;
+        
+        if (y == 3 && x == 0 && !from_held) {
+            ss->variables.m_act = !ss->variables.m_act;
+            screen_mutes_updated();
+            tele_metro_updated();
+            ss->grid.grid_dirty = 1;            
+        } else if (y == 3 && x == 1 && !from_held) {
+            clear_delays_and_slews(ss);
+            ss->grid.grid_dirty = 1;
+        } else if (y == 4 && x < 2) {
+            x += 8;
+            script_triggers[x].on = 1;
+            script_triggers[x].ss = ss;
+            timer_add(&script_triggers[x].timer, 50,
+                &script_triggers_callback, (void *)&script_triggers[x]);
+            ss->grid.grid_dirty = 1;
+            run_script(ss, x);
+        } else if (y == 3 && x == 6) {
+            history_prev();
+        } else if (y == 4 && x == 6) {
+            history_next();
+        } else if (y == 4 && x == 7 && !from_held) {
+            execute_line();
+        }
+        
+        return 1;
+    }
+    
+    // scripts
+    if (tt_mode == G_EDIT) {
+        if (!z || from_held) return 1;
+        
+        if (y == 3 && x == 0) {
+            ss->variables.m_act = !ss->variables.m_act;
+            screen_mutes_updated();
+            tele_metro_updated();
+            ss->grid.grid_dirty = 1;            
+        } else if (y == 3 && x == 1) {
+            clear_delays_and_slews(ss);
+            ss->grid.grid_dirty = 1;
+        } else if (y == 4 && x < 2) {
+            x += 8;
+            script_triggers[x].on = 1;
+            script_triggers[x].ss = ss;
+            timer_add(&script_triggers[x].timer, 50,
+                &script_triggers_callback, (void *)&script_triggers[x]);
+            ss->grid.grid_dirty = 1;
+            run_script(ss, x);
+        } else if (y > 2 && y < 5 && x > 2 && x < 6) {
+            u8 i = x - 3 + (y - 3) * 3;
+            if (i >= ss_get_script_len(ss, tt_script)) return 1;
+            ss_toggle_script_comment(ss, tt_script, i);
+            edit_mode_refresh();
+            ss->grid.grid_dirty = 1;
+        } else if (y == 3 && x == 7) {
+            for (u8 i = 0; i < ss_get_script_len(ss, tt_script); i++)
+                ss_set_script_comment(ss, tt_script, i, 1);
+            edit_mode_refresh();
+            ss->grid.grid_dirty = 1;
+        } else if (y == 4 && x == 7) {
+            for (u8 i = 0; i < ss_get_script_len(ss, tt_script); i++)
+                ss_set_script_comment(ss, tt_script, i, 0);
+            edit_mode_refresh();
+            ss->grid.grid_dirty = 1;
+        }
+        return 1;
+    }
+    
+    return 1;
 }
 
 void grid_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 emulated) {
@@ -193,7 +610,7 @@ void grid_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 emulated) {
     u8 x = SG.rotate && !emulated ? size_x - _x - 1 : _x;
     u8 y = SG.rotate && !emulated ? size_y - _y - 1 : _y;
 
-    if (control_mode ? !emulated : true) {
+    if (control_mode_on ? !emulated : true) {
         u8 key = (y << 4) | x;
         if (z) {
             for (u8 i = 0; i < GRID_MAX_KEY_PRESSED; i++)
@@ -216,12 +633,8 @@ void grid_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 emulated) {
         }
     }
 
-    if (control_mode) {
-        if (!emulated && (size_x <= 8 || tt_mode != M_LIVE || x > 7)) {
-            grid_control_process_key(ss, x, y, z, 0);
-            return;
-        }
-    }
+    if (control_mode_on && !emulated)
+        if (grid_control_process_key(ss, x, y, z, 0)) return;
     
     u8 refresh = 0;
     u8 scripts[SCRIPT_COUNT];
@@ -387,12 +800,8 @@ void grid_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 emulated) {
 }
 
 void grid_process_key_hold_repeat(scene_state_t *ss, u8 x, u8 y) {
-    if (control_mode) {
-        if (size_x <= 8 || tt_mode != M_LIVE || x > 7) {
-            grid_control_process_key(ss, x, y, 1, 1);
-            return;
-        }
-    }
+    if (control_mode_on)
+        if (grid_control_process_key(ss, x, y, 1, 1)) return;
     
     u8 refresh = 0;
     u8 scripts[SCRIPT_COUNT];
@@ -495,11 +904,6 @@ void grid_refresh(scene_state_t *ss) {
     size_y = monome_size_y();
 
     grid_fill_area(0, 0, size_x, size_y, 0);
-    
-    if (control_mode) {
-        grid_control_refresh();
-        return;
-    }
     
     u16 x, y;
     for (u8 i = 0; i < GRID_XYPAD_COUNT; i++) {
@@ -615,6 +1019,8 @@ void grid_refresh(scene_state_t *ss) {
             monomeLedBuffer[total - i - 1] = temp;
         }
     }
+
+    if (control_mode_on) grid_control_refresh(ss);
 
     SG.grid_dirty = 0;
 }

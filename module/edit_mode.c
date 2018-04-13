@@ -45,6 +45,10 @@ void set_edit_mode_script(uint8_t new_script) {
     dirty = D_ALL;
 }
 
+void edit_mode_refresh() {
+    dirty = D_ALL;
+}
+
 void process_edit_keys(uint8_t k, uint8_t m, bool is_held_key) {
     // <down> or C-n: line down
     if (match_no_mod(m, k, HID_DOWN) || match_ctrl(m, k, HID_N)) {

@@ -238,6 +238,11 @@ bool ss_get_script_comment(scene_state_t *ss, script_number_t script_idx,
     return ss->scripts[script_idx].c[c_idx].comment;
 }
 
+void ss_set_script_comment(scene_state_t *ss, script_number_t script_idx,
+                           size_t c_idx, uint8_t on) {
+    ss->scripts[script_idx].c[c_idx].comment = on;
+}
+
 void ss_toggle_script_comment(scene_state_t *ss, script_number_t script_idx,
                               size_t c_idx) {
     ss->scripts[script_idx].c[c_idx].comment =
