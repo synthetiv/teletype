@@ -39,16 +39,49 @@ void set_pattern_mode() {
     edit_buffer = 0;
 }
 
+uint8_t get_pattern_offset() {
+    return offset;
+}
+
+void set_pattern_offset(uint8_t o) {
+    base = 0;
+    offset = o;
+    dirty = true;
+}
+
+void set_pattern_editing(uint8_t on) {
+    editing_number = on;
+    dirty = true;
+}
+
+void set_pattern_pattern(uint8_t p) {
+    pattern = p;
+    dirty = true;
+}
+
+void pattern_up() {
+    editing_number = false;
+    if (base)
+        base--;
+    else if (offset)
+        offset--;
+    dirty = true;
+}
+
+void pattern_down() {
+    editing_number = false;
+    base++;
+    if (base == 8) {
+        base = 7;
+        if (offset < 56) { offset++; }
+    }
+    dirty = true;
+}
+
 void process_pattern_keys(uint8_t k, uint8_t m, bool is_held_key) {
     // <down>: move down
     if (match_no_mod(m, k, HID_DOWN)) {
-        editing_number = false;
-        base++;
-        if (base == 8) {
-            base = 7;
-            if (offset < 56) { offset++; }
-        }
-        dirty = true;
+        pattern_down();
     }
     // alt-<down>: move a page down
     else if (match_alt(m, k, HID_DOWN)) {
@@ -63,12 +96,7 @@ void process_pattern_keys(uint8_t k, uint8_t m, bool is_held_key) {
     }
     // <up>: move up
     else if (match_no_mod(m, k, HID_UP)) {
-        editing_number = false;
-        if (base)
-            base--;
-        else if (offset)
-            offset--;
-        dirty = true;
+        pattern_up();
     }
     // alt-<up>: move a page up
     else if (match_alt(m, k, HID_UP)) {

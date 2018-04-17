@@ -8,6 +8,7 @@
 #include "util.h"
 #include "edit_mode.h"
 #include "live_mode.h"
+#include "pattern_mode.h"
 #include "preset_r_mode.h"
 #include "flash.h"
 
@@ -173,7 +174,7 @@ typedef struct {
 
 static grid_control_mode_t tt_mode = G_LIVE_V, tt_last_mode = G_LIVE_V;
 static u8 control_mode_on = 0, tt_script = 0, variable_edit = 0;
-static u8 preset_write = 0;
+static u8 preset_write = 0, tracker_pressed = 0;
 static u16 size_x = 16, size_y = 8;
 static u8 screen[GRID_MAX_DIMENSION][GRID_MAX_DIMENSION/2];
 static hold_repeat_info held_keys[GRID_MAX_KEY_PRESSED];
@@ -211,8 +212,30 @@ void grid_control_refresh(scene_state_t *ss) {
             monomeLedBuffer[d+i+size_x*j] = 0;
     
     if (tt_mode == G_TRACKER) {
-        // TODO finish tracker view
-        monomeLedBuffer[d+6] = h;
+        monomeLedBuffer[d+7] = h;
+        u8 offset = get_pattern_offset(), in, off, rem;
+        for (u16 j = 0; j < 8; j++) {
+            for (u16 i = 0; i < 4; i++) {
+                in = offset + j >= ss_get_pattern_start(ss, i) &&
+                    offset + j <= ss_get_pattern_end(ss, i);
+                monomeLedBuffer[d+i+2+(j*size_x)] = 
+                    tracker_pressed ? h :
+                        (ss_get_pattern_val(ss, i, j + offset) ?
+                            (in ? h : b) : (in ? m : l));
+            }
+            off = offset >> 3;
+            rem = (offset & 7) >> 1;
+            monomeLedBuffer[d+j*size_x] =
+                j == off ? b - rem : (j == off + 1 ? l + rem: l);
+        }
+        d += size_x * 3;
+        monomeLedBuffer[d+7] = m;
+        d += size_x;
+        monomeLedBuffer[d+7] = m;
+        d += size_x << 1;
+        monomeLedBuffer[d+7] = m;
+        d += size_x;
+        monomeLedBuffer[d+7] = m;
         return;
     }
     
@@ -221,16 +244,17 @@ void grid_control_refresh(scene_state_t *ss) {
     monomeLedBuffer[d+1] = tt_mode == G_EDIT && tt_script == 9 ? h : m;
     monomeLedBuffer[d+3] = tt_mode == G_LIVE_V ? h : m;
     monomeLedBuffer[d+4] = tt_mode == G_LIVE_G || tt_mode == G_LIVE_GF ? h : m;
+    monomeLedBuffer[d+7] = m;
     monomeLedBuffer[d+7] = tt_mode == G_PRESET ? h : m;
     d += size_x;
-    for (u16 i = 0; i < 7; i++)
+    for (u16 i = 0; i < 8; i++)
         monomeLedBuffer[d+i] = tt_mode == G_EDIT && tt_script == i ? h : m;
     d += size_x;
     
     if (tt_mode == G_PRESET) {
         monomeLedBuffer[d+6] = h;
         for (u8 j = 0; j < 25; j += 8) {
-            for (u16 i = 0; i < 7; i++)
+            for (u16 i = 0; i < 8; i++)
                 monomeLedBuffer[d+i] = i + j == preset_select ? h : l;
             d += size_x;
         }
@@ -357,6 +381,9 @@ static void restore_last_mode(scene_state_t *ss) {
     } else if (tt_mode == G_LIVE_GF) {
         set_mode(M_LIVE);
         set_live_submode(3);
+    } else if (tt_mode == G_TRACKER) {
+        tt_mode = G_TRACKER;
+        set_mode(M_PATTERN);
     }
     ss->grid.grid_dirty = 1;
 }
@@ -382,9 +409,25 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
         x -= 8;
     }
     
+    // tracker
     if (tt_mode == G_TRACKER) {
-        // TODO tracker
-        if (x == 7 && y == 0 && !from_held && z) restore_last_mode(ss);
+        if (tracker_pressed) {
+            return 1;
+        }
+        
+        if (x == 7 && y == 0 && !from_held && z) {
+            restore_last_mode(ss);
+            ss->grid.grid_dirty = 1;
+        } else if (x == 0 && !from_held && z) {
+            set_pattern_offset(y);
+            ss->grid.grid_dirty = 1;
+        } else if (x == 7 && y == 6 && z) {
+            pattern_up();
+            ss->grid.grid_dirty = 1;
+        } else if (x == 7 && y == 7 && z) {
+            pattern_down();
+            ss->grid.grid_dirty = 1;
+        }
         return 1;
     }
     
