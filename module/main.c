@@ -466,7 +466,7 @@ void handler_ScreenRefresh(int32_t data) {
 
 void handler_EventTimer(int32_t data) {
     ss_counter++;
-    if (ss_counter > SS_TIMEOUT) set_mode(M_SCREENSAVER);
+    if (ss_counter > SS_TIMEOUT && !grid_control_mode) set_mode(M_SCREENSAVER);
     tele_tick(&scene_state, RATE_CLOCK);
 }
 
@@ -911,6 +911,10 @@ int main(void) {
     init_usb_host();
     init_monome();
     init_oled();
+
+    // wait to allow for any i2c devices to fully initalise
+    delay_ms(1500);
+
     init_i2c_master();
 
     print_dbg("\r\n\r\n// teletype! //////////////////////////////// ");
@@ -962,10 +966,6 @@ int main(void) {
 
     init_live_mode();
     set_mode(M_LIVE);
-
-    // wait 50ms before running the init script to allow for any i2c devices to
-    // fully initalise
-    delay_ms(1500);
 
     run_script(&scene_state, INIT_SCRIPT);
     scene_state.initializing = false;
