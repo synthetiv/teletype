@@ -49,13 +49,9 @@ void set_pattern_offset(uint8_t o) {
     dirty = true;
 }
 
-void set_pattern_editing(uint8_t on) {
-    editing_number = on;
-    dirty = true;
-}
-
-void set_pattern_pattern(uint8_t p) {
+void set_pattern_selected_value(uint8_t p, uint8_t offset) {
     pattern = p;
+    base = offset;
     dirty = true;
 }
 

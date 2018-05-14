@@ -173,8 +173,10 @@ typedef struct {
 } script_trigger_info;
 
 static grid_control_mode_t tt_mode = G_LIVE_V, tt_last_mode = G_LIVE_V;
-static u8 control_mode_on = 0, tt_script = 0, variable_edit = 0;
-static u8 preset_write = 0, tracker_pressed = 0;
+static u8 control_mode_on, tt_script, variable_edit;
+static u8 preset_write, tracker_pressed, tracker_x, tracker_y;
+static u8 tracker_changed, tracker_select, tracker_selected;
+static s16 tracker_last;
 static u16 size_x = 16, size_y = 8;
 static u8 screen[GRID_MAX_DIMENSION][GRID_MAX_DIMENSION/2];
 static hold_repeat_info held_keys[GRID_MAX_KEY_PRESSED];
@@ -202,150 +204,226 @@ void grid_control_refresh(scene_state_t *ss) {
     u16 d = size_y == 16 ? 128 : 0;
     if (size_x == 16) d += 8;
 
-    u8 l = 4;
-    u8 m = 6;
-    u8 b = 8;
-    u8 h = 15;
+    u8 mode_on = 15;
+    u8 mode_off = 7;
+    u8 exec = 15;
+    u8 trig = 7;
+    u8 kill = 11;
+    u8 tracker_in = 6;
+    u8 tracker_out = 3;
+    u8 tracker_on = 13;
+    u8 tracker_pos = 2;
+    u8 tracker_page_on = 11;
+    u8 tracker_page_off = 5;
+    u8 tracker_loop = 5;
+    u8 tracker_control = 11;
+    u8 preset_selected = 15;
+    u8 preset_unselected = 4;
+    u8 preset_scroll = 8;
+    u8 preset_load = 11;
+    u8 preset_save = 15;
+    u8 var_edit_on = 11;
+    u8 var_edit_off = 6;
+    u8 var_value_on = 11;
+    u8 var_value_off = 4;
+    u8 live_hist = 7;
+    u8 live_exec = 11;
+    u8 mute_on = 8;
+    u8 mute_off = 4;
+    u8 grid_page_on = 8;
+    u8 grid_page_off = 4;
+    u8 line_on = 8;
+    u8 line_off = 4;
+    u8 script_control = 8;
+    
+    if (!monome_is_vari()) {
+        mode_on = 15;
+        mode_off = 15;
+        exec = 15;
+        trig = 15;
+        kill = 15;
+        tracker_in = 0;
+        tracker_out = 0;
+        tracker_on = 15;
+        tracker_page_on = 15;
+        tracker_page_off = 0;
+        tracker_loop = 15;
+        tracker_control = 15;
+        preset_selected = 15;
+        preset_unselected = 15;
+        preset_scroll = 15;
+        preset_load = 15;
+        preset_save = 15;
+        var_edit_on = 15;
+        var_edit_off = 15;
+        var_value_on = 15;
+        var_value_off = 0;
+        live_hist = 15;
+        live_exec = 15;
+        mute_on = 15;
+        mute_off = 15;
+        grid_page_on = 15;
+        grid_page_off = 15;
+        line_on = 15;
+        line_off = 15;
+        script_control = 15;
+    }
 
     for (u16 i = 0; i < 8; i++)
         for (u16 j = 0; j < 8; j++)
             monomeLedBuffer[d+i+size_x*j] = 0;
     
     if (tt_mode == G_TRACKER) {
-        monomeLedBuffer[d+7] = h;
+        monomeLedBuffer[d+7] = mode_on;
         u8 offset = get_pattern_offset(), in, off, rem;
         for (u16 j = 0; j < 8; j++) {
             for (u16 i = 0; i < 4; i++) {
                 in = offset + j >= ss_get_pattern_start(ss, i) &&
                     offset + j <= ss_get_pattern_end(ss, i);
                 monomeLedBuffer[d+i+2+(j*size_x)] = 
-                    tracker_pressed ? h :
-                        (ss_get_pattern_val(ss, i, j + offset) ?
-                            (in ? h : b) : (in ? m : l));
+                    ss_get_pattern_val(ss, i, j + offset) ?
+                        tracker_on : (in ? tracker_in : tracker_out);
             }
             off = offset >> 3;
             rem = (offset & 7) >> 1;
             monomeLedBuffer[d+j*size_x] =
-                j == off ? b - rem : (j == off + 1 ? l + rem: l);
+                j == off ? tracker_page_on - rem :
+                    (j == off + 1 ? tracker_page_off + rem : tracker_page_off);
         }
-        d += size_x * 3;
-        monomeLedBuffer[d+7] = m;
-        d += size_x;
-        monomeLedBuffer[d+7] = m;
+        for (u16 i = 0; i < 4; i++) {
+            u8 index = ss_get_pattern_idx(ss, i);
+            if (index >= offset && index <= offset + 7) {
+                monomeLedBuffer[d+i+2+(index*size_x)] += tracker_pos;
+            }
+        }
+
         d += size_x << 1;
-        monomeLedBuffer[d+7] = m;
+        monomeLedBuffer[d+7] = tracker_control;
         d += size_x;
-        monomeLedBuffer[d+7] = m;
+        monomeLedBuffer[d+7] = 
+            turtle_get_shown(&ss->turtle) ? tracker_control : tracker_loop;
+        d += size_x;
+        monomeLedBuffer[d+7] = tracker_loop;
+        d += size_x;
+        monomeLedBuffer[d+7] = tracker_loop;
+        d += size_x;
+        monomeLedBuffer[d+7] = tracker_control;
+        d += size_x;
+        monomeLedBuffer[d+7] = tracker_control;
         return;
     }
     
     // mode selection
-    monomeLedBuffer[d] = tt_mode == G_EDIT && tt_script == 8 ? h : m;
-    monomeLedBuffer[d+1] = tt_mode == G_EDIT && tt_script == 9 ? h : m;
-    monomeLedBuffer[d+3] = tt_mode == G_LIVE_V ? h : m;
-    monomeLedBuffer[d+4] = tt_mode == G_LIVE_G || tt_mode == G_LIVE_GF ? h : m;
-    monomeLedBuffer[d+7] = m;
-    monomeLedBuffer[d+7] = tt_mode == G_PRESET ? h : m;
+    monomeLedBuffer[d] = 
+        tt_mode == G_EDIT && tt_script == 8 ? mode_on : mode_off;
+    monomeLedBuffer[d+1] = 
+        tt_mode == G_EDIT && tt_script == 9 ? mode_on : mode_off;
+    monomeLedBuffer[d+3] = tt_mode == G_LIVE_V ? mode_on : mode_off;
+    monomeLedBuffer[d+4] = 
+        tt_mode == G_LIVE_G || tt_mode == G_LIVE_GF ? mode_on : mode_off;
+    monomeLedBuffer[d+6] = tt_mode == G_PRESET ? mode_on : mode_off;
+    monomeLedBuffer[d+7] = mode_off;
     d += size_x;
     for (u16 i = 0; i < 8; i++)
-        monomeLedBuffer[d+i] = tt_mode == G_EDIT && tt_script == i ? h : m;
+        monomeLedBuffer[d+i] = 
+            tt_mode == G_EDIT && tt_script == i ? mode_on : mode_off;
     d += size_x;
     
     if (tt_mode == G_PRESET) {
-        monomeLedBuffer[d+6] = h;
         for (u8 j = 0; j < 25; j += 8) {
             for (u16 i = 0; i < 8; i++)
-                monomeLedBuffer[d+i] = i + j == preset_select ? h : l;
+                monomeLedBuffer[d+i] = i + j == 
+                    preset_select ? preset_selected : preset_unselected;
             d += size_x;
         }
         
-        monomeLedBuffer[d+7] = m;
+        monomeLedBuffer[d+7] = preset_scroll;
         d += size_x;
-        monomeLedBuffer[d+2] = b;
-        monomeLedBuffer[d+4] = b;
-        monomeLedBuffer[d+7] = m;
+        monomeLedBuffer[d+2] = preset_load;
+        monomeLedBuffer[d+4] = preset_save;
+        monomeLedBuffer[d+7] = preset_scroll;
         return;
-        
-    } else if (tt_mode == G_LIVE_V) {
-        monomeLedBuffer[d+3] = variable_edit == 1 ? h : l;
-        monomeLedBuffer[d+4] = variable_edit == 2 ? h : l;
+    }
+
+    monomeLedBuffer[d+size_x] = ss->variables.m_act ? mute_off : mute_on;
+    monomeLedBuffer[d+size_x+1] = script_triggers[10].on ? exec : kill;
+    monomeLedBuffer[d+size_x+size_x] = script_triggers[8].on ? exec : trig;
+    monomeLedBuffer[d+size_x+size_x+1] = script_triggers[9].on ? exec : trig;
+    
+    if (tt_mode == G_LIVE_V) {
+        monomeLedBuffer[d+3] = variable_edit == 1 ? var_edit_on : var_edit_off;
+        monomeLedBuffer[d+4] = variable_edit == 2 ? var_edit_on : var_edit_off;
         d += size_x;
-        monomeLedBuffer[d] = ss->variables.m_act ? l : b;
-        monomeLedBuffer[d+1] = script_triggers[10].on ? h : b;
-        monomeLedBuffer[d+3] = variable_edit == 3 ? h : l;
-        monomeLedBuffer[d+4] = variable_edit == 4 ? h : l;
-        monomeLedBuffer[d+6] = m;
+        monomeLedBuffer[d+3] = variable_edit == 3 ? var_edit_on : var_edit_off;
+        monomeLedBuffer[d+4] = variable_edit == 4 ? var_edit_on : var_edit_off;
+        monomeLedBuffer[d+6] = live_hist;
         d += size_x;
-        monomeLedBuffer[d] = script_triggers[8].on ? h : m;
-        monomeLedBuffer[d+1] = script_triggers[9].on ? h : m;
-        monomeLedBuffer[d+3] = variable_edit == 5 ? h : l;
-        monomeLedBuffer[d+4] = variable_edit == 6 ? h : l;
-        monomeLedBuffer[d+6] = m;
-        monomeLedBuffer[d+7] = b;
+        monomeLedBuffer[d+3] = variable_edit == 5 ? var_edit_on : var_edit_off;
+        monomeLedBuffer[d+4] = variable_edit == 6 ? var_edit_on : var_edit_off;
+        monomeLedBuffer[d+6] = live_hist;
+        monomeLedBuffer[d+7] = live_exec;
         d += size_x;
-        monomeLedBuffer[d+3] = variable_edit == 7 ? h : l;
-        monomeLedBuffer[d+4] = variable_edit == 8 ? h : l;
+        monomeLedBuffer[d+3] = variable_edit == 7 ? var_edit_on : var_edit_off;
+        monomeLedBuffer[d+4] = variable_edit == 8 ? var_edit_on : var_edit_off;
         
     } else if (tt_mode == G_LIVE_G || tt_mode == G_LIVE_GF) {
         d += size_x;
-        monomeLedBuffer[d] = ss_get_mute(ss, 8) ? b : l;
-        monomeLedBuffer[d+1] = script_triggers[10].on ? h : b;
-        monomeLedBuffer[d+3] = grid_page == 1 ? b : l;
-        monomeLedBuffer[d+7] = m;
+        monomeLedBuffer[d+7] = grid_page == 0 ? grid_page_on : grid_page_off;
         d += size_x;
-        monomeLedBuffer[d] = script_triggers[8].on ? h : m;
-        monomeLedBuffer[d+1] = script_triggers[9].on ? h : m;
-        monomeLedBuffer[d+3] = grid_page == 2 ? b : l;
-        monomeLedBuffer[d+5] = grid_show_controls ? b : l;
-        monomeLedBuffer[d+7] = m;
+        monomeLedBuffer[d+5] = 
+            grid_show_controls ? grid_page_on : grid_page_off;
+        monomeLedBuffer[d+7] = grid_page == 1 ? grid_page_on : grid_page_off;
         d += size_x;
         
     } else if (tt_mode == G_EDIT) {
         d += size_x;
-        monomeLedBuffer[d] = ss_get_mute(ss, 8) ? b : l;
-        monomeLedBuffer[d+1] = script_triggers[10].on ? h : b;
-        monomeLedBuffer[d+3] = ss_get_script_comment(ss, tt_script, 0) ? b : l;
-        monomeLedBuffer[d+4] = ss_get_script_comment(ss, tt_script, 1) ? b : l;
-        monomeLedBuffer[d+5] = ss_get_script_comment(ss, tt_script, 2) ? b : l;
-        monomeLedBuffer[d+7] = m;
+        monomeLedBuffer[d+3] = 
+            ss_get_script_comment(ss, tt_script, 0) ? line_off : line_on;
+        monomeLedBuffer[d+4] = 
+            ss_get_script_comment(ss, tt_script, 3) ? line_off : line_on;
+        monomeLedBuffer[d+7] = script_control;
         d += size_x;
-        monomeLedBuffer[d] = script_triggers[8].on ? h : m;
-        monomeLedBuffer[d+1] = script_triggers[9].on ? h : m;
-        monomeLedBuffer[d+3] = ss_get_script_comment(ss, tt_script, 3) ? b : l;
-        monomeLedBuffer[d+4] = ss_get_script_comment(ss, tt_script, 4) ? b : l;
-        monomeLedBuffer[d+5] = ss_get_script_comment(ss, tt_script, 5) ? b : l;
-        monomeLedBuffer[d+7] = m;
+        monomeLedBuffer[d+3] = 
+            ss_get_script_comment(ss, tt_script, 1) ? line_off : line_on;
+        monomeLedBuffer[d+4] = 
+            ss_get_script_comment(ss, tt_script, 4) ? line_off : line_on;
+        monomeLedBuffer[d+7] = script_control;
         d += size_x;
-
+        monomeLedBuffer[d+3] = 
+            ss_get_script_comment(ss, tt_script, 2) ? line_off : line_on;
+        monomeLedBuffer[d+4] = 
+            ss_get_script_comment(ss, tt_script, 5) ? line_off : line_on;
     } 
     d += size_x;
     
     // script mutes
     for (u16 i = 0; i < 8; i++) 
-        monomeLedBuffer[d+i] = ss_get_mute(ss, i) ? b : l;
+        monomeLedBuffer[d+i] = ss_get_mute(ss, i) ? mute_on : mute_off;
     d += size_x;
     
     // triggered scripts
     for (u16 i = 0; i < 8; i++)
-        monomeLedBuffer[d+i] = script_triggers[i].on ? h : m;
+        monomeLedBuffer[d+i] = script_triggers[i].on ? exec : trig;
     
     if (variable_edit) {
         s16 *v = &(ss->variables.a) - sizeof(s16);
         if (size_x == 8) {
             if (v[variable_edit] < 0 || v[variable_edit] > 8)
                 for (u16 i = 0; i < 8; i++)
-                    monomeLedBuffer[d+i] = l;
+                    monomeLedBuffer[d+i] = var_value_off;
             else
                 for (u16 i = 0; i < 8; i++)
-                    monomeLedBuffer[d+i] = i < v[variable_edit] ? b : l;
+                    monomeLedBuffer[d+i] =
+                        i < v[variable_edit] ? var_value_on : var_value_off;
         } else {
             d -= 8;
             if (v[variable_edit] < 0 || v[variable_edit] > 16)
                 for (u16 i = 0; i < 16; i++)
-                    monomeLedBuffer[d+i] = l;
+                    monomeLedBuffer[d+i] = var_value_off;
             else
                 for (u16 i = 0; i < 16; i++)
-                    monomeLedBuffer[d+i] = i < v[variable_edit] ? b : l;
+                    monomeLedBuffer[d+i] =
+                        i < v[variable_edit] ? var_value_on : var_value_off;
         }
     }
 }
@@ -411,22 +489,154 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
     
     // tracker
     if (tt_mode == G_TRACKER) {
+        u8 offset = get_pattern_offset();
+        
         if (tracker_pressed) {
+            s16 value = ss_get_pattern_val(ss, tracker_x-2, tracker_y+offset);
+            
+            if (x == tracker_x && y == tracker_y && !z) {
+                if (!tracker_changed) {
+                    s16 value = ss_get_pattern_val(ss, tracker_x-2,
+                        tracker_y+get_pattern_offset());
+                    if (value) {
+                        tracker_last = value;
+                        value = 0;
+                    } else {
+                        value = tracker_last ? tracker_last : 1;
+                    }
+                    ss_set_pattern_val(ss, tracker_x-2, tracker_y+offset, value);
+                }
+                tracker_pressed = 0;
+                tele_pattern_updated();
+                ss->grid.grid_dirty = 1;
+                return 1;
+            }
+            
+            if (!z) return 1;
+            
+            u8 updated = 0;
+            if (y == tracker_y) {
+                if (x == tracker_x + 1) {
+                    if (value < 32767) {
+                        ss_set_pattern_val(ss, tracker_x-2, tracker_y+offset,
+                            value + 1);
+                        updated = 1;
+                    }
+                } else if (x == tracker_x + 2) {
+                    if (value < 32758) {
+                        ss_set_pattern_val(ss, tracker_x-2, tracker_y+offset,
+                            value + 10);
+                        updated = 1;
+                    } else if (value < 32767) {
+                        ss_set_pattern_val(ss, tracker_x-2, tracker_y+offset,
+                            32767);
+                        updated = 1;
+                    }
+                } else if (x == tracker_x - 1) {
+                    if (value > -32768) {
+                        ss_set_pattern_val(ss, tracker_x-2, tracker_y+offset,
+                            value - 1);
+                        updated = 1;
+                    }
+                } else if (x == tracker_x - 2) {
+                    if (value > -32759) {
+                        ss_set_pattern_val(ss, tracker_x-2, tracker_y+offset,
+                            value - 10);
+                        updated = 1;
+                    } else if (value > -32768) {
+                        ss_set_pattern_val(ss, tracker_x-2, tracker_y+offset,
+                            -32768);
+                        updated = 1;
+                    }
+                }
+            } else if (x > 1 && x < 6) {
+                // set loop
+                if (from_held) return 1;
+                for (u8 i = min(tracker_x, x); i <= max(tracker_x, x); i++) {
+                    ss_set_pattern_start(ss, i - 2, min(y, tracker_y)+offset);
+                    ss_set_pattern_end(ss, i - 2, max(y, tracker_y)+offset);
+                    ss_set_pattern_len(ss, i - 2, max(y, tracker_y)+offset+1);
+                }
+                updated = 1;
+            }
+            
+            if (updated) {
+                tracker_changed = 1;
+                tele_pattern_updated();
+                ss->grid.grid_dirty = 1;
+            }
             return 1;
         }
         
-        if (x == 7 && y == 0 && !from_held && z) {
+        if (tracker_select) {
+            if (x == 7 && y == tracker_select && !z) {
+                if (y == 3 && !tracker_selected) {
+                    turtle_set_shown(&ss->turtle, !turtle_get_shown(&ss->turtle));
+                    tele_pattern_updated();
+                    ss->grid.grid_dirty = 1;
+                }
+                tracker_select = 0;
+            } else if (x > 1 && x < 6 && z && !from_held) {
+                if (tracker_select == 2) {
+                    // set current position
+                    tracker_selected = 1;
+                    ss_set_pattern_idx(ss, x - 2, offset + y);
+                    tele_pattern_updated();
+                    ss->grid.grid_dirty = 1;
+                } else if (tracker_select == 3) {
+                    // set turtle position
+                    tracker_selected = 1;
+                    turtle_set_x(&ss->turtle, x - 2);
+                    turtle_set_y(&ss->turtle, offset + y);
+                    turtle_set_shown(&ss->turtle, 1);
+                    tele_pattern_updated();
+                    ss->grid.grid_dirty = 1;
+                } else if (tracker_select == 4) {
+                    // set start
+                    tracker_selected = 1;
+                    ss_set_pattern_start(ss, x - 2, y + offset);
+                    tele_pattern_updated();
+                    ss->grid.grid_dirty = 1;
+                } else if (tracker_select == 5) {
+                    // set end
+                    tracker_selected = 1;
+                    ss_set_pattern_end(ss, x - 2, y + offset);
+                    ss_set_pattern_len(ss, x - 2, y + offset + 1);
+                    tele_pattern_updated();
+                    ss->grid.grid_dirty = 1;
+                }
+            }
+            return 1;
+        }
+        
+        if (x > 1 && x < 6 && z) {
+            // pattern value selected
+            tracker_pressed = 1;
+            tracker_changed = 0;
+            tracker_x = x;
+            tracker_y = y;
+            set_pattern_selected_value(x - 2, y);
+            tele_pattern_updated();
+            ss->grid.grid_dirty = 1;
+        } else if (x == 7 && y == 0 && !from_held && z) {
+            // exit tracker
             restore_last_mode(ss);
             ss->grid.grid_dirty = 1;
         } else if (x == 0 && !from_held && z) {
-            set_pattern_offset(y);
+            // select page
+            set_pattern_offset(y << 3);
             ss->grid.grid_dirty = 1;
         } else if (x == 7 && y == 6 && z) {
-            pattern_up();
+            u8 offset = get_pattern_offset();
+            if (offset) set_pattern_offset(offset - 1);
             ss->grid.grid_dirty = 1;
         } else if (x == 7 && y == 7 && z) {
-            pattern_down();
+            u8 offset = get_pattern_offset();
+            if (offset < 56) set_pattern_offset(offset + 1);
             ss->grid.grid_dirty = 1;
+        } else if (x == 7 && y > 1 && z) {
+            tracker_select = y;
+            tracker_selected = 0;
         }
         return 1;
     }
@@ -460,14 +670,14 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
                 break;
             case 6:
                 tt_last_mode = tt_mode;
-                tt_mode = G_TRACKER;
-                set_mode(M_PATTERN);
+                tt_mode = G_PRESET;
+                set_mode(M_PRESET_R);
                 ss->grid.grid_dirty = 1;
                 break;
             case 7:
                 tt_last_mode = tt_mode;
-                tt_mode = G_PRESET;
-                set_mode(M_PRESET_R);
+                tt_mode = G_TRACKER;
+                set_mode(M_PATTERN);
                 ss->grid.grid_dirty = 1;
                 break;
             default:
@@ -476,7 +686,7 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
         return 1;
     }
 
-    // scripts
+    // select script for editing
     if (y == 1) {
         if (!z || from_held) return 1;
         tt_mode = G_EDIT;
@@ -561,6 +771,38 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
         return 1;
     }
     
+    // metro on/off
+    if (y == 3 && x == 0 && !from_held && !z) {
+        ss->variables.m_act = !ss->variables.m_act;
+        screen_mutes_updated();
+        tele_metro_updated();
+        ss->grid.grid_dirty = 1;
+        return 1;
+    }
+    
+    // kill slews/delays
+    if (y == 3 && x == 1 && !from_held && !z) {
+        script_triggers[10].on = 1;
+        script_triggers[10].ss = ss;
+        timer_add(&script_triggers[10].timer, 50,
+            &script_triggers_callback, (void *)&script_triggers[10]);
+        clear_delays_and_slews(ss);
+        ss->grid.grid_dirty = 1;
+        return 1;
+    } 
+    
+    // trigger metro/init
+    if (y == 4 && x < 2 && !z) {
+        x += 8;
+        script_triggers[x].on = 1;
+        script_triggers[x].ss = ss;
+        timer_add(&script_triggers[x].timer, 50,
+            &script_triggers_callback, (void *)&script_triggers[x]);
+        ss->grid.grid_dirty = 1;
+        run_script(ss, x);
+        return 1;
+    }
+    
     // live variables
     if (tt_mode == G_LIVE_V) {
         if (y > 1 && y < 6 && x > 10 && x <13 && !from_held) {
@@ -571,23 +813,7 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
         
         if (!z) return 1;
         
-        if (y == 3 && x == 0 && !from_held) {
-            ss->variables.m_act = !ss->variables.m_act;
-            screen_mutes_updated();
-            tele_metro_updated();
-            ss->grid.grid_dirty = 1;            
-        } else if (y == 3 && x == 1 && !from_held) {
-            clear_delays_and_slews(ss);
-            ss->grid.grid_dirty = 1;
-        } else if (y == 4 && x < 2) {
-            x += 8;
-            script_triggers[x].on = 1;
-            script_triggers[x].ss = ss;
-            timer_add(&script_triggers[x].timer, 50,
-                &script_triggers_callback, (void *)&script_triggers[x]);
-            ss->grid.grid_dirty = 1;
-            run_script(ss, x);
-        } else if (y == 3 && x == 6) {
+        if (y == 3 && x == 6) {
             history_prev();
         } else if (y == 4 && x == 6) {
             history_next();
@@ -598,28 +824,33 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
         return 1;
     }
     
-    // scripts
+    // live grid preview
+    if (tt_mode == G_LIVE_G || tt_mode == G_LIVE_GF) {
+        if (!z || from_held) return 1;
+        
+        if (y == 3 && x == 7) {
+            grid_page = 0;
+            edit_mode_refresh();
+            ss->grid.grid_dirty = 1;
+        } else if (y == 4 && x == 7) {
+            grid_page = 1;
+            edit_mode_refresh();
+            ss->grid.grid_dirty = 1;
+        } else if (y == 4 && x == 5) {
+            grid_show_controls = !grid_show_controls;
+            edit_mode_refresh();
+            ss->grid.grid_dirty = 1;
+        }
+        
+        return 1;
+    }
+
+    // edit scripts
     if (tt_mode == G_EDIT) {
         if (!z || from_held) return 1;
         
-        if (y == 3 && x == 0) {
-            ss->variables.m_act = !ss->variables.m_act;
-            screen_mutes_updated();
-            tele_metro_updated();
-            ss->grid.grid_dirty = 1;            
-        } else if (y == 3 && x == 1) {
-            clear_delays_and_slews(ss);
-            ss->grid.grid_dirty = 1;
-        } else if (y == 4 && x < 2) {
-            x += 8;
-            script_triggers[x].on = 1;
-            script_triggers[x].ss = ss;
-            timer_add(&script_triggers[x].timer, 50,
-                &script_triggers_callback, (void *)&script_triggers[x]);
-            ss->grid.grid_dirty = 1;
-            run_script(ss, x);
-        } else if (y > 2 && y < 5 && x > 2 && x < 6) {
-            u8 i = x - 3 + (y - 3) * 3;
+        if (y > 2 && y < 6 && x > 2 && x < 5) {
+            u8 i = (x - 3) * 3 + y - 3;
             if (i >= ss_get_script_len(ss, tt_script)) return 1;
             ss_toggle_script_comment(ss, tt_script, i);
             edit_mode_refresh();

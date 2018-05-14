@@ -10,8 +10,7 @@ void process_pattern_knob(uint16_t knob, uint8_t mod_key);
 uint8_t screen_refresh_pattern(void);
 uint8_t get_pattern_offset(void);
 void set_pattern_offset(uint8_t offset);
-void set_pattern_editing(uint8_t on);
-void set_pattern_pattern(uint8_t pattern);
+void set_pattern_selected_value(uint8_t pattern, uint8_t offset);
 void pattern_up(void);
 void pattern_down(void);
 
