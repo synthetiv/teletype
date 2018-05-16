@@ -201,6 +201,9 @@ void grid_set_control_mode(u8 control, scene_state_t *ss) {
 }
 
 void grid_control_refresh(scene_state_t *ss) {
+    size_x = monome_size_x();
+    size_y = monome_size_y();
+    
     u16 d = size_y == 16 ? 128 : 0;
     if (size_x == 16) d += 8;
 
@@ -271,7 +274,7 @@ void grid_control_refresh(scene_state_t *ss) {
 
     for (u16 i = 0; i < 8; i++)
         for (u16 j = 0; j < 8; j++)
-            monomeLedBuffer[d+i+size_x*j] = 0;
+            monomeLedBuffer[d+i+(j<<4)] = 0;
     
     if (tt_mode == G_TRACKER) {
         monomeLedBuffer[d+7] = mode_on;
@@ -280,35 +283,35 @@ void grid_control_refresh(scene_state_t *ss) {
             for (u16 i = 0; i < 4; i++) {
                 in = offset + j >= ss_get_pattern_start(ss, i) &&
                     offset + j <= ss_get_pattern_end(ss, i);
-                monomeLedBuffer[d+i+2+(j*size_x)] = 
+                monomeLedBuffer[d+i+2+(j<<4)] = 
                     ss_get_pattern_val(ss, i, j + offset) ?
                         tracker_on : (in ? tracker_in : tracker_out);
             }
             off = offset >> 3;
             rem = (offset & 7) >> 1;
-            monomeLedBuffer[d+j*size_x] =
+            monomeLedBuffer[d+(j<<4)] =
                 j == off ? tracker_page_on - rem :
                     (j == off + 1 ? tracker_page_off + rem : tracker_page_off);
         }
         for (u16 i = 0; i < 4; i++) {
             u8 index = ss_get_pattern_idx(ss, i);
             if (index >= offset && index <= offset + 7) {
-                monomeLedBuffer[d+i+2+(index*size_x)] += tracker_pos;
+                monomeLedBuffer[d+i+2+(index<<4)] += tracker_pos;
             }
         }
 
-        d += size_x << 1;
+        d += 32;
         monomeLedBuffer[d+7] = tracker_control;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+7] = 
             turtle_get_shown(&ss->turtle) ? tracker_control : tracker_loop;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+7] = tracker_loop;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+7] = tracker_loop;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+7] = tracker_control;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+7] = tracker_control;
         return;
     }
@@ -323,83 +326,83 @@ void grid_control_refresh(scene_state_t *ss) {
         tt_mode == G_LIVE_G || tt_mode == G_LIVE_GF ? mode_on : mode_off;
     monomeLedBuffer[d+6] = tt_mode == G_PRESET ? mode_on : mode_off;
     monomeLedBuffer[d+7] = mode_off;
-    d += size_x;
+    d += 16;
     for (u16 i = 0; i < 8; i++)
         monomeLedBuffer[d+i] = 
             tt_mode == G_EDIT && tt_script == i ? mode_on : mode_off;
-    d += size_x;
+    d += 16;
     
     if (tt_mode == G_PRESET) {
         for (u8 j = 0; j < 25; j += 8) {
             for (u16 i = 0; i < 8; i++)
                 monomeLedBuffer[d+i] = i + j == 
                     preset_select ? preset_selected : preset_unselected;
-            d += size_x;
+            d += 16;
         }
         
         monomeLedBuffer[d+7] = preset_scroll;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+2] = preset_load;
         monomeLedBuffer[d+4] = preset_save;
         monomeLedBuffer[d+7] = preset_scroll;
         return;
     }
 
-    monomeLedBuffer[d+size_x] = ss->variables.m_act ? mute_off : mute_on;
-    monomeLedBuffer[d+size_x+1] = script_triggers[10].on ? exec : kill;
-    monomeLedBuffer[d+size_x+size_x] = script_triggers[8].on ? exec : trig;
-    monomeLedBuffer[d+size_x+size_x+1] = script_triggers[9].on ? exec : trig;
+    monomeLedBuffer[d+16] = ss->variables.m_act ? mute_off : mute_on;
+    monomeLedBuffer[d+17] = script_triggers[10].on ? exec : kill;
+    monomeLedBuffer[d+32] = script_triggers[8].on ? exec : trig;
+    monomeLedBuffer[d+33] = script_triggers[9].on ? exec : trig;
     
     if (tt_mode == G_LIVE_V) {
         monomeLedBuffer[d+3] = variable_edit == 1 ? var_edit_on : var_edit_off;
         monomeLedBuffer[d+4] = variable_edit == 2 ? var_edit_on : var_edit_off;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+3] = variable_edit == 3 ? var_edit_on : var_edit_off;
         monomeLedBuffer[d+4] = variable_edit == 4 ? var_edit_on : var_edit_off;
         monomeLedBuffer[d+6] = live_hist;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+3] = variable_edit == 5 ? var_edit_on : var_edit_off;
         monomeLedBuffer[d+4] = variable_edit == 6 ? var_edit_on : var_edit_off;
         monomeLedBuffer[d+6] = live_hist;
         monomeLedBuffer[d+7] = live_exec;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+3] = variable_edit == 7 ? var_edit_on : var_edit_off;
         monomeLedBuffer[d+4] = variable_edit == 8 ? var_edit_on : var_edit_off;
         
     } else if (tt_mode == G_LIVE_G || tt_mode == G_LIVE_GF) {
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+7] = grid_page == 0 ? grid_page_on : grid_page_off;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+5] = 
             grid_show_controls ? grid_page_on : grid_page_off;
         monomeLedBuffer[d+7] = grid_page == 1 ? grid_page_on : grid_page_off;
-        d += size_x;
+        d += 16;
         
     } else if (tt_mode == G_EDIT) {
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+3] = 
             ss_get_script_comment(ss, tt_script, 0) ? line_off : line_on;
         monomeLedBuffer[d+4] = 
             ss_get_script_comment(ss, tt_script, 3) ? line_off : line_on;
         monomeLedBuffer[d+7] = script_control;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+3] = 
             ss_get_script_comment(ss, tt_script, 1) ? line_off : line_on;
         monomeLedBuffer[d+4] = 
             ss_get_script_comment(ss, tt_script, 4) ? line_off : line_on;
         monomeLedBuffer[d+7] = script_control;
-        d += size_x;
+        d += 16;
         monomeLedBuffer[d+3] = 
             ss_get_script_comment(ss, tt_script, 2) ? line_off : line_on;
         monomeLedBuffer[d+4] = 
             ss_get_script_comment(ss, tt_script, 5) ? line_off : line_on;
     } 
-    d += size_x;
+    d += 16;
     
     // script mutes
     for (u16 i = 0; i < 8; i++) 
         monomeLedBuffer[d+i] = ss_get_mute(ss, i) ? mute_on : mute_off;
-    d += size_x;
+    d += 16;
     
     // triggered scripts
     for (u16 i = 0; i < 8; i++)
@@ -1309,7 +1312,7 @@ void grid_fill_area(u8 x, u8 y, u8 w, u8 h, s8 level) {
     if (level == LED_DIM) {
         for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y; _y < y_end; _y++) {
-                index = _x + _y * size_x;
+                index = _x + (_y << 4);
                 if (index < MONOME_MAX_LED_BYTES) {
                     if (monomeLedBuffer[index] > 3)
                         monomeLedBuffer[index] -= 3;
@@ -1321,7 +1324,7 @@ void grid_fill_area(u8 x, u8 y, u8 w, u8 h, s8 level) {
     else if (level == LED_BRI) {
         for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y; _y < y_end; _y++) {
-                index = _x + _y * size_x;
+                index = _x + (_y << 4);
                 if (index < MONOME_MAX_LED_BYTES) {
                     if (monomeLedBuffer[index] > 12)
                         monomeLedBuffer[index] = 15;
@@ -1333,7 +1336,7 @@ void grid_fill_area(u8 x, u8 y, u8 w, u8 h, s8 level) {
     else {
         for (u16 _x = x; _x < x_end; _x++)
             for (u16 _y = y; _y < y_end; _y++) {
-                index = _x + _y * size_x;
+                index = _x + (_y << 4);
                 if (index < MONOME_MAX_LED_BYTES)
                     monomeLedBuffer[index] = level;
             }
