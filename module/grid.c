@@ -1262,7 +1262,7 @@ void grid_refresh(scene_state_t *ss) {
     u16 led;
     for (u16 i = 0; i < size_x; i++)
         for (u16 j = 0; j < size_y; j++) {
-            led = j * size_x + i;
+            led = (j << 4) + i;
             if (led >= MONOME_MAX_LED_BYTES) continue;
 
             if (SG.leds[i][j] >= 0)
