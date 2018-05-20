@@ -15,7 +15,9 @@
 #define GRID_MAX_KEY_PRESSED 10
 #define GRID_KEY_HOLD_DELAY 700
 #define GRID_KEY_REPEAT_RATE 40
+#define GRID_KEY_REPEAT_RATE_CTL 120
 #define GRID_ON_BRIGHTNESS 13
+#define GRID_SCRIPT_TRIGGER 60
 
 typedef enum {
     G_LIVE_V,
@@ -441,7 +443,9 @@ static void script_triggers_callback(void* o) {
 void grid_metro_triggered(scene_state_t *ss) {
     script_triggers[8].on = 1;
     script_triggers[8].ss = ss;
-    timer_add(&script_triggers[8].timer, 50,
+    timer_remove(&script_triggers[8].timer);
+    timer_add(&script_triggers[8].timer, 
+        min(GRID_SCRIPT_TRIGGER, ss->variables.m >> 1),
         &script_triggers_callback, (void *)&script_triggers[8]);
     ss->grid.grid_dirty = 1;
 }
@@ -768,7 +772,8 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
         if (!z) return 1;
         script_triggers[x].on = 1;
         script_triggers[x].ss = ss;
-        timer_add(&script_triggers[x].timer, 50,
+        timer_remove(&script_triggers[x].timer);
+        timer_add(&script_triggers[x].timer, GRID_SCRIPT_TRIGGER,
             &script_triggers_callback, (void *)&script_triggers[x]);
         ss->grid.grid_dirty = 1;
         run_script(ss, x);
@@ -788,7 +793,8 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
     if (y == 3 && x == 1 && !from_held && z) {
         script_triggers[10].on = 1;
         script_triggers[10].ss = ss;
-        timer_add(&script_triggers[10].timer, 50,
+        timer_remove(&script_triggers[x].timer);
+        timer_add(&script_triggers[10].timer, GRID_SCRIPT_TRIGGER,
             &script_triggers_callback, (void *)&script_triggers[10]);
         clear_delays_and_slews(ss);
         ss->grid.grid_dirty = 1;
@@ -800,7 +806,8 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
         x += 8;
         script_triggers[x].on = 1;
         script_triggers[x].ss = ss;
-        timer_add(&script_triggers[x].timer, 50,
+        timer_remove(&script_triggers[x].timer);
+        timer_add(&script_triggers[x].timer, GRID_SCRIPT_TRIGGER,
             &script_triggers_callback, (void *)&script_triggers[x]);
         ss->grid.grid_dirty = 1;
         run_script(ss, x);
@@ -1127,7 +1134,8 @@ void hold_repeat_timer_callback(void* o) {
     hold_repeat_info* hr = o;
     u8 is_hold = hr->used == 1;
     if (is_hold) {
-        timer_set(&hr->timer, GRID_KEY_REPEAT_RATE + (control_mode_on ? 20 : 0));
+        timer_reset_set(&hr->timer, 
+            control_mode_on && hr->x > 7 ? GRID_KEY_REPEAT_RATE_CTL : GRID_KEY_REPEAT_RATE);
         hr->used = 2;
     }
     grid_process_key_hold_repeat(hr->ss, hr->x, hr->y);
