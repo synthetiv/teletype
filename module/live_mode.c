@@ -172,14 +172,24 @@ void execute_line() {
         return;  // quit, screen_refresh_live will display the error message
 
     if (command.length) {
-        // increase history_size up to a maximum
-        history_top++;
-        if (history_top >= MAX_HISTORY_SIZE)
-            history_top = MAX_HISTORY_SIZE - 1;
+        s16 found = -1;
+        for (s16 i = history_top; i >= 0; i--)
+            if (command.length == history[i].length &&
+                memcmp(&(command.data), &(history[i].data), 
+                    command.length * sizeof(tele_data_t)) == 0) {
+                    found = i;
+                    break;
+                }
+                
+        if (found == -1) {
+            // increase history_size up to a maximum 
+            if (history_top < MAX_HISTORY_SIZE - 1) history_top++;
+            found = history_top;
+        }
 
         // shuffle the history up
         // should really use some sort of ring buffer
-        for (size_t i = history_top; i > 0; i--) {
+        for (size_t i = found; i > 0; i--) {
             memcpy(&history[i], &history[i - 1], sizeof(command));
         }
         memcpy(&history[0], &command, sizeof(command));
