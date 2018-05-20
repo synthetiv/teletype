@@ -614,6 +614,7 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
         
         if (x > 1 && x < 6 && z) {
             // pattern value selected
+            if (x != tracker_x || y != tracker_y) tracker_last = 0;
             tracker_pressed = 1;
             tracker_changed = 0;
             tracker_x = x;
@@ -784,7 +785,7 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
     }
     
     // kill slews/delays
-    if (y == 3 && x == 1 && !from_held && !z) {
+    if (y == 3 && x == 1 && !from_held && z) {
         script_triggers[10].on = 1;
         script_triggers[10].ss = ss;
         timer_add(&script_triggers[10].timer, 50,
@@ -795,7 +796,7 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
     } 
     
     // trigger metro/init
-    if (y == 4 && x < 2 && !z) {
+    if (y == 4 && x < 2 && z) {
         x += 8;
         script_triggers[x].on = 1;
         script_triggers[x].ss = ss;
@@ -1126,7 +1127,7 @@ void hold_repeat_timer_callback(void* o) {
     hold_repeat_info* hr = o;
     u8 is_hold = hr->used == 1;
     if (is_hold) {
-        timer_set(&hr->timer, GRID_KEY_REPEAT_RATE);
+        timer_set(&hr->timer, GRID_KEY_REPEAT_RATE + (control_mode_on ? 20 : 0));
         hr->used = 2;
     }
     grid_process_key_hold_repeat(hr->ss, hr->x, hr->y);
