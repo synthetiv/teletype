@@ -151,7 +151,9 @@
         "DIV"         => { MATCH_OP(E_OP_DIV); };
         "MOD"         => { MATCH_OP(E_OP_MOD); };
         "RAND"        => { MATCH_OP(E_OP_RAND); };
+        "RND"         => { MATCH_OP(E_OP_RND); };
         "RRAND"       => { MATCH_OP(E_OP_RRAND); };
+        "RRND"        => { MATCH_OP(E_OP_RRND); };
         "R"           => { MATCH_OP(E_OP_R); };
         "R.MIN"       => { MATCH_OP(E_OP_R_MIN); };
         "R.MAX"       => { MATCH_OP(E_OP_R_MAX); };
@@ -160,6 +162,7 @@
         "MAX"         => { MATCH_OP(E_OP_MAX); };
         "LIM"         => { MATCH_OP(E_OP_LIM); };
         "WRAP"        => { MATCH_OP(E_OP_WRAP); };
+        "WRP"         => { MATCH_OP(E_OP_WRP); };
         "QT"          => { MATCH_OP(E_OP_QT); };
         "AVG"         => { MATCH_OP(E_OP_AVG); };
         "EQ"          => { MATCH_OP(E_OP_EQ); };
@@ -178,6 +181,7 @@
         "OR"          => { MATCH_OP(E_OP_OR); };
         "JI"          => { MATCH_OP(E_OP_JI); };
         "SCALE"       => { MATCH_OP(E_OP_SCALE); };
+        "SCL"         => { MATCH_OP(E_OP_SCL); };
         "N"           => { MATCH_OP(E_OP_N); };
         "V"           => { MATCH_OP(E_OP_V); };
         "VV"          => { MATCH_OP(E_OP_VV); };
