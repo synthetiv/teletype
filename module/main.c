@@ -348,7 +348,11 @@ void handler_PollADC(int32_t data) {
         ss_set_param(&scene_state, adc[1] << 2);
     }
     else if (mode == M_PRESET_R && !(grid_connected && grid_control_mode)) {
-        process_preset_r_preset(adc[1] >> 7);
+        uint8_t preset = adc[1] >> 6;
+        uint8_t deadzone = preset & 1;
+        preset >>= 1;
+        if (!deadzone || abs(preset - get_preset()) > 1)
+            process_preset_r_preset(preset);
     }
     else {
         ss_set_param(&scene_state, adc[1] << 2);
