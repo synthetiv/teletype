@@ -108,7 +108,7 @@ void ss_grid_init(scene_state_t *ss) {
         ss->grid.xypad[i].value_y = 0;
     }
 
-    ss->grid.grid_dirty = ss->grid.scr_dirty = true;
+    ss->grid.grid_dirty = ss->grid.scr_dirty = ss->grid.clear_held = true;
 }
 
 void ss_grid_common_init(grid_common_t *gc) {

@@ -895,6 +895,11 @@ void grid_process_key(scene_state_t *ss, u8 _x, u8 _y, u8 z, u8 emulated) {
     u8 x = SG.rotate && !emulated ? size_x - _x - 1 : _x;
     u8 y = SG.rotate && !emulated ? size_y - _y - 1 : _y;
 
+    if (SG.clear_held) {
+        grid_clear_held_keys();
+        SG.clear_held = 0;
+    }
+    
     if (control_mode_on ? !emulated : true) {
         u8 key = (y << 4) | x;
         if (z) {

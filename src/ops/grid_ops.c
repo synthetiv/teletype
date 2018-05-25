@@ -261,7 +261,7 @@ static void op_G_ROTATE_get(const void *NOTUSED(data), scene_state_t *ss,
                             exec_state_t *NOTUSED(es), command_state_t *cs) {
     s16 rotate = cs_pop(cs);
     SG.rotate = rotate != 0;
-    SG.scr_dirty = SG.grid_dirty = 1;
+    SG.scr_dirty = SG.grid_dirty = SG.clear_held = 1;
 }
 
 static void op_G_DIM_get(const void *NOTUSED(data), scene_state_t *ss,

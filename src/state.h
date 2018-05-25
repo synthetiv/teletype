@@ -174,6 +174,7 @@ typedef struct {
 typedef struct {
     u8 grid_dirty;
     u8 scr_dirty;
+    u8 clear_held;
 
     u8 rotate;
     u8 dim;
