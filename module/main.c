@@ -302,12 +302,13 @@ void handler_Front(int32_t data) {
     ss_counter = 0;
     if (mode == M_SCREENSAVER) {
         set_last_mode();
-        return;
+        if (!grid_connected || data) return;
     }
     if (data == 0) {
         if (grid_connected) {
             grid_control_mode = !grid_control_mode;
-            grid_set_control_mode(grid_control_mode, &scene_state);
+            if (grid_control_mode && mode == M_HELP) set_mode(M_LIVE);
+            grid_set_control_mode(grid_control_mode, mode, &scene_state);
             return;
         }
         
@@ -494,6 +495,10 @@ static void handler_FtdiDisconnect(s32 data) {
 static void handler_MonomeConnect(s32 data) {
     grid_connected = 1;
     timers_set_monome();
+    
+    if (grid_control_mode && mode == M_HELP) set_mode(M_LIVE);
+    grid_set_control_mode(grid_control_mode, mode, &scene_state);
+    
     scene_state.grid.grid_dirty = 1;
     grid_clear_held_keys();
 }
@@ -598,6 +603,7 @@ void set_mode(tele_mode_t m) {
             mode = M_SCREENSAVER;
             break;
     }
+    flash_update_last_mode(mode);
 }
 
 // defined in globals.h
@@ -965,7 +971,7 @@ int main(void) {
     aout[3].slew = 1;
 
     init_live_mode();
-    set_mode(M_LIVE);
+    set_mode(flash_last_mode());
 
     run_script(&scene_state, INIT_SCRIPT);
     scene_state.initializing = false;

@@ -54,6 +54,10 @@ void set_edit_mode_script(uint8_t new_script) {
     dirty = D_ALL;
 }
 
+uint8_t get_edit_script() {
+    return script;
+}
+
 static void save_undo(void) {
     if (++undo_count > 3) undo_count = 3;
     undo_pos = (undo_pos + 1) % UNDO_DEPTH;

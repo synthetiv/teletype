@@ -196,7 +196,22 @@ static bool grid_within_area(u8 x, u8 y, grid_common_t *gc);
 static void grid_fill_area(u8 x, u8 y, u8 w, u8 h, s8 level);
 static void grid_fill_area_scr(u8 x, u8 y, u8 w, u8 h, s8 level, u8 page);
 
-void grid_set_control_mode(u8 control, scene_state_t *ss) {
+void grid_set_control_mode(u8 control, u8 mode, scene_state_t *ss) {
+    if (mode == M_LIVE) {
+        if (grid_mode == GRID_MODE_EDIT)
+            tt_mode = G_LIVE_G;
+        else if (grid_mode == GRID_MODE_FULL)
+            tt_mode = G_LIVE_GF;
+        else
+            tt_mode = G_LIVE_V;
+    } else if (mode == M_EDIT) {
+        tt_mode = G_EDIT;
+        tt_script = get_edit_script();
+    } else if (mode == M_PATTERN) {
+        tt_mode = G_TRACKER;
+    } else if (mode == M_PRESET_W || mode == M_PRESET_R) {
+        tt_mode = G_PRESET;
+    }
     control_mode_on = control;
     grid_clear_held_keys();
     ss->grid.grid_dirty = 1;

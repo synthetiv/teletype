@@ -20,6 +20,10 @@ static bool dirty;
 
 static void do_preset_read(void);
 
+uint8_t get_preset() {
+    return preset_last;
+}
+
 void set_preset_r_mode(uint8_t preset) {
     preset_last = preset;
     offset = 0;

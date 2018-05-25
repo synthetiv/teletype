@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+uint8_t get_preset(void);
 void set_preset_r_mode(uint8_t preset);
 void process_preset_r_preset(uint8_t preset);
 void preset_line_down(void);

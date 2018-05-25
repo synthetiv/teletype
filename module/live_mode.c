@@ -31,10 +31,10 @@ static process_result_t output;
 static error_t status;
 static char error_msg[TELE_ERROR_MSG_LENGTH];
 static bool show_welcome_message;
-static screen_grid_mode grid_mode = GRID_MODE_OFF;
 static uint8_t grid_view_changed = 0;
 static uint8_t grid_x1 = 0, grid_y1 = 0, grid_x2 = 0, grid_y2 = 0;
 static uint8_t grid_pressed = 0;
+screen_grid_mode grid_mode = GRID_MODE_OFF;
 uint8_t grid_page = 0;
 uint8_t grid_show_controls = 0;
 
@@ -93,6 +93,10 @@ void set_metro_icon(bool display) {
 
 void set_vars_updated() {
     dirty |= D_VARS;
+}
+
+void set_grid_updated() {
+    grid_view_changed = true;
 }
 
 // main mode functions

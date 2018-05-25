@@ -19,7 +19,7 @@ typedef enum {
     GRID_MODE_LAST
 } screen_grid_mode;
 
-extern void grid_set_control_mode(u8 control, scene_state_t *ss);
+extern void grid_set_control_mode(u8 control, u8 mode, scene_state_t *ss);
 extern void grid_metro_triggered(scene_state_t *ss);
 extern void grid_refresh(scene_state_t *ss);
 extern void grid_screen_refresh(scene_state_t *ss, screen_grid_mode mode,
