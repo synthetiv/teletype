@@ -809,7 +809,14 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
         u8 ve = variable_edit - 1;
         
         if (!z && x > 2 && x < 5 && variable_edit == x - 2 + ((y - 2) << 1)) {
-            if (!variable_changed) v[ve] = v[ve] ? 0 : variable_last;
+            if (!variable_changed) {
+                if (v[ve]) {
+                    variable_last = v[ve];
+                    v[ve] = 0;
+                } else {
+                    v[ve] = variable_last ? variable_last : 1;
+                }
+            }
             variable_edit = 0;
             set_vars_updated();
             ss->grid.grid_dirty = 1;
