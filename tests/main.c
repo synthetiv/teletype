@@ -11,6 +11,9 @@
 #include "process_tests.h"
 #include "turtle_tests.h"
 
+uint32_t tele_get_ticks() {
+    return 0;
+}
 void tele_metro_updated() {}
 void tele_metro_reset() {}
 void tele_tr(uint8_t i, int16_t v) {}

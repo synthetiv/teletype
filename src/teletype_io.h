@@ -7,6 +7,9 @@
 // These functions are for interacting with the teletype hardware, each target
 // must provide it's own implementation
 
+// used for TIME and LAST
+extern uint32_t tele_get_ticks(void);
+
 // called when M or M.ACT are updated
 extern void tele_metro_updated(void);
 

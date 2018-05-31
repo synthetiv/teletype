@@ -783,6 +783,10 @@ void render_init(void) {
 ////////////////////////////////////////////////////////////////////////////////
 // teletype_io.h
 
+uint32_t tele_get_ticks() {
+    return get_ticks();
+}
+
 void tele_metro_updated() {
     uint32_t metro_time = scene_state.variables.m;
 

@@ -90,8 +90,8 @@ typedef struct {
     int16_t r_min;
     int16_t r_max;
     int16_t scene;
-    int16_t time;
-    int16_t time_act;
+    int64_t time;
+    uint8_t time_act;
     int16_t tr[TR_COUNT];
     int16_t tr_pol[TR_COUNT];
     int16_t tr_time[TR_COUNT];
@@ -129,7 +129,7 @@ typedef struct {
     uint8_t l;
     tele_command_t c[SCRIPT_MAX_COMMANDS];
     every_count_t every[SCRIPT_MAX_COMMANDS];
-    int16_t last_time;
+    uint32_t last_time;
 } scene_script_t;
 
 typedef struct {

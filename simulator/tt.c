@@ -11,6 +11,10 @@
 #include "util.h"
 
 
+uint32_t tele_get_ticks() {
+    return 0;
+}
+
 void tele_metro_updated() {
     printf("METRO UPDATED");
     printf("\n");

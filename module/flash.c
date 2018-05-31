@@ -5,6 +5,7 @@
 // asf
 #include "flashc.h"
 #include "print_funcs.h"
+#include "init_teletype.h"
 
 // this
 #include "teletype.h"
@@ -89,6 +90,11 @@ void flash_read(uint8_t preset_no, scene_state_t *scene,
     unpack_grid(scene);
     memcpy(text, &f.scenes[preset_no].text,
            SCENE_TEXT_LINES * SCENE_TEXT_CHARS);
+    // need to reset timestamps
+    uint32_t ticks = get_ticks();
+    for (size_t i = 0; i < TEMP_SCRIPT; i++)
+        scene->scripts[i].last_time = ticks;
+    scene->variables.time = 0;
 }
 
 uint8_t flash_last_saved_scene() {

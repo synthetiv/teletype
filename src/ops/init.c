@@ -169,6 +169,8 @@ static void op_INIT_TIME_get(const void *NOTUSED(data), scene_state_t *ss,
                              command_state_t *NOTUSED(cs)) {
     clear_delays(ss);
     ss->variables.time = 0;
-    for (uint8_t i = 0; i < TEMP_SCRIPT; i++) ss->scripts[i].last_time = 0;
+    uint32_t ticks = tele_get_ticks();
+    for (uint8_t i = 0; i < TEMP_SCRIPT; i++) ss->scripts[i].last_time = ticks;
+    ss->variables.time = 0;
     ss_sync_every(ss, 0);
 }

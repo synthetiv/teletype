@@ -299,10 +299,6 @@ process_result_t process_command(scene_state_t *ss, exec_state_t *es,
 // TICK /////////////////////////////////////////////////////////
 
 void tele_tick(scene_state_t *ss, uint8_t time) {
-    // time is the basic resolution of all code henceforth called
-    // hardware 2.0: get an RTC!
-    if (ss->variables.time_act) ss->variables.time += time;
-
     // could be a while() if there is reason to expect a user to cascade moves
     // with SCRIPTs without the tick delay
     if (ss->turtle.stepped && ss->turtle.script_number != TEMP_SCRIPT) {

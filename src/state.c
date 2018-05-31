@@ -17,6 +17,11 @@ void ss_init(scene_state_t *ss) {
     ss->stack_op.top = 0;
     memset(&ss->scripts, 0, ss_scripts_size());
     turtle_init(&ss->turtle);
+    uint32_t ticks = tele_get_ticks();
+    for (size_t i = 0; i < TEMP_SCRIPT; i++)
+        ss->scripts[i].last_time = ticks;
+    ss->variables.time = 0;
+    ss->variables.time_act = 1;
 }
 
 void ss_variables_init(scene_state_t *ss) {
@@ -331,17 +336,14 @@ size_t ss_scripts_size() {
 }
 
 int16_t ss_get_script_last(scene_state_t *ss, script_number_t idx) {
-    int16_t now = ss->variables.time;
     if (idx < TT_SCRIPT_1) return 0;
     if (idx > INIT_SCRIPT) return 0;
-    int16_t last = ss->scripts[idx].last_time;
-    if (now < last)
-        return (INT16_MAX - last) + (now - INT16_MIN);  // I must be dense?
-    return now - last;
+    uint32_t delta = (tele_get_ticks() - ss->scripts[idx].last_time) & 0x7fff;
+    return delta;
 }
 
 void ss_update_script_last(scene_state_t *ss, script_number_t idx) {
-    ss->scripts[idx].last_time = ss->variables.time;
+    ss->scripts[idx].last_time = tele_get_ticks();
 }
 
 every_count_t *ss_get_every(scene_state_t *ss, script_number_t idx,
