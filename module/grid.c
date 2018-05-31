@@ -881,11 +881,7 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
     if (tt_mode == G_LIVE_V) {
         if (y > 1 && y < 6 && x > 2 && x < 5 && !from_held) {
             variable_edit = z ? x - 2 + ((y - 2) << 1) : 0;
-            if (variable_edit) {
-                variable_changed = 0;
-                int16_t *v = &(ss->variables.a);
-                variable_last = v[variable_edit - 1];
-            }
+            if (variable_edit) variable_changed = 0;
             ss->grid.grid_dirty = 1;
             return 1;
         }
