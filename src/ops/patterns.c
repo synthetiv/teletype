@@ -1,5 +1,7 @@
 #include "ops/patterns.h"
 
+#include <stdlib.h>  // rand
+
 #include "helpers.h"
 #include "teletype.h"
 #include "teletype_io.h"
@@ -35,6 +37,20 @@ static int16_t normalise_idx(scene_state_t *ss, const int16_t pn, int16_t idx) {
     return idx;
 }
 
+static int16_t wrap(int16_t value, int16_t a, int16_t b) {
+    int16_t c, i = value;
+    if (a < b) {
+        c = b - a + 1;
+        while (i >= b) i -= c;
+        while (i < a) i += c;
+    }
+    else {
+        c = a - b + 1;
+        while (i >= a) i -= c;
+        while (i < b) i += c;
+    }
+    return i;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // P.N /////////////////////////////////////////////////////////////////////////
@@ -741,3 +757,141 @@ static void op_PN_MAX_get(const void *NOTUSED(data), scene_state_t *ss,
 // Make ops
 const tele_op_t op_P_MAX = MAKE_GET_OP(P.MAX, op_P_MAX_get, 0, true);
 const tele_op_t op_PN_MAX = MAKE_GET_OP(PN.MAX, op_PN_MAX_get, 1, true);
+
+////////////////////////////////////////////////////////////////////////////////
+// P.RND ///////////////////////////////////////////////////////////////////////
+
+static int16_t p_rnd_get(scene_state_t *ss, int16_t pn) {
+    pn = normalise_pn(pn);
+    int16_t start = ss_get_pattern_start(ss, pn);
+    int16_t end = ss_get_pattern_end(ss, pn);
+    if (end < start) return 0;
+    return ss_get_pattern_val(ss, pn, rand() % (end - start + 1) + start);
+}
+
+static void op_P_RND_get(const void *NOTUSED(data), scene_state_t *ss,
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    cs_push(cs, p_rnd_get(ss, ss->variables.p_n));
+}
+
+static void op_PN_RND_get(const void *NOTUSED(data), scene_state_t *ss,
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t pn = cs_pop(cs);
+    cs_push(cs, p_rnd_get(ss, pn));
+}
+
+// Make ops
+const tele_op_t op_P_RND = MAKE_GET_OP(P.RND, op_P_RND_get, 0, true);
+const tele_op_t op_PN_RND = MAKE_GET_OP(PN.RND, op_PN_RND_get, 1, true);
+
+////////////////////////////////////////////////////////////////////////////////
+// P.+ P.+W ////////////////////////////////////////////////////////////////////
+
+static void p_add_get(scene_state_t *ss, int16_t pn, int16_t idx, 
+    int16_t delta, uint8_t wrap_value, int16_t min, int16_t max) {
+    pn = normalise_pn(pn);
+    idx = normalise_idx(ss, pn, idx);
+    int16_t value = ss_get_pattern_val(ss, pn, idx) + delta;
+    if (wrap_value) value = wrap(value, min, max);
+    ss_set_pattern_val(ss, pn, idx, value);
+}
+
+static void op_P_ADD_get(const void *NOTUSED(data), scene_state_t *ss,
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t idx = cs_pop(cs);
+    int16_t delta = cs_pop(cs);
+    p_add_get(ss, ss->variables.p_n, idx, delta, 0, 0, 0);
+    tele_pattern_updated();
+}
+
+static void op_PN_ADD_get(const void *NOTUSED(data), scene_state_t *ss,
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t pn = cs_pop(cs);
+    int16_t idx = cs_pop(cs);
+    int16_t delta = cs_pop(cs);
+    p_add_get(ss, pn, idx, delta, 0, 0, 0);
+    tele_pattern_updated();
+}
+
+static void op_P_ADDW_get(const void *NOTUSED(data), scene_state_t *ss,
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t idx = cs_pop(cs);
+    int16_t delta = cs_pop(cs);
+    int16_t min = cs_pop(cs);
+    int16_t max = cs_pop(cs);
+    p_add_get(ss, ss->variables.p_n, idx, delta, 1, min, max);
+    tele_pattern_updated();
+}
+
+static void op_PN_ADDW_get(const void *NOTUSED(data), scene_state_t *ss,
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t pn = cs_pop(cs);
+    int16_t idx = cs_pop(cs);
+    int16_t delta = cs_pop(cs);
+    int16_t min = cs_pop(cs);
+    int16_t max = cs_pop(cs);
+    p_add_get(ss, pn, idx, delta, 1, min, max);
+    tele_pattern_updated();
+}
+
+// Make ops
+const tele_op_t op_P_ADD = MAKE_GET_OP(P.+, op_P_ADD_get, 2, false);
+const tele_op_t op_PN_ADD = MAKE_GET_OP(PN.+, op_PN_ADD_get, 3, false);
+const tele_op_t op_P_ADDW = MAKE_GET_OP(P.+W, op_P_ADDW_get, 4, false);
+const tele_op_t op_PN_ADDW = MAKE_GET_OP(PN.+W, op_PN_ADDW_get, 5, false);
+
+////////////////////////////////////////////////////////////////////////////////
+// P.- P.-W ////////////////////////////////////////////////////////////////////
+
+static void p_sub_get(scene_state_t *ss, int16_t pn, int16_t idx, 
+    int16_t delta, uint8_t wrap_value, int16_t min, int16_t max) {
+    pn = normalise_pn(pn);
+    idx = normalise_idx(ss, pn, idx);
+    int16_t value = ss_get_pattern_val(ss, pn, idx) - delta;
+    if (wrap_value) value = wrap(value, min, max);
+    ss_set_pattern_val(ss, pn, idx, value);
+}
+
+static void op_P_SUB_get(const void *NOTUSED(data), scene_state_t *ss,
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t idx = cs_pop(cs);
+    int16_t delta = cs_pop(cs);
+    p_sub_get(ss, ss->variables.p_n, idx, delta, 0, 0, 0);
+    tele_pattern_updated();
+}
+
+static void op_PN_SUB_get(const void *NOTUSED(data), scene_state_t *ss,
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t pn = cs_pop(cs);
+    int16_t idx = cs_pop(cs);
+    int16_t delta = cs_pop(cs);
+    p_sub_get(ss, pn, idx, delta, 0, 0, 0);
+    tele_pattern_updated();
+}
+
+static void op_P_SUBW_get(const void *NOTUSED(data), scene_state_t *ss,
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t idx = cs_pop(cs);
+    int16_t delta = cs_pop(cs);
+    int16_t min = cs_pop(cs);
+    int16_t max = cs_pop(cs);
+    p_sub_get(ss, ss->variables.p_n, idx, delta, 1, min, max);
+    tele_pattern_updated();
+}
+
+static void op_PN_SUBW_get(const void *NOTUSED(data), scene_state_t *ss,
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t pn = cs_pop(cs);
+    int16_t idx = cs_pop(cs);
+    int16_t delta = cs_pop(cs);
+    int16_t min = cs_pop(cs);
+    int16_t max = cs_pop(cs);
+    p_sub_get(ss, pn, idx, delta, 1, min, max);
+    tele_pattern_updated();
+}
+
+// Make ops
+const tele_op_t op_P_SUB = MAKE_GET_OP(P.-, op_P_SUB_get, 2, false);
+const tele_op_t op_PN_SUB = MAKE_GET_OP(PN.-, op_PN_SUB_get, 3, false);
+const tele_op_t op_P_SUBW = MAKE_GET_OP(P.-W, op_P_SUBW_get, 4, false);
+const tele_op_t op_PN_SUBW = MAKE_GET_OP(PN.-W, op_PN_SUBW_get, 5, false);

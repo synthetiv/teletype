@@ -113,6 +113,16 @@
         "PN.MIN"      => { MATCH_OP(E_OP_PN_MIN); };
         "P.MAX"       => { MATCH_OP(E_OP_P_MAX); };
         "PN.MAX"      => { MATCH_OP(E_OP_PN_MAX); };
+        "P.RND"       => { MATCH_OP(E_OP_P_RND); };
+        "PN.RND"      => { MATCH_OP(E_OP_PN_RND); };
+        "P.+"         => { MATCH_OP(E_OP_P_ADD); };
+        "PN.+"        => { MATCH_OP(E_OP_PN_ADD); };
+        "P.-"         => { MATCH_OP(E_OP_P_SUB); };
+        "PN.-"        => { MATCH_OP(E_OP_PN_SUB); };
+        "P.+W"        => { MATCH_OP(E_OP_P_ADDW); };
+        "PN.+W"       => { MATCH_OP(E_OP_PN_ADDW); };
+        "P.-W"        => { MATCH_OP(E_OP_P_SUBW); };
+        "PN.-W"       => { MATCH_OP(E_OP_PN_SUBW); };
 
         # queue
         "Q"           => { MATCH_OP(E_OP_Q); };
