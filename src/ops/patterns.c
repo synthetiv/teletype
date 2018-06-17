@@ -641,18 +641,19 @@ static int16_t p_pop_get(scene_state_t *ss, int16_t pn) {
     }
     else
         return 0;
-    tele_pattern_updated();
 }
 
 static void op_P_POP_get(const void *NOTUSED(data), scene_state_t *ss,
                          exec_state_t *NOTUSED(es), command_state_t *cs) {
     cs_push(cs, p_pop_get(ss, ss->variables.p_n));
+    tele_pattern_updated();
 }
 
 static void op_PN_POP_get(const void *NOTUSED(data), scene_state_t *ss,
                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t pn = cs_pop(cs);
     cs_push(cs, p_pop_get(ss, pn));
+    tele_pattern_updated();
 }
 
 // Make ops
