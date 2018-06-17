@@ -233,12 +233,13 @@ static void op_RAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     if (a == -1)
         cs_push(cs, 0);
     else
-        cs_push(cs, rand() % (a + 1));
+        cs_push(cs, a == 32767 ? rand() : rand() % (a + 1));
 }
 
 static void op_RRAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                          exec_state_t *NOTUSED(es), command_state_t *cs) {
-    int16_t a, b, min, max, range;
+    int16_t a, b, min, max;
+    int64_t range;
     a = cs_pop(cs);
     b = cs_pop(cs);
     if (a < b) {
@@ -252,8 +253,11 @@ static void op_RRAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     range = max - min + 1;
     if (range == 0)
         cs_push(cs, a);
-    else
-        cs_push(cs, rand() % range + min);
+    else {
+        int64_t rrand = ((int32_t)rand() << 16) + rand();
+        rrand = rrand % range + min;
+        cs_push(cs, rrand);
+    }
 }
 
 
