@@ -190,7 +190,8 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     &op_G_FDR_L, &op_G_FDR_X, &op_G_FDR_Y, &op_G_FDRI, &op_G_FDRV, &op_G_FDRN,
     &op_G_FDRL, &op_G_FDRX, &op_G_FDRY, &op_G_FDR_PR, &op_G_GFDR_V,
     &op_G_GFDR_N, &op_G_GFDR_L, &op_G_GFDR_RN, &op_G_XYP, &op_G_XYP_X,
-    &op_G_XYP_Y,
+    &op_G_XYP_Y, &op_G_GBTN_C, &op_G_GBTN_I, &op_G_GBTN_W, &op_G_GBTN_H,
+    &op_G_GBTN_X1, &op_G_GBTN_X2, &op_G_GBTN_Y1, &op_G_GBTN_Y2,
     
     // matrixarchate
     &op_MA_SELECT, &op_MA_STEP, &op_MA_RESET, &op_MA_PGM, &op_MA_ON, &op_MA_PON,

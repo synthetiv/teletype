@@ -39,6 +39,14 @@ extern const tele_op_t op_G_BTN_SW;
 extern const tele_op_t op_G_BTN_PR;
 extern const tele_op_t op_G_GBTN_V;
 extern const tele_op_t op_G_GBTN_L;
+extern const tele_op_t op_G_GBTN_C;
+extern const tele_op_t op_G_GBTN_I;
+extern const tele_op_t op_G_GBTN_W;
+extern const tele_op_t op_G_GBTN_H;
+extern const tele_op_t op_G_GBTN_X1;
+extern const tele_op_t op_G_GBTN_X2;
+extern const tele_op_t op_G_GBTN_Y1;
+extern const tele_op_t op_G_GBTN_Y2;
 
 extern const tele_op_t op_G_FDR;
 extern const tele_op_t op_G_FDX;
