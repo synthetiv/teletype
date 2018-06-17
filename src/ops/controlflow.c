@@ -120,16 +120,20 @@ static void mod_L_func(scene_state_t *ss, exec_state_t *es, command_state_t *cs,
     // using a pointer means that the loop contents can a interact with the
     // iterator, allowing users to roll back a loop or advance it faster
     int16_t *i = &es_variables(es)->i;
-
+    *i = a;
+    
     // Forward loop
     if (a < b) {
         // continue the loop whenever the _pointed-to_ I meets the condition
         // this means that I can be interacted with inside the loop command
-        for (*i = a; *i <= b; (*i)++) {
-            // the increment statement has careful syntax, because the
-            // ++ operator has precedence over the dereference * operator
+        
+        // iterate with higher precision to account for b == 32767
+        for (int32_t l = a; l <= b; l++) {
             process_command(ss, es, post_command);
             if (es_variables(es)->breaking) break;
+            // the increment statement has careful syntax, because the
+            // ++ operator has precedence over the dereference * operator
+            (*i)++;
         }
 
         if (!es_variables(es)->breaking)
@@ -137,8 +141,10 @@ static void mod_L_func(scene_state_t *ss, exec_state_t *es, command_state_t *cs,
     }
     // Reverse loop (also works for equal values (either loop would))
     else {
-        for (*i = a; *i >= b && !es_variables(es)->breaking; (*i)--)
+        for (int32_t l = a; l >= b && !es_variables(es)->breaking; l--) {
             process_command(ss, es, post_command);
+            (*i)--;
+        }
         if (!es_variables(es)->breaking) (*i)++;
     }
 }
