@@ -558,12 +558,14 @@ static int16_t p_rm_get(scene_state_t *ss, int16_t pn, int16_t idx) {
         idx = normalise_idx(ss, pn, idx);
         int16_t ret = ss_get_pattern_val(ss, pn, idx);
 
-        for (int16_t i = idx; i < len; i++) {
-            int16_t v = ss_get_pattern_val(ss, pn, i + 1);
-            ss_set_pattern_val(ss, pn, i, v);
-        }
+        if (idx < len) {
+            for (int16_t i = idx; i < len; i++) {
+                int16_t v = ss_get_pattern_val(ss, pn, i + 1);
+                ss_set_pattern_val(ss, pn, i, v);
+            }
 
-        ss_set_pattern_len(ss, pn, len - 1);
+            ss_set_pattern_len(ss, pn, len - 1);
+        }
 
         return ret;
     }
