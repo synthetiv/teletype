@@ -57,7 +57,7 @@ void ERSend(uint8_t command, uint16_t output, int16_t value, bool set) {
     // convert the output to the device and the port
     uint8_t port = output % 100;
     uint8_t device = output / 100;
-    uint8_t address = ER301 + device;
+    uint8_t address = ER301_1 + device;
     // put the package in the i2c mail
     SendIt(address, command, port, value, set);
 }
