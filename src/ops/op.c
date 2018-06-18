@@ -23,6 +23,7 @@
 #include "ops/turtle.h"
 #include "ops/variables.h"
 #include "ops/whitewhale.h"
+#include "ops/wslash.h"
 
 
 /////////////////////////////////////////////////////////////////
@@ -119,6 +120,9 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     // justfriends
     &op_JF_TR, &op_JF_RMODE, &op_JF_RUN, &op_JF_SHIFT, &op_JF_VTR, &op_JF_MODE,
     &op_JF_TICK, &op_JF_VOX, &op_JF_NOTE, &op_JF_GOD, &op_JF_TUNE, &op_JF_QT,
+
+    // W/
+    &op_WS_PLAY, &op_WS_REC, &op_WS_CUE, &op_WS_LOOP,
 
     // telex
     &op_TO_TR, &op_TO_TR_TOG, &op_TO_TR_PULSE, &op_TO_TR_TIME, &op_TO_TR_TIME_S,

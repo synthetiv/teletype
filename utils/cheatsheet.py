@@ -60,6 +60,7 @@ OPS_SECTIONS = [
     ("earthsea",      "Earthsea",      False),
     ("orca",          "Orca",          False),
     ("justfriends",   "Just Friends",  True),
+    ("wslash",        "W/",            True),
     ("telex_i",       "TELEXi",        False),
     ("telex_o",       "TELEXo",        False)
 ]
