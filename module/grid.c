@@ -1376,8 +1376,8 @@ void grid_refresh(scene_state_t *ss) {
     if (SG.rotate) {
         if (size_x == 8) {
             u16 a, b;
-            for (u16 row = 0; row < 8; row++)
-                for (u16 col = 0; col < 8; col++) {
+            for (u16 row = 0; row < 4; row++)
+                for (u16 col = 0; col < 4; col++) {
                     a = (row << 4) + col;
                     b = ((7 - row) << 4) + 7 - col;
                     temp = monomeLedBuffer[a];
