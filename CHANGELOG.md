@@ -3,6 +3,7 @@
 ## v2.NEXT
 - **FIX**: I now accessible to child SCRIPTS
 - **NEW**: new ops for Ansible: KR.CV, KR.MUTE, KR.TMUTE, KR.CLK, ME.CV
+- **NEW**: new ops for W/: WS.PLAY, WS.REC, WS.LOOP, WS.CUE
 
 ## v2.2
 - **NEW**: added a cheat sheet PDF

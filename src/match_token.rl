@@ -565,6 +565,12 @@
         "G.XYP.X"          => { MATCH_OP(E_OP_G_XYP_X); };
         "G.XYP.Y"          => { MATCH_OP(E_OP_G_XYP_Y); };
 
+        # w/
+        "WS.PLAY"     => { MATCH_OP(E_OP_WS_PLAY); };
+        "WS.REC"      => { MATCH_OP(E_OP_WS_REC); };
+        "WS.CUE"      => { MATCH_OP(E_OP_WS_CUE); };
+        "WS.LOOP"     => { MATCH_OP(E_OP_WS_LOOP); };
+
         # MODS
         # controlflow
         "IF"          => { MATCH_MOD(E_MOD_IF); };
