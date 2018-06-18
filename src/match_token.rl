@@ -451,6 +451,13 @@
         "TI.PRM.MAP"       => { MATCH_OP(E_OP_TI_PRM_MAP); };
         "TI.PRM.INIT"      => { MATCH_OP(E_OP_TI_PRM_INIT); };
 
+        # w/
+        "WS.PLAY"     => { MATCH_OP(E_OP_WS_PLAY); };
+        "WS.REC"      => { MATCH_OP(E_OP_WS_REC); };
+        "WS.CUE"      => { MATCH_OP(E_OP_WS_CUE); };
+        "WS.LOOP"     => { MATCH_OP(E_OP_WS_LOOP); };
+
+
         # MODS
         # controlflow
         "IF"          => { MATCH_MOD(E_MOD_IF); };
