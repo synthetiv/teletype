@@ -18,7 +18,7 @@ tests: main.o \
 	../src/ops/patterns.o ../src/ops/queue.o ../src/ops/stack.o \
 	../src/ops/telex.o ../src/ops/variables.o  ../src/ops/whitewhale.o \
 	../src/ops/turtle.o ../src/ops/init.o ../src/ops/grid_ops.o \
-    ../src/ops/matrixarchate.o \
+	../src/ops/matrixarchate.o ../src/ops/wslash.o \
 	../libavr32/src/euclidean/data.o ../libavr32/src/euclidean/euclidean.o \
 	../libavr32/src/util.o
 	$(CC) -o $@ $^ $(CFLAGS)
