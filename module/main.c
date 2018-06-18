@@ -299,10 +299,11 @@ void grid_fader_timer_callback(void* o) {
 void handler_None(int32_t data) {}
 
 void handler_Front(int32_t data) {
+    
     ss_counter = 0;
     if (mode == M_SCREENSAVER) {
         set_last_mode();
-        if (!grid_connected || data) return;
+        return;
     }
     if (data == 0) {
         if (grid_connected) {
@@ -471,7 +472,7 @@ void handler_ScreenRefresh(int32_t data) {
 
 void handler_EventTimer(int32_t data) {
     ss_counter++;
-    if (ss_counter > SS_TIMEOUT && !grid_control_mode) set_mode(M_SCREENSAVER);
+    if (ss_counter > SS_TIMEOUT) set_mode(M_SCREENSAVER);
     tele_tick(&scene_state, RATE_CLOCK);
 }
 
@@ -498,6 +499,7 @@ static void handler_FtdiDisconnect(s32 data) {
 
 static void handler_MonomeConnect(s32 data) {
     grid_connected = 1;
+    hold_key = 0;
     timers_set_monome();
     
     if (grid_control_mode && mode == M_HELP) set_mode(M_LIVE);
@@ -518,6 +520,12 @@ static void handler_MonomeRefresh(s32 data) {
 }
 
 static void handler_MonomeGridKey(s32 data) {
+    if (mode == M_SCREENSAVER && grid_control_mode) {
+        set_last_mode();
+        ss_counter = 0;
+        return;
+    }
+
     u8 x, y, z;
     monome_grid_key_parse_event_data(data, &x, &y, &z);
     grid_process_key(&scene_state, x, y, z, 0);
@@ -607,7 +615,7 @@ void set_mode(tele_mode_t m) {
             mode = M_SCREENSAVER;
             break;
     }
-    flash_update_last_mode(mode);
+    if (mode != M_SCREENSAVER) flash_update_last_mode(mode);
 }
 
 // defined in globals.h
