@@ -493,6 +493,7 @@ static void restore_last_mode(scene_state_t *ss) {
         tt_mode = G_TRACKER;
         set_mode(M_PATTERN);
     }
+    grid_clear_held_keys();
     ss->grid.grid_dirty = 1;
 }
 
@@ -715,6 +716,7 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
             default:
                 break;
         }
+        grid_clear_held_keys();
         return 1;
     }
 
