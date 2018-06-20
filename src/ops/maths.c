@@ -230,18 +230,16 @@ static void op_MOD_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
 static void op_RAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a = cs_pop(cs);
-    if (a == -1)
-        cs_push(cs, 0);
+    if (a < 0)
+        cs_push(cs, -(rand() % (1 - a)));
+    else if (a == 32767)
+        cs_push(cs, rand());
     else
-        cs_push(cs, a == 32767 ? rand() : rand() % (a + 1));
+        cs_push(cs, rand() % (a + 1));
 }
 
-static void op_RRAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                         exec_state_t *NOTUSED(es), command_state_t *cs) {
-    int16_t a, b, min, max;
-    int64_t range;
-    a = cs_pop(cs);
-    b = cs_pop(cs);
+static int16_t push_random(int16_t a, int16_t b) {
+    int16_t min, max;
     if (a < b) {
         min = a;
         max = b;
@@ -250,31 +248,26 @@ static void op_RRAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
         min = b;
         max = a;
     }
-    range = max - min + 1;
-    if (range == 0)
-        cs_push(cs, a);
-    else {
-        int64_t rrand = ((int32_t)rand() << 16) + rand();
-        rrand = rrand % range + min;
-        cs_push(cs, rrand);
-    }
+    int64_t range = max - min + 1;
+    if (range == 0 || min == max) return min;
+
+    int64_t rrand = ((int64_t)rand() << 15) + rand();
+    rrand = rrand % range + min;
+    return rrand;
+}
+
+static void op_RRAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t a, b;
+    a = cs_pop(cs);
+    b = cs_pop(cs);
+    cs_push(cs, push_random(a, b));
 }
 
 
 static void op_R_get(const void *NOTUSED(data), scene_state_t *ss,
                          exec_state_t *NOTUSED(es), command_state_t *cs) {
-    int16_t min = ss->variables.r_min;
-    int16_t max = ss->variables.r_max;
-    if (max < min) {
-        int16_t temp = min;
-        min = max;
-        max = temp;
-    }
-    int16_t range = max - min + 1;
-    if (range == 0)
-        cs_push(cs, min);
-    else
-        cs_push(cs, rand() % range + min);
+    cs_push(cs, push_random(ss->variables.r_min, ss->variables.r_max));
 }
 
 static void op_R_MIN_get(const void *NOTUSED(data), scene_state_t *ss,
