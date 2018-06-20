@@ -615,7 +615,7 @@ void set_mode(tele_mode_t m) {
             mode = M_SCREENSAVER;
             break;
     }
-    if (mode != M_SCREENSAVER) flash_update_last_mode(mode);
+    if (mode != M_SCREENSAVER && mode != M_HELP) flash_update_last_mode(mode);
 }
 
 // defined in globals.h
