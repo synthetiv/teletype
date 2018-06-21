@@ -93,7 +93,7 @@ def cheatsheet_tex():
             validate_toml(ops)
             ops_array = pool.map(inject_latex, ops.values())
             for op in ops_array:
-                prototype = op["prototype"]
+                prototype = latex_safe(op["prototype"])
                 if "prototype_set" in op:
                     prototype += " / " + op["prototype_set"]
                 output += "\\begin{op}"
