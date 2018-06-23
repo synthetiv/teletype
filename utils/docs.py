@@ -66,6 +66,7 @@ def deep_merge_dict(source, destination):
 
 
 def common_md():
+    print(f"Pandoc version:           {pypandoc.get_pandoc_version()}")
     print(f"Using docs directory:     {DOCS_DIR}")
     print(f"Using ops docs directory: {OP_DOCS_DIR}")
     print()
@@ -170,6 +171,10 @@ def main():
             latex = latex_preamble \
             .render(title=_VERSION_STR_, fonts_dir=FONTS_DIR) + "\n\n"
             latex += output
+            pandoc_version = int(pypandoc.get_pandoc_version()[0])
+            engine = ("--pdf-engine=xelatex"
+                      if pandoc_version >= 2
+                      else "--latex-engine=xelatex")
             pypandoc.convert_text(
                 latex,
                 format=input_format,
@@ -179,7 +184,7 @@ def main():
                             "--column=80",
                             "--toc",
                             "--toc-depth=2",
-                            "--latex-engine=xelatex",
+                            engine,
                             "--variable=papersize:A4"])
 
 
