@@ -54,6 +54,7 @@ def _convert_struct_name_to_op_name(name):
         "SYM_STAR":               "*",
         "SYM_FORWARD_SLASH":      "/",
         "SYM_PERCENTAGE":         "%",
+        "SYM_DOLLAR":             "$",
         "SYM_EQUAL_x2":           "==",
         "SYM_EXCLAMATION_EQUAL":  "!=",
         "SYM_LEFT_ANGLED":        "<",

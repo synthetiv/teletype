@@ -159,6 +159,7 @@ short = "potentially execute command with probability `x` (0-100)"
 [SCRIPT]
 prototype = "SCRIPT"
 prototype_set = "SCRIPT x"
+aliases = ["$"]
 short = "get current script number, or execute script `x` (1-8), recursion allowed"
 description = """
 Execute script `x` (1-8), recursion allowed.
