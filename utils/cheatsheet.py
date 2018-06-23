@@ -71,9 +71,11 @@ OPS_SECTIONS = [
 
 def latex_safe(s):
     # backslash must be first, otherwise it will duplicate itself
-    unsafe = ["\\", "&", "%", "$", "#", "_", "{", "}", "~", "^"]
+    unsafe = ["\\", "&", "%", "$", "#", "_", "{", "}", "^"]
     for u in unsafe:
         s = s.replace(u, "\\" + u)
+    # ~ is special
+    s = s.replace("~", "\\~{}")
     return s
 
 
