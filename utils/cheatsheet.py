@@ -45,7 +45,8 @@ env = jinja2.Environment(
     lstrip_blocks=True
 )
 
-# determines the order in which sections are displayed
+# determines the order in which sections are displayed,
+# final column indicates that a new page is inserted _after_ that section
 OPS_SECTIONS = [
     ("variables",     "Variables",     False),
     ("hardware",      "Hardware",      False),
@@ -61,9 +62,11 @@ OPS_SECTIONS = [
     ("whitewhale",    "Whitewhale",    False),
     ("meadowphysics", "Meadowphysics", False),
     ("earthsea",      "Earthsea",      False),
-    ("orca",          "Orca",          False),
-    ("justfriends",   "Just Friends",  True),
-    ("wslash",        "W/",            True),
+    ("orca",          "Orca",          True),
+    ("justfriends",   "Just Friends",  False),
+    ("wslash",        "W/",            False),
+    ("er301",         "ER-301",        False),
+    ("fader",         "Fader",         True),
     ("telex_i",       "TELEXi",        False),
     ("telex_o",       "TELEXo",        False)
 ]
