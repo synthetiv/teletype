@@ -19,9 +19,9 @@ TEMPLATE_DIR = ROOT_DIR / "utils" / "templates"
 DOCS_DIR = ROOT_DIR / "docs"
 OP_DOCS_DIR = DOCS_DIR / "ops"
 FONTS_DIR = ROOT_DIR / "utils" / "fonts"
-_VERSION_ = get_tt_version()
-_VERSION_STR_ = "Teletype " + \
-              _VERSION_["tag"] + " " + _VERSION_["hash"] + " Cheatsheet"
+TT_VERSION = get_tt_version()
+VERSION_STR = " ".join(["Teletype", TT_VERSION["tag"], TT_VERSION["hash"],
+                        "Documentation"])
 
 
 # We want to run inject_latex in parallel as it's quite slow, and we must run
@@ -82,11 +82,11 @@ def cheatsheet_tex():
     print(f"Using ops docs directory: {OP_DOCS_DIR}")
     print()
 
-    output = _VERSION_STR_ + "\n\n"
+    output = VERSION_STR + "\n\n"
     for (section, title, new_page) in OPS_SECTIONS:
         toml_file = Path(OP_DOCS_DIR, section + ".toml")
         if toml_file.exists() and toml_file.is_file():
-            output += f"\group{{{ title }}}\n\n"
+            output += f"\\group{{{ title }}}\n\n"
             print(f"Reading {toml_file}")
             # n.b. Python 3.6 dicts maintain insertion order
             ops = toml.loads(toml_file.read_text())
@@ -105,7 +105,7 @@ def cheatsheet_tex():
                 output += "\\end{op}"
                 output += "\n\n"
             if new_page:
-                output += "\pagebreak\n\n"
+                output += "\\pagebreak\n\n"
     return output
 
 

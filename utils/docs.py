@@ -6,7 +6,6 @@ from pathlib import Path
 import jinja2
 import pypandoc
 import pytoml as toml
-import subprocess
 
 from common import list_ops, list_mods, validate_toml, get_tt_version
 
@@ -19,8 +18,9 @@ TEMPLATE_DIR = ROOT_DIR / "utils" / "templates"
 DOCS_DIR = ROOT_DIR / "docs"
 OP_DOCS_DIR = DOCS_DIR / "ops"
 FONTS_DIR = ROOT_DIR / "utils" / "fonts"
-_VERSION_ = get_tt_version()
-_VERSION_STR_ = "Teletype " + _VERSION_["tag"] + " " + _VERSION_["hash"] + " Documentation"
+TT_VERSION = get_tt_version()
+VERSION_STR = " ".join(["Teletype", TT_VERSION["tag"], TT_VERSION["hash"],
+                        "Documentation"])
 
 env = jinja2.Environment(
     autoescape=False,
@@ -75,8 +75,8 @@ def common_md():
     op_extended_template = env.get_template("op_extended.jinja2.md")
 
     output = ""
-    output += Path(DOCS_DIR / "intro.md").read_text() \
-                                         .replace("VERSION", _VERSION_["tag"][1:]) + "\n\n"
+    output += Path(DOCS_DIR / "intro.md") \
+        .read_text().replace("VERSION", TT_VERSION["tag"][1:]) + "\n\n"
     output += Path(DOCS_DIR / "whats_new.md").read_text() + "\n\n"
     output += Path(DOCS_DIR / "quickstart.md").read_text() + "\n\n"
     output += Path(DOCS_DIR / "keys.md").read_text() + "\n\n"
@@ -154,7 +154,7 @@ def main():
         if ext == ".md":
             p.write_text(output)
         elif ext == ".html":
-            output = "# " + _VERSION_STR_ + "\n\n" + output
+            output = "# " + VERSION_STR + "\n\n" + output
             pypandoc.convert_text(
                 output,
                 format=input_format,
@@ -165,11 +165,12 @@ def main():
                             "--toc",
                             "--toc-depth=2",
                             "--css=" + str(TEMPLATE_DIR / "docs.css"),
-                            "--template=" + str(TEMPLATE_DIR / "template.html5")])
+                            "--template=" + str(TEMPLATE_DIR /
+                                                "template.html5")])
         elif ext == ".pdf" or ext == ".tex":
             latex_preamble = env.get_template("latex_preamble.jinja2.md")
             latex = latex_preamble \
-            .render(title=_VERSION_STR_, fonts_dir=FONTS_DIR) + "\n\n"
+                .render(title=VERSION_STR, fonts_dir=FONTS_DIR) + "\n\n"
             latex += output
             pandoc_version = int(pypandoc.get_pandoc_version()[0])
             engine = ("--pdf-engine=xelatex"
