@@ -40,8 +40,8 @@ void tele_cv_slew(uint8_t i, int16_t v) {
     printf("\n");
 }
 
-void tele_update_in(void) {
-    printf("UPDATE IN");
+void tele_update_adc(uint8_t force) {
+    printf("UPDATE ADC force:%s", force ? "true" : "false");
     printf("\n");
 }
 

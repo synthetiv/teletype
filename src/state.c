@@ -52,6 +52,7 @@ void ss_variables_init(scene_state_t *ss) {
     };
 
     memcpy(&ss->variables, &default_variables, sizeof(default_variables));
+    tele_update_adc(1);
     ss_update_param_scale(ss);
     ss_update_in_scale(ss);
 }

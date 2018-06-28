@@ -112,7 +112,7 @@ static aout_t aout[4];
 static bool metro_timer_enabled;
 static uint8_t front_timer;
 static uint8_t mod_key = 0, hold_key, hold_key_count = 0;
-static uint64_t last_in_tick = 0;
+static uint64_t last_adc_tick = 0;
 
 // timers
 static softTimer_t clockTimer = {.next = NULL, .prev = NULL };
@@ -867,11 +867,12 @@ void tele_cv_off(uint8_t i, int16_t v) {
     aout[i].off = v;
 }
 
-void tele_update_in(void) {
-    if (get_ticks() == last_in_tick) return;
-    last_in_tick = get_ticks();
+void tele_update_adc(u8 force) {
+    if (!force && get_ticks() == last_adc_tick) return;
+    last_adc_tick = get_ticks();
     adc_convert(&adc);
     ss_set_in(&scene_state, adc[0] << 2);
+    ss_set_param(&scene_state, adc[1] << 2);
 }
 
 void tele_ii_tx(uint8_t addr, uint8_t* data, uint8_t l) {
@@ -972,6 +973,9 @@ int main(void) {
     timer_add(&adcTimer, 61, &adcTimer_callback, NULL);
     timer_add(&refreshTimer, 63, &refreshTimer_callback, NULL);
     timer_add(&gridFaderTimer, 25, &grid_fader_timer_callback, NULL);
+
+    // update IN and PARAM in case Init uses them
+    tele_update_adc(1);
 
     // manually call tele_metro_updated to sync metro to scene_state
     metro_timer_enabled = false;

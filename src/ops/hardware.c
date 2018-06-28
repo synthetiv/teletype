@@ -215,7 +215,7 @@ static void op_CV_OFF_set(const void *NOTUSED(data), scene_state_t *ss,
 
 static void op_IN_get(const void *NOTUSED(data), scene_state_t *ss,
                       exec_state_t *NOTUSED(es), command_state_t *cs) {
-    tele_update_in();
+    tele_update_adc(0);
     cs_push(cs, ss_get_in(ss));
 }
 
@@ -247,6 +247,7 @@ static void op_IN_CAL_RESET_set(const void *NOTUSED(data), scene_state_t *ss,
 
 static void op_PARAM_get(const void *NOTUSED(data), scene_state_t *ss,
                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+    tele_update_adc(0);
     cs_push(cs, ss_get_param(ss));
 }
 

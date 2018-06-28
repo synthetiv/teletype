@@ -19,7 +19,7 @@ void tele_metro_reset() {}
 void tele_tr(uint8_t i, int16_t v) {}
 void tele_cv(uint8_t i, int16_t v, uint8_t s) {}
 void tele_cv_slew(uint8_t i, int16_t v) {}
-void tele_update_in(void) {}
+void tele_update_adc(uint8_t force) {}
 void tele_has_delays(bool i) {}
 void tele_has_stack(bool i) {}
 void tele_cv_off(uint8_t i, int16_t v) {}
