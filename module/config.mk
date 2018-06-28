@@ -73,7 +73,6 @@ CSRCS = \
 	../module/preset_r_mode.c   				\
 	../module/preset_w_mode.c   				\
 	../module/usb_disk_mode.c   				\
-	../module/screensaver_mode.c   				\
 	../src/command.c					\
 	../src/every.c					\
 	../src/helpers.c					\

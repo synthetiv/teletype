@@ -29,8 +29,7 @@ typedef enum {
     M_PATTERN,
     M_PRESET_W,
     M_PRESET_R,
-    M_HELP,
-    M_SCREENSAVER
+    M_HELP
 } tele_mode_t;
 
 void set_mode(tele_mode_t mode);

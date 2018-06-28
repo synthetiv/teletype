@@ -43,7 +43,6 @@
 #include "pattern_mode.h"
 #include "preset_r_mode.h"
 #include "preset_w_mode.h"
-#include "screensaver_mode.h"
 #include "teletype.h"
 #include "teletype_io.h"
 #include "usb_disk_mode.h"
@@ -69,6 +68,7 @@ void tele_profile_delay(uint8_t d) {
 
 #define RATE_CLOCK 10
 #define RATE_CV 6
+#define SS_TIMEOUT 90 /* minutes */ * 60 * 100
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -173,6 +173,7 @@ void timers_unset_monome(void);
 
 // other
 static void render_init(void);
+static void exit_screensaver(void);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -299,12 +300,12 @@ void grid_fader_timer_callback(void* o) {
 void handler_None(int32_t data) {}
 
 void handler_Front(int32_t data) {
-    
-    ss_counter = 0;
-    if (mode == M_SCREENSAVER) {
-        set_last_mode();
+    if (ss_counter >= SS_TIMEOUT) {
+        exit_screensaver();
         return;
     }
+    ss_counter = 0;
+    
     if (data == 0) {
         if (grid_connected) {
             grid_control_mode = !grid_control_mode;
@@ -338,9 +339,9 @@ void handler_PollADC(int32_t data) {
 
     ss_set_in(&scene_state, adc[0] << 2);
 
-    if (mode == M_SCREENSAVER && (adc[1] >> 8 != last_knob >> 8)) {
-        ss_counter = 0;
-        set_last_mode();
+    if (ss_counter >= SS_TIMEOUT && (adc[1] >> 8 != last_knob >> 8)) {
+        exit_screensaver();
+        return;
     }
     last_knob = adc[1];
 
@@ -449,7 +450,7 @@ void handler_ScreenRefresh(int32_t data) {
     profile_update(&prof_ScreenRefresh);
 #endif
     uint8_t screen_dirty = 0;
-
+    
     switch (mode) {
         case M_PATTERN: screen_dirty = screen_refresh_pattern(); break;
         case M_PRESET_W: screen_dirty = screen_refresh_preset_w(); break;
@@ -457,23 +458,33 @@ void handler_ScreenRefresh(int32_t data) {
         case M_HELP: screen_dirty = screen_refresh_help(); break;
         case M_LIVE: screen_dirty = screen_refresh_live(&scene_state); break;
         case M_EDIT: screen_dirty = screen_refresh_edit(); break;
-        case M_SCREENSAVER: screen_dirty = screen_refresh_screensaver(); break;
     }
 
     u8 grid = 0;
     for (size_t i = 0; i < 8; i++)
-        if (screen_dirty & (1 << i)) { grid = 1; region_draw(&line[i]); }
-    if (grid_connected && grid_control_mode && grid)
-        scene_state.grid.grid_dirty = 1;
+        if (screen_dirty & (1 << i)) {
+            grid = 1; 
+            if (ss_counter < SS_TIMEOUT) region_draw(&line[i]); 
+        }
+    if (grid_control_mode && grid) scene_state.grid.grid_dirty = 1;
+    
 #ifdef TELETYPE_PROFILE
     profile_update(&prof_ScreenRefresh);
 #endif
 }
 
 void handler_EventTimer(int32_t data) {
-    ss_counter++;
-    if (ss_counter > SS_TIMEOUT) set_mode(M_SCREENSAVER);
     tele_tick(&scene_state, RATE_CLOCK);
+    
+    if (ss_counter < SS_TIMEOUT) {
+        ss_counter++;
+        if (ss_counter == SS_TIMEOUT) {
+            u8 empty = 0;
+            for (int i = 0; i < 64; i++)
+                for (int j = 0; j < 64; j++)
+                    screen_draw_region(i << 1, j, 2, 1, &empty);
+        }
+    }
 }
 
 void handler_AppCustom(int32_t data) {
@@ -520,11 +531,11 @@ static void handler_MonomeRefresh(s32 data) {
 }
 
 static void handler_MonomeGridKey(s32 data) {
-    if (mode == M_SCREENSAVER && grid_control_mode) {
-        set_last_mode();
-        ss_counter = 0;
+    if (grid_control_mode && ss_counter >= SS_TIMEOUT) {
+        exit_screensaver();
         return;
     }
+    if (grid_control_mode) ss_counter = 0;
 
     u8 x, y, z;
     monome_grid_key_parse_event_data(data, &x, &y, &z);
@@ -583,7 +594,6 @@ void check_events(void) {
 
 // defined in globals.h
 void set_mode(tele_mode_t m) {
-    if (m == mode && m == M_SCREENSAVER) return;
     last_mode = mode;
     switch (m) {
         case M_LIVE:
@@ -610,22 +620,15 @@ void set_mode(tele_mode_t m) {
             set_help_mode();
             mode = M_HELP;
             break;
-        case M_SCREENSAVER:
-            set_screensaver_mode();
-            mode = M_SCREENSAVER;
-            break;
     }
-    if (mode != M_SCREENSAVER && mode != M_HELP) flash_update_last_mode(mode);
+    if (mode != M_HELP) flash_update_last_mode(mode);
 }
 
 // defined in globals.h
 void set_last_mode() {
     if (mode == last_mode) return;
 
-    if (mode == M_SCREENSAVER)
-        set_mode(last_mode);
-    else if (last_mode == M_LIVE || last_mode == M_EDIT ||
-             last_mode == M_PATTERN)
+    if (last_mode == M_LIVE || last_mode == M_EDIT || last_mode == M_PATTERN)
         set_mode(last_mode);
     else
         set_mode(M_LIVE);
@@ -643,13 +646,11 @@ void clear_delays_and_slews(scene_state_t *ss) {
 void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key,
                       bool is_release) {
     // reset inactivity counter
-    ss_counter = 0;
-    if (mode == M_SCREENSAVER) {
-        set_last_mode();
-#if SS_DROP_KEYSTROKE
+    if (ss_counter >= SS_TIMEOUT) {
+        exit_screensaver();
         return;
-#endif
     }
+    ss_counter = 0;
 
     // release is a special case for live mode
     if (is_release) {
@@ -675,8 +676,6 @@ void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key,
             process_preset_r_keys(key, mod_key, is_held_key);
             break;
         case M_HELP: process_help_keys(key, mod_key, is_held_key); break;
-        case M_SCREENSAVER:
-            break;  // impossible
     }
 }
 
@@ -785,6 +784,11 @@ void render_init(void) {
     region_alloc(&line[5]);
     region_alloc(&line[6]);
     region_alloc(&line[7]);
+}
+
+void exit_screensaver(void) {
+    ss_counter = 0;
+    set_mode(mode);
 }
 
 
