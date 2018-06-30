@@ -168,6 +168,24 @@ To facilitate performance without the need for the keyboard, scenes can be recal
 
 The *INIT* script (represented as `I`) is executed when a preset is recalled. This is a good place to set initial values of variables if needed, like metro time `M` or time enable `TIME.ACT` for example.
 
+## USB Backup
+
+Teletype's scenes can be saved and loaded from a USB flash drive. When a flash
+drive is inserted, Teletype will recognize it and go into disk mode. First,
+all 32 scenes will be written to text files on the drive with names of the form `tt##s.txt`. For example, scene 5 will be saved to `tt05s.txt`. The screen will display `WRITE.......` as this is done.
+
+Once complete, Teletype will attempt to read any files named `tt##.txt` and save them into
+memory. For example, a file named `tt13.txt` would be saved as scene 13 on
+Teletype. The screen will display `READ......` Once this process is complete, Teletype will return to LIVE mode and the drive can be safely removed.
+
+For best results, use an FAT-formatted USB flash drive. If Teletype does not
+recognize a disk that is inserted within a few seconds, it may be best to try another.
+
+An
+example of possible scenes to load, as well as the set of factory default scenes, can be
+found at the [Teletype
+Codex](https://github.com/monome-community/teletype-codex).
+
 ## Commands
 
 ### Nomenclature
