@@ -47,7 +47,7 @@
 // clang-format off
 
 static void grid_common_init(grid_common_t *gc);
-static s16 scale(s16 a, s16 b, s16 x, s16 y, s16 value);
+static s32 scale(s32 a, s32 b, s32 x, s32 y, s32 value);
 static void grid_rectangle(scene_state_t *ss, s16 x, s16 y, s16 w, s16 h, u8 fill, u8 border);
 static void grid_init_button(scene_state_t *ss, s16 group, s16 i, s16 x, s16 y, s16 w, s16 h, s16 latch, s16 level, s16 script);
 static void grid_init_fader(scene_state_t *ss, s16 group, s16 i, s16 x, s16 y, s16 w, s16 h, s16 type, s16 level, s16 script);
@@ -1408,9 +1408,11 @@ void grid_common_init(grid_common_t *gc) {
 
 // helpers
 
-s16 scale(s16 a, s16 b, s16 x, s16 y, s16 value) {
+s32 scale(s32 a, s32 b, s32 x, s32 y, s32 value) {
     if (a == b) return x;
-    return (value - a) * (y - x) / (b - a) + x;
+    s32 result = (value - a) * (y - x) * 2 / (b - a);
+    result = (result / 2) + (result & 1); // rounding
+    return result + x;
 }
 
 void grid_rectangle(scene_state_t *ss, s16 x, s16 y, s16 w, s16 h, u8 fill,

@@ -525,7 +525,7 @@ static void op_JI_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
 
 static void op_SCALE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                          exec_state_t *NOTUSED(es), command_state_t *cs) {
-    int16_t a, b, x, y, i;
+    int32_t a, b, x, y, i;
     a = cs_pop(cs);
     b = cs_pop(cs);
     x = cs_pop(cs);
@@ -537,7 +537,10 @@ static void op_SCALE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
         return;
     }
 
-    cs_push(cs, (i - a) * (y - x) / (b - a) + x);
+    int32_t result = (i - a) * (y - x) * 2 / (b - a);
+    result = result / 2 + (result & 1); // rounding
+    
+    cs_push(cs, result + x);
 }
 
 static void op_N_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
