@@ -1264,6 +1264,9 @@ void grid_refresh(scene_state_t *ss) {
     size_x = monome_size_x();
     size_y = monome_size_y();
 
+    if (size_x == 0) size_x = 16;
+    if (size_y == 0) size_y = 8;
+    
     grid_fill_area(0, 0, size_x, size_y, 0);
     
     u16 x, y;

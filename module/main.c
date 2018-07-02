@@ -271,7 +271,7 @@ static void monome_poll_timer_callback(void* obj) {
 
 // monome refresh callback
 static void monome_refresh_timer_callback(void* obj) {
-    if (scene_state.grid.grid_dirty) {
+    if (grid_connected && scene_state.grid.grid_dirty) {
         static event_t e;
         e.type = kEventMonomeRefresh;
         event_post(&e);
@@ -504,14 +504,14 @@ static void handler_FtdiConnect(s32 data) {
     ftdi_setup();
 }
 static void handler_FtdiDisconnect(s32 data) {
-    timers_unset_monome();
     grid_connected = 0;
+    timers_unset_monome();
 }
 
 static void handler_MonomeConnect(s32 data) {
-    grid_connected = 1;
     hold_key = 0;
     timers_set_monome();
+    grid_connected = 1;
     
     if (grid_control_mode && mode == M_HELP) set_mode(M_LIVE);
     grid_set_control_mode(grid_control_mode, mode, &scene_state);
@@ -828,10 +828,7 @@ void tele_metro_updated() {
 }
 
 void tele_metro_reset() {
-    if (metro_timer_enabled) {
-        timer_reset(&metroTimer);
-        if (grid_connected && grid_control_mode) scene_state.grid.grid_dirty = 1;
-    }
+    if (metro_timer_enabled) timer_reset(&metroTimer);
 }
 
 void tele_tr(uint8_t i, int16_t v) {
