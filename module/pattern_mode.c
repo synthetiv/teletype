@@ -410,7 +410,7 @@ void process_pattern_keys(uint8_t k, uint8_t m, bool is_held_key) {
 }
 
 void process_pattern_knob(uint16_t knob, uint8_t m) {
-    if (mod_only_ctrl(m)) {
+    if (mod_only_ctrl_alt(m)) {
         ss_set_pattern_val(&scene_state, pattern, base + offset, knob >> 7);
         dirty = true;
     }
