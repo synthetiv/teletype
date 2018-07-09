@@ -59,7 +59,10 @@ prototype = "I"
 prototype_set = "I x"
 short = """
 get / set the variable `I`, this variable is overwritten by `L`, but can be used
-freely outside an `L` loop"""
+freely outside an `L` loop. Each script gets its own `I` variable, so if you call
+a script from another script's loop you can still use and modify `I` without
+affecting the calling loop. In this scenario the script getting called will have
+its `I` value initialized with the calling loop's current `I` value."""
 
 [O]
 prototype = "O"

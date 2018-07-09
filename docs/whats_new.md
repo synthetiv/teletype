@@ -2,23 +2,81 @@
 
 ## Version 2.3
 
-### Grid Integration
+### Major new features
+
+#### Grid Integration
 
 TBA
 
-### New Operators
 
-`P.MIN` `PN.MIN` `P.MAX` `PN.MAX` returns the position for the first smallest/largest value in a pattern between the `START` and `END` points.
-`TO.CV.CALIB` allows you to lock-in an offset across power cycles to calibrate your TELEX CV output (`TO.CV.RESET` removes the calibration).
-`TO.ENV` now accepts gate values (1/0) to trigger the attack and decay.
+#### Improved script editing
 
-### Support for the Orthogonal Devices ER-301 Sound Computer over i2c
+You can now select multiple lines when editing scripts by holding `shift`. You can move the current selection up and down with 'alt-<up>` and `alt-<down>`. You can copy/cut/paste a multiline selection as well. To delete selected lines without copying into the clipboard use `alt-<delete>`.
+
+Three level undo is also now available with `ctrl-z` shortcut.
+
+#### Support for the Orthogonal Devices ER-301 Sound Computer over i2c
 
 You now can connect up to three ER-301s via i2c and address up to 100 virtual CV channels and 100 virtual TR channels per ER-301. (The outputs range 1-100, 101-200, and 201-300 respectively.) To function, this requires a slight mod to current in-market ER-301s and a specialized i2c cable that reorders two of the pins. Find more information [on the Orthogonal Devices ER-301 Wiki Teletype Integration Page](http://wiki.orthogonaldevices.com/index.php/ER-301/Teletype_Integration).
 
-### Support for the 16n Faderbank via i2c
+#### Support for the 16n Faderbank via i2c
 
 The 16n Faderbank is an open-source sixteen fader controller with support for USB MIDI, standard MIDI, and i2c communication with the Teletype. It operates just like an IN or PARAM (or the TXi for that matter) in that you read values from the device. You use the operator FADER (or the alias FB) and the number of the slider you wish to poll (1-16). Know that longer cables may require that you use a powered bus board even if you only have one device on your Teletype's i2c bus. (You will know that you have a problem if your Teletype randomly hangs on reads.)
+
+#### Support for the SSSR Labs SM010 Matrixarchate
+
+The SSSR Labs SM010 Matrixarchate is a 16x8 IO Sequenceable Matrix Signal Router. Teletype integration allows you to switch programs and control connections. For a complete list of available ops refer to the manual. Information on how to connect the module can be found [in the SM010 manual](https://www.sssrlabs.com/store/sm010/).
+
+### New operators
+
+`? x y z` is a ternary "if" operator, it will select between `y` and `z` based on the condition `x`.
+
+#### New pattern ops:
+
+`P.MIN` `PN.MIN` `P.MAX` `PN.MAX` returns the position for the first smallest/largest value in a pattern between the `START` and `END` points.
+
+####New Telex ops
+
+`TO.CV.CALIB` allows you to lock-in an offset across power cycles to calibrate your TELEX CV output (`TO.CV.RESET` removes the calibration).
+
+`TO.ENV` now accepts gate values (1/0) to trigger the attack and decay.
+
+####New Kria ops
+
+`KR.CV x` get the current CV value for channel `x`
+`KR.MUTE x` `KR.MUTE x y` get/set mute state for channel `x`
+`KR.TMUTE x` toggle mute state for channel `x`
+`KR.CLK x` advance the clock for channel `x` (channel must have teletype clocking enabled)
+
+
+### New aliases
+
+`$` for `SCRIPT`
+`RND` / `RRND` `RAND` / `RRAND`
+`WRP` for `WRAP`
+`SCL` for `SCALE`
+
+### New keybindings
+
+Hold `shift` while making line selection in script editing to select multiple lines.
+Use 'alt-<up>` and `alt-<down>` to move selected lines up and down.
+Copy/cut/paste shortcuts work with multiline selection as well. To delete selected lines without copying into the clipboard use `alt-<delete>`.
+
+While editing a line you can now use `ctrl-<left>` / `ctrl-<right>` to move by words.
+
+`ctrl-z` provides three level undo in script editing.
+
+Additional `Alt-H` shortcut is available to view the Help screen.
+
+`Alt-G` in Live mode will turn on the Grid Visualizer, which has its own shortcuts. Refer to the **Keys** section for a complete list.
+
+### Bug fixes
+
+### New behavior
+
+Previously, when pasting the clipboard while in script editing the pasted line would replace the current line. It will now instead push the current line down. This might result in some lines being pushed beyond the script limits - if this happens, use `ctrl-z` to undo the change, delete some lines and then paste again.
+
+`I` would previously get initialized to 0 when executing a script. If you called a script from another script's loop this meant you had to use a variable to pass the loop's current `I` value to the called script. This is not needed anymore - when a script is called from another script its `I` value will be set to the current `I` value of the calling script.
 
 ## Version 2.2 
 

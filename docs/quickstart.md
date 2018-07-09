@@ -147,6 +147,8 @@ The edit position is indicated by the brightest number. Very dim numbers indicat
 
 Use the square bracket keys `[` and `]` to decrease/increase the values. Backspace sets the value to 0. Entering numbers will overwrite a new value. You can cut/copy/paste with ALT-X-C-V.
 
+Check the *Keys* section for a complete list of tracker shortcuts.
+
 
 ## Scenes
 

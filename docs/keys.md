@@ -10,7 +10,7 @@ These bindings work everywhere.
 | `<esc>`                      | preset read mode, or return to last mode       |
 | `alt-<esc>`                  | preset write mode                              |
 | `win-<esc>`                  | clear delays, stack and slews                  |
-| `shift-alt-?`                | help text, or return to last mode              |
+| `shift-alt-?` / `alt-h`      | help text, or return to last mode              |
 | `<F1>` to `<F8>`             | run corresponding script                       |
 | `<F9>`                       | run metro script                               |
 | `<F10>`                      | run init script                                |
@@ -33,6 +33,8 @@ In most cases, the clipboard is shared between _live_, _edit_ and the 2 _preset_
 |--------------------------------|-----------------------------------------|
 | `<left>` / `ctrl-b`            | move cursor left                        |
 | `<right>` / `ctrl-f`           | move cursor right                       |
+| `ctrl-<left>`                  | move left by one word                   |
+| `ctrl-<right>`                 | move right by one word                  |
 | `<home>` / `ctrl-a`            | move to beginning of line               |
 | `<end>` / `ctrl-e`             | move to end of line                     |
 | `<backspace>` / `ctrl-h`       | backwards delete one character          |
@@ -46,15 +48,26 @@ In most cases, the clipboard is shared between _live_, _edit_ and the 2 _preset_
 
 ## Live mode
 
-| Key              | Action              |
-|------------------|---------------------|
-| `<down>` / `C-n` | history next        |
-| `<up>` / `C-p`   | history previous    |
-| `<enter>`        | execute command     |
-| `~`              | toggle variables    |
-| `[` / `]`        | switch to edit mode |
+| Key                  | Action                   |
+|----------------------|--------------------------|
+| `<down>` / `C-n`     | history next             |
+| `<up>` / `C-p`       | history previous         |
+| `<enter>`            | execute command          |
+| `~`                  | toggle variables         |
+| `[` / `]`            | switch to edit mode      |
+| `alt-g`              | toggle grid visualizer   |
+| `alt-<arrows>`       | move grid cursor         |
+| `alt-shift-<arrows>` | select grid area         |
+| `alt-<space>`        | emulate grid press       |
+| `alt-/`              | switch grid pages        |
+| `alt-\`              | toggle grid control view |
+| `alt-<prt sc>`       | insert grid x/y/w/h      |
+
+In full grid visualizer mode pressing `alt` is not required.
 
 ## Edit mode
+
+In _edit_ mode multiple lines can be selected and used with the clipboard.
 
 | Key                | Action                    |
 |--------------------|---------------------------|
@@ -65,6 +78,12 @@ In most cases, the clipboard is shared between _live_, _edit_ and the 2 _preset_
 | `<enter>`          | enter command             |
 | `shift-<enter>`    | insert command            |
 | `alt-/`            | toggle line comment       |
+| `shift-<up>`       | expand selection up       |
+| `shift-<down>`     | expand selection down     |
+| `alt-<delete>`     | delete selection          |
+| `alt-<up>`         | move selection up         |
+| `alt-<down>`       | move selection down       |
+| `ctrl-z`           | undo (3 levels)           |
 
 ## Tracker mode
 
@@ -100,6 +119,8 @@ The tracker mode clipboard is independent of text and code clipboard.
 | `<space>`           | toggle non-zero to zero, and zero to 1                                                |
 | `0` to `9`          | numeric entry                                                                         |
 | `shift-2` (`@`)     | toggle turtle display marker (`<`)                                                    |
+| `ctrl-alt`          | insert knob value scaled to 0..31                                                     |
+| `ctrl-shift`        | insert knob value scaled to 0..1023                                                   |
 
 ## Preset read mode
 

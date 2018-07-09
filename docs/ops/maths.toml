@@ -26,15 +26,21 @@ short = "find the remainder after division of `x` by `y`"
 
 [RAND]
 prototype = "RAND x"
+aliases = ["RND"]
 short = "generate a random number between `0` and `x` inclusive"
 
 [RRAND]
 prototype = "RRAND x y"
+aliases = ["RRND"]
 short = "generate a random number between `x` and `y` inclusive"
 
 [TOSS]
 prototype = "TOSS"
 short = "randomly return `0` or `1`"
+
+[RRAND]
+prototype = "? x y z"
+short = "if condition `x` is true return `y`, otherwise return `z`"
 
 [MIN]
 prototype = "MIN x y"
@@ -50,6 +56,7 @@ short = "limit the value `x` to the range `y` to `z` inclusive"
 
 [WRAP]
 prototype = "WRAP x y z"
+aliases = ["WRP"]
 short = "limit the value `x` to the range `y` to `z` inclusive, but with wrapping"
 
 [QT]
@@ -163,6 +170,7 @@ short = "just intonation helper, precision ratio divider normalised to 1V"
 
 [SCALE]
 prototype = "SCALE a b x y i"
+aliases = ["SCL"]
 short = "scale `i` from range `a` to `b` to range `x` to `y`, i.e. `i * (y - x) / (b - a)`"
 
 [ER]

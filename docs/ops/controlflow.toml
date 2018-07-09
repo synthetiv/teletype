@@ -210,7 +210,8 @@ prototype = "INIT.DATA"
 short = "clears all data held in all variables"
 description = """
 
-Clears the following variables and resets them to default values: A, B, C, D, CV slew, Drunk min/max, M, O, Q, R, T, TR, CV input, and the Paramter knob
+Clears the following variables and resets them to default values: A, B, C, D, CV slew, Drunk min/max, M, O, Q, R, T, TR. 
+Does not affect the CV input (IN) or the Parameter knob (PARAM) values.
 """
 
 ["INIT.P"]
