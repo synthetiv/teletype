@@ -1,13 +1,12 @@
 # What's new?
 
-## Version 2.3
+## Version 3.0
 
 ### Major new features
 
 #### Grid Integration
 
-TBA
-
+Grid integration allows you to use grid to visualize, control and execute teletype scripts. You can create your own UIs using grid ops, or control Teletype directly with the Grid Control mode. Built in Grid Visualizer allows designing and using grid scenes without a grid. For more information and examples of grid scenes please see the [Grid Studies](https://github.com/scanner-darkly/teletype/wiki/GRID-INTEGRATION). Important: do NOT plug your grid directly into Teletype! Doing so may damage your module. Grid must be powered externally. 
 
 #### Improved script editing
 
@@ -23,17 +22,27 @@ You now can connect up to three ER-301s via i2c and address up to 100 virtual CV
 
 The 16n Faderbank is an open-source sixteen fader controller with support for USB MIDI, standard MIDI, and i2c communication with the Teletype. It operates just like an IN or PARAM (or the TXi for that matter) in that you read values from the device. You use the operator FADER (or the alias FB) and the number of the slider you wish to poll (1-16). Know that longer cables may require that you use a powered bus board even if you only have one device on your Teletype's i2c bus. (You will know that you have a problem if your Teletype randomly hangs on reads.)
 
-#### Support for the SSSR Labs SM010 Matrixarchate
+#### Support for the SSSR Labs SM010 Matrixarchate via i2c
 
 The SSSR Labs SM010 Matrixarchate is a 16x8 IO Sequenceable Matrix Signal Router. Teletype integration allows you to switch programs and control connections. For a complete list of available ops refer to the manual. Information on how to connect the module can be found [in the SM010 manual](https://www.sssrlabs.com/store/sm010/).
+
+#### Support for W/ via i2c
+
+Support for controlling Whimsical Raps W/ module via i2c. See the respective section for a complete list of available ops and refer to https://www.whimsicalraps.com/pages/w-type for more details.
 
 ### New operators
 
 `? x y z` is a ternary "if" operator, it will select between `y` and `z` based on the condition `x`.
 
-#### New pattern ops:
+#### New pattern ops
 
-`P.MIN` `PN.MIN` `P.MAX` `PN.MAX` returns the position for the first smallest/largest value in a pattern between the `START` and `END` points.
+`P.MIN` `PN.MIN` `P.MAX` `PN.MAX` return the position for the first smallest/largest value in a pattern between the `START` and `END` points.
+
+`P.RND` / `PN.RND` return a randomly selected value in a pattern between the `START` and `END` points.
+
+`P.+` / `PN.+` / `P.-` / `PN.-` increment/decrement a pattern value by the specified amount.
+
+`P.+W` / `PN.+W` / `P.-W` / `PN.-W` same as above and wrap to the specified range.
 
 ####New Telex ops
 
@@ -46,8 +55,11 @@ The SSSR Labs SM010 Matrixarchate is a 16x8 IO Sequenceable Matrix Signal Router
 `KR.CV x` get the current CV value for channel `x`
 `KR.MUTE x` `KR.MUTE x y` get/set mute state for channel `x`
 `KR.TMUTE x` toggle mute state for channel `x`
-`KR.CLK x` advance the clock for channel `x` (channel must have teletype clocking enabled)
+`KR.CLK x` advance the clock for channel `x`
 
+####Ops for ER-301, 16n Faderbank, SM010, W/
+
+Too many to list, please refer to their respective sections.
 
 ### New aliases
 
@@ -70,7 +82,24 @@ Additional `Alt-H` shortcut is available to view the Help screen.
 
 `Alt-G` in Live mode will turn on the Grid Visualizer, which has its own shortcuts. Refer to the **Keys** section for a complete list.
 
+The keybindings to insert a scaled knob value in the Tracker mode were changed from `ctrl` to `ctrl-alt` and from `shift` to `ctrl-shift`.
+
 ### Bug fixes
+
+i2c initialization delayed to account for ER-301 bootup
+last screen saved to flash
+knob jitter when loading/saving scenes reduced
+[duplicate commands not added to history](https://github.com/monome/teletype/issues/99)
+`SCALE` precision improved
+`PARAM` set properly when used in the init script
+`PARAM` and `IN` won't reset to 0 after `INIT.DATA`
+[`PN.HERE`, `P.POP`, `PN.POP` will update the tracker screen](https://github.com/monome/teletype/issues/151)
+[`P.RM` was 1-based, now 0-based](https://github.com/monome/teletype/issues/149)
+[`P.RM` / `PN.RM` will not change pattern length if deleting outside of length range](https://github.com/monome/teletype/issues/150)
+[`JI` op fixed](https://llllllll.co/t/teletype-the-ji-op/10553)
+[`TIME` and `LAST` are now 1ms accurate](https://github.com/monome/teletype/issues/144)
+[`RAND` / `RRAND` will properly work with large range values](https://github.com/monome/teletype/issues/143)
+[`L .. 32767` won't freeze](https://github.com/monome/teletype/issues/148)
 
 ### New behavior
 
