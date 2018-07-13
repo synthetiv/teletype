@@ -6,11 +6,11 @@
 
 #### Grid Integration
 
-Grid integration allows you to use grid to visualize, control and execute teletype scripts. You can create your own UIs using grid ops, or control Teletype directly with the Grid Control mode. Built in Grid Visualizer allows designing and using grid scenes without a grid. For more information and examples of grid scenes please see the [Grid Studies](https://github.com/scanner-darkly/teletype/wiki/GRID-INTEGRATION). Important: do NOT plug your grid directly into Teletype! Doing so may damage your module. Grid must be powered externally. 
+Grid integration allows you to use grid to visualize, control and execute teletype scripts. You can create your own UIs using grid ops, or control Teletype directly with the Grid Control mode. Built in Grid Visualizer allows designing and using grid scenes without a grid. For more information and examples of grid scenes please see the [Grid Studies](https://github.com/scanner-darkly/teletype/wiki/GRID-INTEGRATION). **Important**: do NOT plug your grid directly into Teletype! Doing so may damage your module. Grid must be powered externally. 
 
 #### Improved script editing
 
-You can now select multiple lines when editing scripts by holding `shift`. You can move the current selection up and down with 'alt-<up>` and `alt-<down>`. You can copy/cut/paste a multiline selection as well. To delete selected lines without copying into the clipboard use `alt-<delete>`.
+You can now select multiple lines when editing scripts by holding `shift`. You can move the current selection up and down with `alt-<up>` and `alt-<down>`. You can copy/cut/paste a multiline selection as well. To delete selected lines without copying into the clipboard use `alt-<delete>`.
 
 Three level undo is also now available with `ctrl-z` shortcut.
 
@@ -44,35 +44,39 @@ Support for controlling Whimsical Raps W/ module via i2c. See the respective sec
 
 `P.+W` / `PN.+W` / `P.-W` / `PN.-W` same as above and wrap to the specified range.
 
-####New Telex ops
+#### New Telex ops
 
 `TO.CV.CALIB` allows you to lock-in an offset across power cycles to calibrate your TELEX CV output (`TO.CV.RESET` removes the calibration).
 
 `TO.ENV` now accepts gate values (1/0) to trigger the attack and decay.
 
-####New Kria ops
+#### New Kria ops
 
 `KR.CV x` get the current CV value for channel `x`
+
 `KR.MUTE x` `KR.MUTE x y` get/set mute state for channel `x`
+
 `KR.TMUTE x` toggle mute state for channel `x`
+
 `KR.CLK x` advance the clock for channel `x`
 
-####Ops for ER-301, 16n Faderbank, SM010, W/
+#### Ops for ER-301, 16n Faderbank, SM010, W/
 
 Too many to list, please refer to their respective sections.
 
 ### New aliases
 
 `$` for `SCRIPT`
+
 `RND` / `RRND` `RAND` / `RRAND`
+
 `WRP` for `WRAP`
+
 `SCL` for `SCALE`
 
 ### New keybindings
 
-Hold `shift` while making line selection in script editing to select multiple lines.
-Use 'alt-<up>` and `alt-<down>` to move selected lines up and down.
-Copy/cut/paste shortcuts work with multiline selection as well. To delete selected lines without copying into the clipboard use `alt-<delete>`.
+Hold `shift` while making line selection in script editing to select multiple lines. Use `alt-<up>` and `alt-<down>` to move selected lines up and down. Copy/cut/paste shortcuts work with multiline selection as well. To delete selected lines without copying into the clipboard use `alt-<delete>`.
 
 While editing a line you can now use `ctrl-<left>` / `ctrl-<right>` to move by words.
 
@@ -87,18 +91,31 @@ The keybindings to insert a scaled knob value in the Tracker mode were changed f
 ### Bug fixes
 
 i2c initialization delayed to account for ER-301 bootup
+
 last screen saved to flash
+
 knob jitter when loading/saving scenes reduced
+
 [duplicate commands not added to history](https://github.com/monome/teletype/issues/99)
+
 `SCALE` precision improved
+
 `PARAM` set properly when used in the init script
+
 `PARAM` and `IN` won't reset to 0 after `INIT.DATA`
+
 [`PN.HERE`, `P.POP`, `PN.POP` will update the tracker screen](https://github.com/monome/teletype/issues/151)
+
 [`P.RM` was 1-based, now 0-based](https://github.com/monome/teletype/issues/149)
+
 [`P.RM` / `PN.RM` will not change pattern length if deleting outside of length range](https://github.com/monome/teletype/issues/150)
+
 [`JI` op fixed](https://llllllll.co/t/teletype-the-ji-op/10553)
+
 [`TIME` and `LAST` are now 1ms accurate](https://github.com/monome/teletype/issues/144)
+
 [`RAND` / `RRAND` will properly work with large range values](https://github.com/monome/teletype/issues/143)
+
 [`L .. 32767` won't freeze](https://github.com/monome/teletype/issues/148)
 
 ### New behavior
