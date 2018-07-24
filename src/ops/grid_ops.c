@@ -335,7 +335,7 @@ static void op_G_GRP_RST_get(const void *NOTUSED(data), scene_state_t *ss,
     SG.group[group].enabled = true;
     SG.group[group].script = -1;
     SG.group[group].fader_min = 0;
-    SG.group[group].fader_max = 0;
+    SG.group[group].fader_max = 16383;
 
     for (u16 i = 0; i < GRID_BUTTON_COUNT; i++)
         if (GBC.group == group) {
