@@ -127,3 +127,35 @@ Although happy accidents in the modular world are one of it's many joys, when wr
   4. **Avoid using `A`, `B`, `C` and `D` to refer to the trigger outputs, instead use the numerical values directly.**
    
      As `A-D` are variables, they may no longer contain the values `1-4`, and while this was the recommend way to name triggers, it is no longer consider ideal. Newer versions of the Teletype hardware have replaced the labels on the trigger outputs, with the numbers `1` to `4`.
+
+## Grid integration
+
+Grid integration can be described very simply: it allows you to use grid with
+teletype. However, there is more to it than just that. You can create custom
+grid interfaces that can be tailored individually for each scene. Since it's
+done with scripts you can dynamically change these interfaces at any point -
+you could even create a dynamic interface that reacts to the scene itself or
+incoming triggers or control voltages.
+
+It's hard to describe what can be done as there are so many different ways you
+can use it. You can simply use grid as an LED display to visualize your scene.
+Or make it into an earthsea style keyboard. You can create sequencers, or
+control surfaces to control other sequencers.
+
+There are many grid operators intended to simplify building very complex
+interfaces, while something simple like a bank of faders can be done with just
+two lines of scripts (and can be just as useful!).
+
+As you can't have both keyboard and grid connected at the same time, the Grid
+Visualizer is provided in Live screen so you can see exactly what it will look
+like on the actual grid. You can even use it to emulate grid presses so you can
+test your scene too. As a matter of fact, it's entirely possible to use grid
+scenes without a grid just by using the Visualizer.
+
+If you don't feel like creating your own interfaces you can take advantage of
+the Grid Control mode. It allows you to use grid to trigger and mute scripts,
+edit variables and tracker values, save and load scenes, and more.
+
+As there are many topics to cover, the best way to start learning Grid 
+integration is by following 
+[the Grid Studies](https://github.com/scanner-darkly/teletype/wiki/GRID-INTEGRATION).
