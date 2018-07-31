@@ -393,6 +393,7 @@ prototype = "TO.OSC.RECT x y"
 short = "rectifies the polarity of the oscillator for output `x` to `y`; range for `y` is -2 to 2; default is 0 (no rectification); 1 & -1 are partial rectification - omitting all values on the other side of the sign; 2 & -2 are full rectification - inverting values from the other pole"
 description = """
 The rectification command performs a couple of levels of rectification based on how you have it set. The following values for `y` work as follows:
+
 * `y = 2`: "full-positive" - inverts negative values, making them positive
 * `y = 1`: "half-positive" - omits all negative values (values below zero are set to zero)
 * `y = 0`: no rectification (default)
