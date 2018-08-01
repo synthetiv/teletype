@@ -57,7 +57,8 @@ OPS_SECTIONS = [
     ("delay",         "Delay",         False),
     ("stack",         "Stack",         False),
     ("queue",         "Queue",         False),
-    ("turtle",        "Turtle",        True),
+    ("turtle",        "Turtle",        False),
+    ("grid",          "Grid",          True),
     ("ansible",       "Ansible",       False),
     ("whitewhale",    "Whitewhale",    False),
     ("meadowphysics", "Meadowphysics", False),
@@ -66,7 +67,8 @@ OPS_SECTIONS = [
     ("justfriends",   "Just Friends",  False),
     ("wslash",        "W/",            False),
     ("er301",         "ER-301",        False),
-    ("fader",         "Fader",         True),
+    ("fader",         "Fader",         False),
+    ("matrixarchate", "Matrixarchate", True),
     ("telex_i",       "TELEXi",        False),
     ("telex_o",       "TELEXo",        False)
 ]
