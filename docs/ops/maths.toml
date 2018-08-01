@@ -38,7 +38,7 @@ short = "generate a random number between `x` and `y` inclusive"
 prototype = "TOSS"
 short = "randomly return `0` or `1`"
 
-[RRAND]
+["?"]
 prototype = "? x y z"
 short = "if condition `x` is true return `y`, otherwise return `z`"
 

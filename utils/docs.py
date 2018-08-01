@@ -43,6 +43,7 @@ OPS_SECTIONS = [
     "stack",
     "queue",
     "turtle",
+    "grid",
     "ansible",
     "whitewhale",
     "meadowphysics",
@@ -50,7 +51,11 @@ OPS_SECTIONS = [
     "orca",
     "justfriends",
     "telex_i",
-    "telex_o"
+    "telex_o",
+    "er301",
+    "fader",
+    "wslash",
+    "matrixarchate"
 ]
 
 
