@@ -1,5 +1,5 @@
 #ifndef CHAOS_H
-#define CHOAS_H
+#define CHAOS_H
 #include <stdint.h>
 
 typedef enum {
