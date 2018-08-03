@@ -35,8 +35,8 @@ TEST op_stack_size() {
         const tele_op_t *op = tele_ops[i];
 
         if (op->get != NULL) {
-            scene_state_t ss = {};  // initalise to empty
-                                    // (needs dedicated initaliser)
+            scene_state_t ss;
+            ss_init(&ss);
             exec_state_t es;
             es_init(&es);
             es_push(&es);
@@ -63,10 +63,11 @@ TEST op_stack_size() {
         }
 
         if (op->set != NULL) {
-            scene_state_t ss = {};  // initalise to empty
-                                    // (needs dedicated initaliser)
+            scene_state_t ss;
+            ss_init(&ss);
             exec_state_t es;
             es_init(&es);
+            es_push(&es);
             command_state_t cs;
             cs_init(&cs);
 
@@ -93,10 +94,11 @@ TEST mod_stack_size() {
     for (size_t i = 0; i < E_MOD__LENGTH; i++) {
         const tele_mod_t *mod = tele_mods[i];
 
-        scene_state_t ss = {};  // initalise to empty
-                                // (needs dedicated initaliser)
+        scene_state_t ss;
+        ss_init(&ss);
         exec_state_t es;
         es_init(&es);
+        es_push(&es);
         command_state_t cs;
         cs_init(&cs);
 
