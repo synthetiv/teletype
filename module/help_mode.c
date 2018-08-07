@@ -641,7 +641,7 @@ const char* help12[HELP12_LENGTH] = {
                                     "KR.L.ST X Y",
                                     "    GET LOOP START FOR",
                                     "    TRACK X, PARAM Y",
-                                    "KR.L.ST X Y Z"
+                                    "KR.L.ST X Y Z",
                                     "    LOOP START FOR",
                                     "    TRACK X, PARAM Y TO Z",
                                     "KR.L.LEN X Y",
@@ -793,7 +793,7 @@ const char* help14[HELP14_LENGTH] = {
                                     "WS.REC X",
                                     "    SET RECORDING MODE",
                                     "    0 PLAYBACK ONLY, 1 OVERDUB",
-                                    "    -1 OVERWRITE"
+                                    "    -1 OVERWRITE",
                                     "WS.CUE X",
                                     "    MOVE TO CUEPOINT (RELATIVE)",
                                     "    0 RETRIGGER CURRENT CUE",
