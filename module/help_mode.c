@@ -15,10 +15,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Help text ///////////////////////////////////////////////////////////////////
 
-#define HELP_PAGES 11
+#define HELP_PAGES 14
 
 #define HELP1_LENGTH 59
-const char* help1[HELP1_LENGTH] = { "1/11 HELP",
+const char* help1[HELP1_LENGTH] = { "1/14 HELP",
                                     "[ ] NAVIGATE HELP PAGES",
                                     "UP/DOWN TO SCROLL",
                                     " ",
@@ -79,7 +79,7 @@ const char* help1[HELP1_LENGTH] = { "1/11 HELP",
                                     "SHIFT-2|SHOW/HIDE TURTLE" };
 
 #define HELP2_LENGTH 13
-const char* help2[HELP2_LENGTH] = { "2/11 VARIABLES",
+const char* help2[HELP2_LENGTH] = { "2/14 VARIABLES",
                                     " ",
                                     "X, Y, Z|GENERAL PURPOSE",
                                     "T|USE FOR TIME",
@@ -94,7 +94,7 @@ const char* help2[HELP2_LENGTH] = { "2/11 VARIABLES",
                                     "Q.AVG|AVERAGE OF ALL Q" };
 
 #define HELP3_LENGTH 26
-const char* help3[HELP3_LENGTH] = { "3/11 PARAMETERS",
+const char* help3[HELP3_LENGTH] = { "3/14 PARAMETERS",
                                     " ",
                                     "TR A-D|SET TR VALUE (0,1)",
                                     "TR.TIME A-D|TR PULSE TIME",
@@ -122,7 +122,7 @@ const char* help3[HELP3_LENGTH] = { "3/11 PARAMETERS",
                                     "LAST N|GET SCRIPT LAST RUN" };
 
 #define HELP4_LENGTH 11
-const char* help4[HELP4_LENGTH] = { "4/11 DATA AND TABLES",
+const char* help4[HELP4_LENGTH] = { "4/14 DATA AND TABLES",
                                     " ",
                                     "ALL PARAMS HAVE 16B RANGE",
                                     "-32768 TO 32767",
@@ -135,7 +135,7 @@ const char* help4[HELP4_LENGTH] = { "4/11 DATA AND TABLES",
                                     "EXP X|EXPO LOOKUP" };
 
 #define HELP5_LENGTH 56
-const char* help5[HELP5_LENGTH] = { "5/11 OPERATORS",
+const char* help5[HELP5_LENGTH] = { "5/14 OPERATORS",
                                     " ",
                                     "RAND A|RANDOM 0 - A",
                                     "RRAND A B|RANDOM A - B",
@@ -193,7 +193,7 @@ const char* help5[HELP5_LENGTH] = { "5/11 OPERATORS",
                                     "TR.PULSE X|PULSE TR X" };
 
 #define HELP6_LENGTH 31
-const char* help6[HELP6_LENGTH] = { "6/11 PRE :",
+const char* help6[HELP6_LENGTH] = { "6/14 PRE :",
                                     " ",
                                     "EACH PRE NEEDS A : FOLLOWED",
                                     "BY A COMMAND TO OPERATE ON",
@@ -226,7 +226,7 @@ const char* help6[HELP6_LENGTH] = { "6/11 PRE :",
                                     "BREAK|STOP EXECUTION" };
 
 #define HELP7_LENGTH 37
-const char* help7[HELP7_LENGTH] = { "7/11 PATTERNS",
+const char* help7[HELP7_LENGTH] = { "7/14 PATTERNS",
                                     " ",
                                     "// DIRECT ACCESS",
                                     "P A|GET VAL AT INDEX A",
@@ -264,7 +264,7 @@ const char* help7[HELP7_LENGTH] = { "7/11 PATTERNS",
                                     "P.-W A B C D",
                                     " |DEC AND WRAP TO C..D" };
 #define HELP8_LENGTH 135
-const char* help8[HELP8_LENGTH] = { "8/11 GRID",
+const char* help8[HELP8_LENGTH] = { "8/14 GRID",
                                     " ",
                                     "G.RST|RESET EVERYTHING",
                                     "G.CLR|CLEAR ALL LEDS",
@@ -400,7 +400,7 @@ const char* help8[HELP8_LENGTH] = { "8/11 GRID",
                                     "G.GFDR.RN group min max",
                                     "    SET FADER RANGE FOR .V" };
 #define HELP9_LENGTH 17
-const char* help9[HELP9_LENGTH] = { "9/11 TURTLE",
+const char* help9[HELP9_LENGTH] = { "9/14 TURTLE",
                                     " ",
                                     "// CRAWLS TRACKER DATA",
                                     "@|GET/SET DATA",
@@ -419,7 +419,7 @@ const char* help9[HELP9_LENGTH] = { "9/11 TURTLE",
                                     "@SHOW 1/0|DISPLAY < ON TRACKER" };
 
 #define HELP10_LENGTH 36
-const char* help10[HELP10_LENGTH] = { "10/11 TELEX INPUT",
+const char* help10[HELP10_LENGTH] = { "10/14 TELEX INPUT",
                                     " ",
                                     "TI.PARAM X|(TI.PRM)",
                                     "    GET KNOB VALUE",
@@ -458,7 +458,7 @@ const char* help10[HELP10_LENGTH] = { "10/11 TELEX INPUT",
 
 #define HELP11_LENGTH 164
 const char* help11[HELP11_LENGTH] = {
-                                    "11/11 TELEX OUTPUT",
+                                    "11/14 TELEX OUTPUT",
                                     " ",
                                     "TO.TR X Y",
                                     "    SET TR VALUE (0/1)",
@@ -623,17 +623,196 @@ const char* help11[HELP11_LENGTH] = {
                                     "TO.CV.RESET X",
                                     "    RESET CV CALIB"};
 
+#define HELP12_LENGTH 115
+const char* help12[HELP12_LENGTH] = {
+                                    "12/14 ANSIBLE",
+                                    " ",
+                                    "KR.PRE / KR.PRE X",
+                                    "    RETURN/LOAD CURRENT PRESET",
+                                    "KR.PERIOD / KR.PERIOD X",
+                                    "    GET/SET INTERNAL PERIOD",
+                                    "KR.PAT / KR.PAT X",
+                                    "    GET/SET CURRENT PATTERN",
+                                    "KR.SCALE / KR.SCALE X",
+                                    "    GET/SET CURRENT SCALE",
+                                    "KR.POS X Y / KR.POS X Y Z",
+                                    "    GET/SET POSITION Z",
+                                    "    FOR TRACK X PARAM Y",
+                                    "KR.L.ST X Y",
+                                    "    GET LOOP START FOR",
+                                    "    TRACK X, PARAM Y",
+                                    "KR.L.ST X Y Z",
+                                    "    LOOP START FOR",
+                                    "    TRACK X, PARAM Y TO Z",
+                                    "KR.L.LEN X Y",
+                                    "    GET LENGTH OF",
+                                    "    TRACK X, PARAM Y",
+                                    "KR.L.LEN X Y Z",
+                                    "    SET LENGTH OF",
+                                    "    TRACK X, PARAM Y TO Z",
+                                    "KR.RES X Y",
+                                    "    RESET POSITION",
+                                    "    FOR TRACK X, PARAM Y",
+                                    "KR.CV X",
+                                    "    GET CV FOR CHANNEL X",
+                                    "KR.MUTE X / KR.MUTE X Y",
+                                    "    GET/SET MUTE STATE",
+                                    "    FOR CHANNEL X",
+                                    "KR.TRMUTE X",
+                                    "    TOGGLE MUTE STATE",
+                                    "    FOR CHANNEL X",
+                                    "KR.CLK X",
+                                    "    ADVANCE THE CLOCK",
+                                    "    FOR CHANNEL X",
+                                    "    (MUST BE ENABLED!)",
+                                    "ME.PRE / ME.PRE X",
+                                    "    RETURN/LOAD CURRENT PRESET",
+                                    "ME.SCALE / ME.SCALE X",
+                                    "    GET/SET CURRENT SCALE",
+                                    "ME.PERIOD / ME.PERIOD X",
+                                    "    GET/SET CLOCK PERIOD",
+                                    "ME.STOP X",
+                                    "    STOP CHANNEL X (0 = ALL)",
+                                    "ME.RES X",
+                                    "    RESET CHANNEL X (0 = ALL)",
+                                    "    ALSO USED AS START",
+                                    "ME.CV X",
+                                    "    GET CV FOR CHANNEL X",
+                                    "LV.PRE / LV.PRE X",
+                                    "    RETURN/LOAD CURRENT PRESET",
+                                    "LV.RES X", 
+                                    "    RESET (0 ON NEXT CLK, 1 NOW)",
+                                    "LV.POS / LV.POS X",
+                                    "    GET/SET CURRENT POSITION",
+                                    "LV.L.ST / LV.L.ST X",
+                                    "    GET/SET LOOP START",
+                                    "LV.L.LEN / LV.L.LEN X",
+                                    "    GET/SET LOOP LENGTH",
+                                    "LV.L.DIR / LV.L.DIR X",
+                                    "    GET/SET LOOP DIRECTION",
+                                    "LV.CV X",
+                                    "    GET CV FOR CHANNEL X",
+                                    "CY.PRE / CY.PRE X",
+                                    "    RETURN/LOAD CURRENT PRESET",
+                                    "CY.RES X",
+                                    "    RESET CHANNEL X (0 = ALL)",
+                                    "CY.POS X / CY.POS X Y",
+                                    "    GET/SET POSITION OF CHANNEL",
+                                    "    X = 0 TO SET ALL",
+                                    "    POSITION BETWEEN 0-255",
+                                    "CY.REV X",
+                                    "    REVERSE CHANNEL X (0 = ALL)",
+                                    "MID.SLEW T",
+                                    "    SET PITCH SLEW TIME",
+                                    "    TO T IN MS",
+                                    "MID.SHIFT X",
+                                    "    SHIFT PITCH BY TT PITCH X",
+                                    "    (E.G. N 6, V -1)",
+                                    "ARP.HLD X",
+                                    "    0 DISABLES KEY HOLD",
+                                    "    OTHER VALUES ENABLE",
+                                    "ARP.STY X",
+                                    "    SET ARP STYLE (0-7)",
+                                    "ARP.GT V G",
+                                    "    SET GATE LENGTH FOR VOICE V",
+                                    "    TO G (0-127, SYNCED TO CLK)",
+                                    "ARP.SLEW V T",
+                                    "    SET SLEW TIME FOR VOICE V",
+                                    "    TO T IN MS",
+                                    "ARP.RPT V N S",
+                                    "    SET VOICE PATTERN REPEAT",
+                                    "    FOR VOICE V TO N TIMES",
+                                    "    SHIFTED BY S SEMITONES",
+                                    "ARP.DIV V D",
+                                    "    SET VOICE CLOCK DIVISOR",
+                                    "    FOR VOICE V TO D (1-32)",
+                                    "ARP.FIL V F",
+                                    "    SET VOICE EUCLIDEAN FILL",
+                                    "    1 FOR STRAIGHT CLOCK (1-32)",
+                                    "ARP.ROT V R",
+                                    "    SET VOICE EUCLIDEAN",
+                                    "    ROTATION (-32, 32)",
+                                    "ARP.ER V F D R",
+                                    "    SET ALL EUCLIDEAN RHYTHM",
+                                    "ARP.RES V",
+                                    "    RESET VOICE CLOCK/PATTERN",
+                                    "    ON NEXT CLOCK TICK",
+                                    "ARP.SHIFT V X",
+                                    "    SHIFT VOICE CV BY TT PITCH",
+                                    "    (E.G. N 6, V -1)"};
+
+#define HELP13_LENGTH 39
+const char* help13[HELP13_LENGTH] = {
+                                    "13/14 JUST FRIENDS",
+                                    " ",
+                                    "JF.TR X Y",
+                                    "    TRIGGER CHANNEL X (0 = ALL)",
+                                    "    WITH STATE Y (1 ON, 0 OFF)",
+                                    "JF.RMODE X",
+                                    "    SET RUN STATE OF JF",
+                                    "    (0 = OFF, NON-ZERO = ON)",
+                                    "JF.RUN X",
+                                    "    SEND X TO RUN INPUT",
+                                    "    (V -5 TO V 5)",
+                                    "JF.SHIFT X",
+                                    "    TRANSPOSE JF BY X",
+                                    "JF.VTR X Y",
+                                    "    LIKE JF.TR WITH VOLUME CTRL",
+                                    "    (V 0 TO V 5)",
+                                    "JF.TUNE X Y Z",
+                                    "    ADJUST TUNING OF CHANNEL X",
+                                    "    SET NUMERATOR TO Y",
+                                    "    SET DENOMINATOR TO Z",
+                                    "JF.MODE X",
+                                    "    NON-0 FOR ALTERNATE MODES",
+                                    "JF.VOX X Y Z",
+                                    "    CREATE NOTE AT CHANNEL X",
+                                    "    Y = PITCH, Z = VELOCITY",
+                                    "JF.NOTE X Y",
+                                    "    ALLOCATED NOTE SEQUENCING",
+                                    "    X = PITCH, Y = VELOCITY",
+                                    "JF.GOD X",
+                                    "    REDEFINE C3 TO GOD NOTE",
+                                    "    (0: A=440HZ, 1: A=432HZ)",
+                                    "JF.TICK X",
+                                    "    SET TIMEBASE OF GEODE",
+                                    "    1-48 TICKS PER MEASURE",
+                                    "    49-255 BEATS PER MINUTE",
+                                    "JF.QT X",
+                                    "    SET QUANTIZATION",
+                                    "    0 = NO QUANTIZATION",
+                                    "    1-32 SETS SUBDIVISION"};
+
+#define HELP14_LENGTH 16
+const char* help14[HELP14_LENGTH] = {
+                                    "14/14 W/",
+                                    " ",
+                                    "WS.PLAY X",
+                                    "    SET PLAYBACK STATE AND DIR",
+                                    "    0 = STOP, 1 = FWD, -1 = REV",
+                                    "WS.REC X",
+                                    "    SET RECORDING MODE",
+                                    "    0 PLAYBACK ONLY, 1 OVERDUB",
+                                    "    -1 OVERWRITE",
+                                    "WS.CUE X",
+                                    "    MOVE TO CUEPOINT (RELATIVE)",
+                                    "    0 RETRIGGER CURRENT CUE",
+                                    "    1 JUMP TO NEXT CUE",
+                                    "    -1 JUMP TO PREV CUE",
+                                    "WS.LOOP X",
+                                    "    SET LOOP STATE ON/OFF"};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Help mode ///////////////////////////////////////////////////////////////////
 
 const char** help_pages[HELP_PAGES] = { help1, help2, help3, help4, help5,
                                         help6, help7, help8, help9, help10,
-                                        help11 };
+                                        help11, help12, help13, help14 };
 const uint8_t help_length[HELP_PAGES] = {
     HELP1_LENGTH, HELP2_LENGTH, HELP3_LENGTH, HELP4_LENGTH, HELP5_LENGTH,
     HELP6_LENGTH, HELP7_LENGTH, HELP8_LENGTH, HELP9_LENGTH, HELP10_LENGTH,
-    HELP11_LENGTH
+    HELP11_LENGTH, HELP12_LENGTH, HELP13_LENGTH, HELP14_LENGTH
 };
 
 static uint8_t page_no;
