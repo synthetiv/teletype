@@ -57,7 +57,7 @@ OPS_SECTIONS = [
     ("delay",         "Delay",         False),
     ("stack",         "Stack",         False),
     ("queue",         "Queue",         False),
-    ("turtle",        "Turtle",        False),
+    ("turtle",        "Turtle",        True),
     ("grid",          "Grid",          True),
     ("ansible",       "Ansible",       False),
     ("whitewhale",    "Whitewhale",    False),

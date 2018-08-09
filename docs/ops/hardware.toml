@@ -75,6 +75,10 @@ description = """
     7. Call IN and confirm that the result is 16383
 """
 
+["IN.CAL.RESET"]
+prototype = "IN.CAL.RESET"
+short = "Reset the input CV calibration"
+
 ["PARAM.CAL.MIN"]
 prototype = "PARAM.CAL.MIN"
 short = "Reads the Parameter Knob minimum position and assigns a zero value"
@@ -86,12 +90,16 @@ description = """
 
 ["PARAM.CAL.MAX"]
 prototype = "PARAM.CAL.MAX"
-short = "Reads the Paramter Knob maximum position and assigns the maximum point"
+short = "Reads the Parameter Knob maximum position and assigns the maximum point"
 description = """
     4. Turn the knob all the way to the right
     5. Execute PARAM.CAL.MAX from the live terminal
     6. Call PARAM and verify that the result is 16383
 """
+
+["PARAM.CAL.RESET"]
+prototype = "PARAM.CAL.RESET"
+short = "Resets the Parameter Knob calibration"
 
 ["TR"]
 prototype = "TR x"

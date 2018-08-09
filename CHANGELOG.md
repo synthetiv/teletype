@@ -15,6 +15,7 @@
 - **NEW**: new Telex ops: TO.CV.CALIB, TO.ENV
 - **NEW**: new Kria ops: KR.CV, KR.MUTE, KR.TMUTE, KR.CLK, ME.CV
 - **NEW**: new aliases: $, RND, RRND, WRP, SCL
+- **NEW**: telex, ansible, just friends, w/ added to the help screen
 - **FIX**: i2c initialization delayed to account for ER-301 bootup
 - **FIX**: last screen saved to flash
 - **FIX**: knob jitter when loading/saving scenes reduced
