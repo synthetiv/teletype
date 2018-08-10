@@ -178,6 +178,7 @@ static grid_control_mode_t tt_mode = G_LIVE_V, tt_last_mode = G_LIVE_V;
 static u8 control_mode_on, tt_script, variable_edit, variable_changed;
 static u8 preset_write, tracker_pressed, tracker_x, tracker_y;
 static u8 tracker_changed, tracker_select, tracker_selected;
+static u8 tracker_set_start, tracker_set_end;
 static s16 tracker_last, variable_last;
 static u16 size_x = 16, size_y = 8;
 static u8 screen[GRID_MAX_DIMENSION][GRID_MAX_DIMENSION/2];
@@ -523,6 +524,9 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
     if (tt_mode == G_TRACKER) {
         u8 offset = get_pattern_offset();
         
+        if (x == 7 && y == 4) tracker_set_start = z;
+        if (x == 7 && y == 5) tracker_set_end = z;
+        
         if (tracker_pressed) {
             s16 value = ss_get_pattern_val(ss, tracker_x-2, tracker_y+offset);
             
@@ -600,7 +604,7 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
             return 1;
         }
         
-        if (tracker_select) {
+        if (tracker_select || tracker_set_start || tracker_set_end) {
             if (x == 7 && y == tracker_select && !z) {
                 if (y == 3 && !tracker_selected) {
                     turtle_set_shown(&ss->turtle, !turtle_get_shown(&ss->turtle));
@@ -623,17 +627,19 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
                     turtle_set_shown(&ss->turtle, 1);
                     tele_pattern_updated();
                     ss->grid.grid_dirty = 1;
-                } else if (tracker_select == 4) {
+                }
+                if (tracker_set_start) {
                     // set start
-                    tracker_selected = 1;
                     ss_set_pattern_start(ss, x - 2, y + offset);
+                    tracker_selected = 1;
                     tele_pattern_updated();
                     ss->grid.grid_dirty = 1;
-                } else if (tracker_select == 5) {
+                }
+                if (tracker_set_end) {
                     // set end
-                    tracker_selected = 1;
                     ss_set_pattern_end(ss, x - 2, y + offset);
                     ss_set_pattern_len(ss, x - 2, y + offset + 1);
+                    tracker_selected = 1;
                     tele_pattern_updated();
                     ss->grid.grid_dirty = 1;
                 }
@@ -667,7 +673,7 @@ static u8 grid_control_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 from_
             u8 offset = get_pattern_offset();
             if (offset < 56) set_pattern_offset(offset + 1);
             ss->grid.grid_dirty = 1;
-        } else if (x == 7 && y > 1 && z) {
+        } else if (x == 7 && y > 1 && y != 4 && y != 5 && z) {
             tracker_select = y;
             tracker_selected = 0;
         }
