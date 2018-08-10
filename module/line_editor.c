@@ -178,5 +178,5 @@ void line_editor_draw(line_editor_t *le, char prefix, region *reg) {
     strcat(s, " ");
 
     region_fill(reg, 0);
-    font_string_region_clip_hi(reg, s, 0, 0, 0xf, 0, le->cursor + 2);
+    font_string_region_clip_hid(reg, s, 0, 0, 0xf, 0, le->cursor + 2, 3);
 }
