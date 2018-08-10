@@ -6,7 +6,7 @@
 
 #### Grid Integration
 
-Grid integration allows you to use grid to visualize, control and execute teletype scripts. You can create your own UIs using grid ops, or control Teletype directly with the Grid Control mode. Built in Grid Visualizer allows designing and using grid scenes without a grid. For more information and examples of grid scenes please see the [Grid Studies](https://github.com/scanner-darkly/teletype/wiki/GRID-INTEGRATION). **Important**: do NOT plug your grid directly into Teletype! Doing so may damage your module. Grid must be powered externally. 
+Grid integration allows you to use grid to visualize, control and execute teletype scripts. You can create your own UIs using grid ops, or control Teletype directly with the Grid Control mode. Built in Grid Visualizer allows designing and using grid scenes without a grid. For more information and examples of grid scenes please see the [Grid Studies](https://github.com/scanner-darkly/teletype/wiki/GRID-INTEGRATION).
 
 #### Improved script editing
 
