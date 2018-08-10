@@ -77,7 +77,7 @@ description = """
 
 ["IN.CAL.RESET"]
 prototype = "IN.CAL.RESET"
-short = "Reset the input CV calibration"
+short = "Resets the input CV calibration"
 
 ["PARAM.CAL.MIN"]
 prototype = "PARAM.CAL.MIN"

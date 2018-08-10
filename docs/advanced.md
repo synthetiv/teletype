@@ -151,7 +151,7 @@ any of your scripts.
 
 Grid Visualizer provides a virtual grid within the Teletype itself:
 
-![Teletype command terminology](img/gridvisualizer.jpg)
+![Grid Visualizer](img/gridvisualizer.jpg)
 
 It can be very useful while developing a script as you don't have to switch
 between the grid and the keyboard as often. To turn it on navigate to Live
