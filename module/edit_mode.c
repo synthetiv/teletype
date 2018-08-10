@@ -65,25 +65,25 @@ static void save_undo(void) {
     undo_line_no2[undo_pos] = line_no2;
     undo_length[undo_pos] = ss_get_script_len(&scene_state, script);
     for (u8 l = 0; l < undo_length[undo_pos]; l++) {
-        undo_comments[undo_pos][l] = ss_get_script_comment(&scene_state,
-            script, l);
-        ss_copy_script_command(&undo_buffer[undo_pos][l], 
-            &scene_state, script, l);
+        undo_comments[undo_pos][l] =
+            ss_get_script_comment(&scene_state, script, l);
+        ss_copy_script_command(&undo_buffer[undo_pos][l], &scene_state, script,
+                               l);
     }
 }
 
 static void undo(void) {
     if (undo_count == 0) return;
     undo_count--;
-    
+
     ss_clear_script(&scene_state, script);
     for (u8 l = 0; l < undo_length[undo_pos]; l++) {
         ss_insert_script_command(&scene_state, script, l,
-            &undo_buffer[undo_pos][l]);
+                                 &undo_buffer[undo_pos][l]);
         ss_set_script_comment(&scene_state, script, l,
-            undo_comments[undo_pos][l]);
+                              undo_comments[undo_pos][l]);
     }
-    
+
     line_no1 = undo_line_no1[undo_pos];
     line_no2 = undo_line_no2[undo_pos];
 
@@ -100,9 +100,7 @@ void edit_mode_refresh() {
 
 void process_edit_keys(uint8_t k, uint8_t m, bool is_held_key) {
     // C-z: undo
-    if (match_ctrl(m, k, HID_Z)) {
-        undo();
-    }
+    if (match_ctrl(m, k, HID_Z)) { undo(); }
     // <down> or C-n: line down
     else if (match_no_mod(m, k, HID_DOWN) || match_ctrl(m, k, HID_N)) {
         if (line_no1 < (SCRIPT_MAX_COMMANDS - 1) &&
@@ -150,7 +148,8 @@ void process_edit_keys(uint8_t k, uint8_t m, bool is_held_key) {
                     &le, ss_get_script_command(&scene_state, script, line_no1));
                 dirty |= D_LIST | D_INPUT;
             }
-        } else if (line_no2) {
+        }
+        else if (line_no2) {
             line_no2--;
             dirty |= D_LIST | D_INPUT;
         }
@@ -223,7 +222,7 @@ void process_edit_keys(uint8_t k, uint8_t m, bool is_held_key) {
                 save_undo();
                 strcpy(copy_buffer[0], line_editor_get(&le));
                 copy_buffer_len = 1;
-                 ss_delete_script_command(&scene_state, script, line_no1);
+                ss_delete_script_command(&scene_state, script, line_no1);
             }
         }
         else {
@@ -257,7 +256,8 @@ void process_edit_keys(uint8_t k, uint8_t m, bool is_held_key) {
         else {
             save_undo();
             copy_buffer_len = 0;
-            for (u8 l = min(line_no1, line_no2); l <= max(line_no1, line_no2); l++)
+            for (u8 l = min(line_no1, line_no2); l <= max(line_no1, line_no2);
+                 l++)
                 print_command(ss_get_script_command(&scene_state, script, l),
                               copy_buffer[copy_buffer_len++]);
         }

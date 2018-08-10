@@ -305,7 +305,7 @@ void handler_Front(int32_t data) {
         return;
     }
     ss_counter = 0;
-    
+
     if (data == 0) {
         if (grid_connected) {
             grid_control_mode = !grid_control_mode;
@@ -313,7 +313,7 @@ void handler_Front(int32_t data) {
             grid_set_control_mode(grid_control_mode, mode, &scene_state);
             return;
         }
-        
+
         if (mode != M_PRESET_R) {
             front_timer = 0;
             set_preset_r_mode(adc[1] >> 7);
@@ -450,7 +450,7 @@ void handler_ScreenRefresh(int32_t data) {
     profile_update(&prof_ScreenRefresh);
 #endif
     uint8_t screen_dirty = 0;
-    
+
     switch (mode) {
         case M_PATTERN: screen_dirty = screen_refresh_pattern(); break;
         case M_PRESET_W: screen_dirty = screen_refresh_preset_w(); break;
@@ -463,11 +463,11 @@ void handler_ScreenRefresh(int32_t data) {
     u8 grid = 0;
     for (size_t i = 0; i < 8; i++)
         if (screen_dirty & (1 << i)) {
-            grid = 1; 
-            if (ss_counter < SS_TIMEOUT) region_draw(&line[i]); 
+            grid = 1;
+            if (ss_counter < SS_TIMEOUT) region_draw(&line[i]);
         }
     if (grid_control_mode && grid) scene_state.grid.grid_dirty = 1;
-    
+
 #ifdef TELETYPE_PROFILE
     profile_update(&prof_ScreenRefresh);
 #endif
@@ -475,7 +475,7 @@ void handler_ScreenRefresh(int32_t data) {
 
 void handler_EventTimer(int32_t data) {
     tele_tick(&scene_state, RATE_CLOCK);
-    
+
     if (ss_counter < SS_TIMEOUT) {
         ss_counter++;
         if (ss_counter == SS_TIMEOUT) {
@@ -512,10 +512,10 @@ static void handler_MonomeConnect(s32 data) {
     hold_key = 0;
     timers_set_monome();
     grid_connected = 1;
-    
+
     if (grid_control_mode && mode == M_HELP) set_mode(M_LIVE);
     grid_set_control_mode(grid_control_mode, mode, &scene_state);
-    
+
     scene_state.grid.grid_dirty = 1;
     grid_clear_held_keys();
 }
@@ -635,7 +635,7 @@ void set_last_mode() {
 }
 
 // defined in globals.h
-void clear_delays_and_slews(scene_state_t *ss) {
+void clear_delays_and_slews(scene_state_t* ss) {
     clear_delays(ss);
     for (int i = 0; i < 4; i++) { aout[i].step = 1; }
 }
@@ -823,7 +823,7 @@ void tele_metro_updated() {
         set_metro_icon(true);
     else
         set_metro_icon(false);
-    
+
     if (grid_connected && grid_control_mode) scene_state.grid.grid_dirty = 1;
 }
 

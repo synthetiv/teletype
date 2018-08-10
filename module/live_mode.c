@@ -125,16 +125,21 @@ void set_live_submode(u8 submode) {
     if (submode == 0) {
         show_vars = 0;
         grid_mode = GRID_MODE_OFF;
-    } else if (submode == 1) {
+    }
+    else if (submode == 1) {
         show_vars = 1;
         grid_mode = GRID_MODE_OFF;
-    } else if (submode == 2) {
+    }
+    else if (submode == 2) {
         show_vars = 0;
         grid_mode = GRID_MODE_EDIT;
-    } else if (submode == 3) {
+    }
+    else if (submode == 3) {
         show_vars = 0;
         grid_mode = GRID_MODE_FULL;
-    } else return;
+    }
+    else
+        return;
     dirty = D_ALL;
     activity_prev = 0xFF;
     grid_view_changed = true;
@@ -179,14 +184,14 @@ void execute_line() {
         s16 found = -1;
         for (s16 i = history_top; i >= 0; i--)
             if (command.length == history[i].length &&
-                memcmp(&(command.data), &(history[i].data), 
-                    command.length * sizeof(tele_data_t)) == 0) {
-                    found = i;
-                    break;
-                }
-                
+                memcmp(&(command.data), &(history[i].data),
+                       command.length * sizeof(tele_data_t)) == 0) {
+                found = i;
+                break;
+            }
+
         if (found == -1) {
-            // increase history_size up to a maximum 
+            // increase history_size up to a maximum
             if (history_top < MAX_HISTORY_SIZE - 1) history_top++;
             found = history_top;
         }
@@ -427,8 +432,8 @@ uint8_t screen_refresh_live(scene_state_t *ss) {
         (grid_view_changed || ss->grid.scr_dirty)) {
         grid_view_changed = 0;
         screen_dirty = 0b111111;
-        grid_screen_refresh(ss, grid_mode, grid_page, grid_show_controls, grid_x1,
-                            grid_y1, grid_x2, grid_y2);
+        grid_screen_refresh(ss, grid_mode, grid_page, grid_show_controls,
+                            grid_x1, grid_y1, grid_x2, grid_y2);
     }
     if (grid_mode == GRID_MODE_FULL) return 0b11111111;
 

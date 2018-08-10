@@ -76,9 +76,7 @@ void pattern_down() {
 
 void process_pattern_keys(uint8_t k, uint8_t m, bool is_held_key) {
     // <down>: move down
-    if (match_no_mod(m, k, HID_DOWN)) {
-        pattern_down();
-    }
+    if (match_no_mod(m, k, HID_DOWN)) { pattern_down(); }
     // alt-<down>: move a page down
     else if (match_alt(m, k, HID_DOWN)) {
         editing_number = false;

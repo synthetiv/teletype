@@ -23,9 +23,8 @@ extern void grid_set_control_mode(u8 control, u8 mode, scene_state_t *ss);
 extern void grid_metro_triggered(scene_state_t *ss);
 extern void grid_refresh(scene_state_t *ss);
 extern void grid_screen_refresh(scene_state_t *ss, screen_grid_mode mode,
-    u8 page, u8 ctrl, u8 x1, u8 y1, u8 x2, u8 y2);
-extern void grid_process_key(scene_state_t *ss, u8 x, u8 y, u8 z,
-    u8 emulated);
+                                u8 page, u8 ctrl, u8 x1, u8 y1, u8 x2, u8 y2);
+extern void grid_process_key(scene_state_t *ss, u8 x, u8 y, u8 z, u8 emulated);
 extern void grid_process_fader_slew(scene_state_t *ss);
 extern void grid_clear_held_keys(void);
 

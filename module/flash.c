@@ -4,8 +4,8 @@
 
 // asf
 #include "flashc.h"
-#include "print_funcs.h"
 #include "init_teletype.h"
+#include "print_funcs.h"
 
 // this
 #include "teletype.h"
@@ -21,7 +21,7 @@ static grid_data_t grid_data;
 
 // NVRAM data structure located in the flash array.
 typedef const struct {
-    scene_script_t scripts[SCRIPT_COUNT - 1]; // Exclude TEMP script
+    scene_script_t scripts[SCRIPT_COUNT - 1];  // Exclude TEMP script
     scene_pattern_t patterns[PATTERN_COUNT];
     grid_data_t grid_data;
     char text[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
