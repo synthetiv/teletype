@@ -835,10 +835,12 @@ static void op_PN_ADDW_get(const void *NOTUSED(data), scene_state_t *ss,
 }
 
 // Make ops
+// clang-format off
 const tele_op_t op_P_ADD = MAKE_GET_OP(P.+, op_P_ADD_get, 2, false);
 const tele_op_t op_PN_ADD = MAKE_GET_OP(PN.+, op_PN_ADD_get, 3, false);
-const tele_op_t op_P_ADDW = MAKE_GET_OP(P.+ W, op_P_ADDW_get, 4, false);
-const tele_op_t op_PN_ADDW = MAKE_GET_OP(PN.+ W, op_PN_ADDW_get, 5, false);
+const tele_op_t op_P_ADDW = MAKE_GET_OP(P.+W, op_P_ADDW_get, 4, false);
+const tele_op_t op_PN_ADDW = MAKE_GET_OP(PN.+W, op_PN_ADDW_get, 5, false);
+// clang-format on
 
 ////////////////////////////////////////////////////////////////////////////////
 // P.- P.-W ////////////////////////////////////////////////////////////////////
@@ -891,7 +893,9 @@ static void op_PN_SUBW_get(const void *NOTUSED(data), scene_state_t *ss,
 }
 
 // Make ops
+// clang-format off
 const tele_op_t op_P_SUB = MAKE_GET_OP(P.-, op_P_SUB_get, 2, false);
 const tele_op_t op_PN_SUB = MAKE_GET_OP(PN.-, op_PN_SUB_get, 3, false);
-const tele_op_t op_P_SUBW = MAKE_GET_OP(P.- W, op_P_SUBW_get, 4, false);
-const tele_op_t op_PN_SUBW = MAKE_GET_OP(PN.- W, op_PN_SUBW_get, 5, false);
+const tele_op_t op_P_SUBW = MAKE_GET_OP(P.-W, op_P_SUBW_get, 4, false);
+const tele_op_t op_PN_SUBW = MAKE_GET_OP(PN.-W, op_PN_SUBW_get, 5, false);
+// clang-format on
