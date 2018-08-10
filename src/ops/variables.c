@@ -27,13 +27,13 @@ static void op_I_get(const void *data, scene_state_t *ss, exec_state_t *es,
 static void op_I_set(const void *data, scene_state_t *ss, exec_state_t *es,
                      command_state_t *cs);
 static void op_TIME_get(const void *data, scene_state_t *ss, exec_state_t *es,
-                     command_state_t *cs);
+                        command_state_t *cs);
 static void op_TIME_set(const void *data, scene_state_t *ss, exec_state_t *es,
-                     command_state_t *cs);
-static void op_TIME_ACT_get(const void *data, scene_state_t *ss, exec_state_t *es,
-                     command_state_t *cs);
-static void op_TIME_ACT_set(const void *data, scene_state_t *ss, exec_state_t *es,
-                     command_state_t *cs);
+                        command_state_t *cs);
+static void op_TIME_ACT_get(const void *data, scene_state_t *ss,
+                            exec_state_t *es, command_state_t *cs);
+static void op_TIME_ACT_set(const void *data, scene_state_t *ss,
+                            exec_state_t *es, command_state_t *cs);
 
 // clang-format off
 const tele_op_t op_A          = MAKE_SIMPLE_VARIABLE_OP(A         , variables.a         );
@@ -63,25 +63,26 @@ const tele_op_t op_I     = MAKE_GET_SET_OP(I    , op_I_get, op_I_set, 0, true);
 
 static void op_TIME_get(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
-    int64_t delta = ss->variables.time_act ?
-        tele_get_ticks() - ss->variables.time : ss->variables.time;
+    int64_t delta = ss->variables.time_act
+                        ? tele_get_ticks() - ss->variables.time
+                        : ss->variables.time;
     cs_push(cs, delta & 0x7fff);
 }
 
 static void op_TIME_set(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t new_time = cs_pop(cs);
-    ss->variables.time = ss->variables.time_act ?
-        tele_get_ticks() - new_time : new_time;
+    ss->variables.time =
+        ss->variables.time_act ? tele_get_ticks() - new_time : new_time;
 }
 
 static void op_TIME_ACT_get(const void *NOTUSED(data), scene_state_t *ss,
-                        exec_state_t *NOTUSED(es), command_state_t *cs) {
+                            exec_state_t *NOTUSED(es), command_state_t *cs) {
     cs_push(cs, ss->variables.time_act ? 1 : 0);
 }
 
 static void op_TIME_ACT_set(const void *NOTUSED(data), scene_state_t *ss,
-                        exec_state_t *NOTUSED(es), command_state_t *cs) {
+                            exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t act = cs_pop(cs);
     if (act && ss->variables.time_act) return;
     if (!act && !ss->variables.time_act) return;

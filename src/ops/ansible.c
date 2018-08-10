@@ -37,14 +37,14 @@ static void op_KR_RES_get(const void *data, scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs);
 static void op_KR_CV_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
-static void op_KR_MUTE_get(const void *data, scene_state_t *ss, exec_state_t *es,
-                         command_state_t *cs);
-static void op_KR_MUTE_set(const void *data, scene_state_t *ss, exec_state_t *es,
-                         command_state_t *cs);
-static void op_KR_TMUTE_get(const void *data, scene_state_t *ss, exec_state_t *es,
-                         command_state_t *cs);
+static void op_KR_MUTE_get(const void *data, scene_state_t *ss,
+                           exec_state_t *es, command_state_t *cs);
+static void op_KR_MUTE_set(const void *data, scene_state_t *ss,
+                           exec_state_t *es, command_state_t *cs);
+static void op_KR_TMUTE_get(const void *data, scene_state_t *ss,
+                            exec_state_t *es, command_state_t *cs);
 static void op_KR_CLK_get(const void *data, scene_state_t *ss, exec_state_t *es,
-                         command_state_t *cs);
+                          command_state_t *cs);
 
 
 static void op_ME_PRE_get(const void *data, scene_state_t *ss, exec_state_t *es,
@@ -348,16 +348,18 @@ static void op_KR_CV_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     cs_push(cs, (d[0] << 8) + d[1]);
 }
 
-static void op_KR_MUTE_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+static void op_KR_MUTE_set(const void *NOTUSED(data),
+                           scene_state_t *NOTUSED(ss),
+                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a = cs_pop(cs);
     int16_t b = cs_pop(cs);
     uint8_t d[] = { II_KR_MUTE, a, b };
     tele_ii_tx(II_KR_ADDR, d, 3);
 }
 
-static void op_KR_MUTE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+static void op_KR_MUTE_get(const void *NOTUSED(data),
+                           scene_state_t *NOTUSED(ss),
+                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a = cs_pop(cs);
     uint8_t d[] = { II_KR_MUTE | II_GET, a };
     uint8_t addr = II_KR_ADDR;
@@ -367,8 +369,9 @@ static void op_KR_MUTE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss)
     cs_push(cs, d[0]);
 }
 
-static void op_KR_TMUTE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+static void op_KR_TMUTE_get(const void *NOTUSED(data),
+                            scene_state_t *NOTUSED(ss),
+                            exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a = cs_pop(cs);
     uint8_t d[] = { II_KR_TMUTE, a };
     tele_ii_tx(II_KR_ADDR, d, 2);

@@ -18,8 +18,7 @@ void ss_init(scene_state_t *ss) {
     memset(&ss->scripts, 0, ss_scripts_size());
     turtle_init(&ss->turtle);
     uint32_t ticks = tele_get_ticks();
-    for (size_t i = 0; i < TEMP_SCRIPT; i++)
-        ss->scripts[i].last_time = ticks;
+    for (size_t i = 0; i < TEMP_SCRIPT; i++) ss->scripts[i].last_time = ticks;
     ss->variables.time = 0;
     ss->variables.time_act = 1;
 }
@@ -505,7 +504,7 @@ size_t es_push(exec_state_t *es) {
         if (es->exec_depth > 0) {
             es->variables[es->exec_depth].if_else_condition =
                 es->variables[es->exec_depth - 1].if_else_condition;
-            es->variables[es->exec_depth].i = 
+            es->variables[es->exec_depth].i =
                 es->variables[es->exec_depth - 1].i;
         }
         else {

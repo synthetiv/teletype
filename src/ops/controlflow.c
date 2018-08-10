@@ -60,8 +60,8 @@ const tele_mod_t mod_OTHER = MAKE_MOD(OTHER, mod_OTHER_func, 0);
 
 const tele_op_t op_SCRIPT =
     MAKE_GET_SET_OP(SCRIPT, op_SCRIPT_get, op_SCRIPT_set, 0, true);
-const tele_op_t op_SYM_DOLLAR = MAKE_ALIAS_OP($, op_SCRIPT_get, op_SCRIPT_set, 0,
-    true);
+const tele_op_t op_SYM_DOLLAR =
+    MAKE_ALIAS_OP($, op_SCRIPT_get, op_SCRIPT_set, 0, true);
 const tele_op_t op_KILL = MAKE_GET_OP(KILL, op_KILL_get, 0, false);
 const tele_op_t op_SCENE =
     MAKE_GET_SET_OP(SCENE, op_SCENE_get, op_SCENE_set, 0, true);
@@ -121,12 +121,12 @@ static void mod_L_func(scene_state_t *ss, exec_state_t *es, command_state_t *cs,
     // iterator, allowing users to roll back a loop or advance it faster
     int16_t *i = &es_variables(es)->i;
     *i = a;
-    
+
     // Forward loop
     if (a < b) {
         // continue the loop whenever the _pointed-to_ I meets the condition
         // this means that I can be interacted with inside the loop command
-        
+
         // iterate with higher precision to account for b == 32767
         for (int32_t l = a; l <= b; l++) {
             process_command(ss, es, post_command);

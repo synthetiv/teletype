@@ -787,8 +787,8 @@ const tele_op_t op_PN_RND = MAKE_GET_OP(PN.RND, op_PN_RND_get, 1, true);
 ////////////////////////////////////////////////////////////////////////////////
 // P.+ P.+W ////////////////////////////////////////////////////////////////////
 
-static void p_add_get(scene_state_t *ss, int16_t pn, int16_t idx, 
-    int16_t delta, uint8_t wrap_value, int16_t min, int16_t max) {
+static void p_add_get(scene_state_t *ss, int16_t pn, int16_t idx, int16_t delta,
+                      uint8_t wrap_value, int16_t min, int16_t max) {
     pn = normalise_pn(pn);
     idx = normalise_idx(ss, pn, idx);
     int16_t value = ss_get_pattern_val(ss, pn, idx) + delta;
@@ -814,7 +814,7 @@ static void op_PN_ADD_get(const void *NOTUSED(data), scene_state_t *ss,
 }
 
 static void op_P_ADDW_get(const void *NOTUSED(data), scene_state_t *ss,
-                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t idx = cs_pop(cs);
     int16_t delta = cs_pop(cs);
     int16_t min = cs_pop(cs);
@@ -824,7 +824,7 @@ static void op_P_ADDW_get(const void *NOTUSED(data), scene_state_t *ss,
 }
 
 static void op_PN_ADDW_get(const void *NOTUSED(data), scene_state_t *ss,
-                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t pn = cs_pop(cs);
     int16_t idx = cs_pop(cs);
     int16_t delta = cs_pop(cs);
@@ -837,14 +837,14 @@ static void op_PN_ADDW_get(const void *NOTUSED(data), scene_state_t *ss,
 // Make ops
 const tele_op_t op_P_ADD = MAKE_GET_OP(P.+, op_P_ADD_get, 2, false);
 const tele_op_t op_PN_ADD = MAKE_GET_OP(PN.+, op_PN_ADD_get, 3, false);
-const tele_op_t op_P_ADDW = MAKE_GET_OP(P.+W, op_P_ADDW_get, 4, false);
-const tele_op_t op_PN_ADDW = MAKE_GET_OP(PN.+W, op_PN_ADDW_get, 5, false);
+const tele_op_t op_P_ADDW = MAKE_GET_OP(P.+ W, op_P_ADDW_get, 4, false);
+const tele_op_t op_PN_ADDW = MAKE_GET_OP(PN.+ W, op_PN_ADDW_get, 5, false);
 
 ////////////////////////////////////////////////////////////////////////////////
 // P.- P.-W ////////////////////////////////////////////////////////////////////
 
-static void p_sub_get(scene_state_t *ss, int16_t pn, int16_t idx, 
-    int16_t delta, uint8_t wrap_value, int16_t min, int16_t max) {
+static void p_sub_get(scene_state_t *ss, int16_t pn, int16_t idx, int16_t delta,
+                      uint8_t wrap_value, int16_t min, int16_t max) {
     pn = normalise_pn(pn);
     idx = normalise_idx(ss, pn, idx);
     int16_t value = ss_get_pattern_val(ss, pn, idx) - delta;
@@ -870,7 +870,7 @@ static void op_PN_SUB_get(const void *NOTUSED(data), scene_state_t *ss,
 }
 
 static void op_P_SUBW_get(const void *NOTUSED(data), scene_state_t *ss,
-                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t idx = cs_pop(cs);
     int16_t delta = cs_pop(cs);
     int16_t min = cs_pop(cs);
@@ -880,7 +880,7 @@ static void op_P_SUBW_get(const void *NOTUSED(data), scene_state_t *ss,
 }
 
 static void op_PN_SUBW_get(const void *NOTUSED(data), scene_state_t *ss,
-                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t pn = cs_pop(cs);
     int16_t idx = cs_pop(cs);
     int16_t delta = cs_pop(cs);
@@ -893,5 +893,5 @@ static void op_PN_SUBW_get(const void *NOTUSED(data), scene_state_t *ss,
 // Make ops
 const tele_op_t op_P_SUB = MAKE_GET_OP(P.-, op_P_SUB_get, 2, false);
 const tele_op_t op_PN_SUB = MAKE_GET_OP(PN.-, op_PN_SUB_get, 3, false);
-const tele_op_t op_P_SUBW = MAKE_GET_OP(P.-W, op_P_SUBW_get, 4, false);
-const tele_op_t op_PN_SUBW = MAKE_GET_OP(PN.-W, op_PN_SUBW_get, 5, false);
+const tele_op_t op_P_SUBW = MAKE_GET_OP(P.- W, op_P_SUBW_get, 4, false);
+const tele_op_t op_PN_SUBW = MAKE_GET_OP(PN.- W, op_PN_SUBW_get, 5, false);

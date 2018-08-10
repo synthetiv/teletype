@@ -62,7 +62,7 @@ static void op_INIT_get(const void *NOTUSED(data), scene_state_t *ss,
     // At boot, all data is zeroed
     memset(ss, 0, sizeof(scene_state_t));
     ss_init(ss);
-    
+
     ss->cal = caldata;
     // Once calibration data is loaded, the scales need to be reset
     ss_update_param_scale(ss);

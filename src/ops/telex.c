@@ -374,8 +374,7 @@ void TXSend(uint8_t model, uint8_t command, uint8_t output, int16_t value,
     // zero-index the output
     output -= 1;
     // return if out of range
-    if (output < 0 || output > 31)
-        return;
+    if (output < 0 || output > 31) return;
     // convert the output to the device and the port
     uint8_t port = output & 3;
     uint8_t device = output >> 2;

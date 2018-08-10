@@ -55,7 +55,7 @@ extern const tele_op_t op_BCLR;
 extern const tele_op_t op_CHAOS;
 extern const tele_op_t op_CHAOS_R;
 extern const tele_op_t op_CHAOS_ALG;
-extern const tele_op_t op_TIF; // ternary if
+extern const tele_op_t op_TIF;  // ternary if
 
 extern const tele_op_t op_XOR;  // XOR alias NE
 

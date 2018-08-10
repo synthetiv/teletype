@@ -22,7 +22,7 @@ static void op_RAND_get(const void *data, scene_state_t *ss, exec_state_t *es,
 static void op_RRAND_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
 static void op_R_get(const void *data, scene_state_t *ss, exec_state_t *es,
-                         command_state_t *cs);
+                     command_state_t *cs);
 static void op_R_MIN_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
 static void op_R_MIN_set(const void *data, scene_state_t *ss, exec_state_t *es,
@@ -266,7 +266,7 @@ static void op_RRAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
 
 
 static void op_R_get(const void *NOTUSED(data), scene_state_t *ss,
-                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+                     exec_state_t *NOTUSED(es), command_state_t *cs) {
     cs_push(cs, push_random(ss->variables.r_min, ss->variables.r_max));
 }
 
@@ -473,26 +473,27 @@ static void op_OR_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
 
 static void op_JI_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                       exec_state_t *NOTUSED(es), command_state_t *cs) {
-    const uint8_t prime[6] = {2, 3, 5, 7, 11, 13 };
+    const uint8_t prime[6] = { 2, 3, 5, 7, 11, 13 };
     const int16_t ji_const[6] = { 6554, 10388, 15218, 18399, 22673, 24253 };
     int32_t result = 0;
     int16_t n = abs(cs_pop(cs));
     int16_t d = abs(cs_pop(cs));
-    
+
     /* code for generation of ji_const
-     
+
      int16_t ji_find_prime_constant( uint16_t prime ) {
         float r = 1638.0 * logf( (float)prime ) / log( 2.0 );
-        r *= 4.0;                       // this corresponds to the inverse of the bitshift applied at rounding & scaling
+        r *= 4.0;                       // this corresponds to the inverse of
+     the bitshift applied at rounding & scaling
         return( (int16_t)( r + 0.5 ) );
      }
      */
-    
+
     if (n == 0 || d == 0) {  // early return if zeroes
         cs_push(cs, 0);
         return;
     }
-    
+
     for (uint8_t p = 0; p <= 6; p++) {  // find num factors
         if (n == 1) { break; }          // succeed if all primes found
         if (p == 6) {                   // failed to find solution
@@ -519,7 +520,7 @@ static void op_JI_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
             quotient = d / prime[p];
         }
     }
-    result = ( result + 2 ) >> 2; // round & scale
+    result = (result + 2) >> 2;  // round & scale
     cs_push(cs, result);
 }
 
@@ -538,8 +539,8 @@ static void op_SCALE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     }
 
     int32_t result = (i - a) * (y - x) * 2 / (b - a);
-    result = result / 2 + (result & 1); // rounding
-    
+    result = result / 2 + (result & 1);  // rounding
+
     cs_push(cs, result + x);
 }
 
