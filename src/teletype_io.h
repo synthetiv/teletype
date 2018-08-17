@@ -7,6 +7,9 @@
 // These functions are for interacting with the teletype hardware, each target
 // must provide it's own implementation
 
+// used for TIME and LAST
+extern uint32_t tele_get_ticks(void);
+
 // called when M or M.ACT are updated
 extern void tele_metro_updated(void);
 
@@ -17,7 +20,7 @@ extern void tele_tr(uint8_t i, int16_t v);
 extern void tele_cv(uint8_t i, int16_t v, uint8_t s);
 extern void tele_cv_slew(uint8_t i, int16_t v);
 
-extern void tele_update_in(void);
+extern void tele_update_adc(uint8_t force);
 
 // inform target if there are delays
 extern void tele_has_delays(bool has_delays);
@@ -45,5 +48,8 @@ void tele_save_calibration(void);
 void tele_profile_script(size_t);
 void tele_profile_delay(uint8_t);
 #endif
+
+// emulate grid key press
+extern void grid_key_press(uint8_t x, uint8_t y, uint8_t z);
 
 #endif

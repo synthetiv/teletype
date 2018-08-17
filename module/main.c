@@ -24,6 +24,7 @@
 #include "init_teletype.h"
 #include "interrupts.h"
 #include "kbd.h"
+#include "monome.h"
 #include "region.h"
 #include "screen.h"
 #include "timers.h"
@@ -35,13 +36,13 @@
 #include "edit_mode.h"
 #include "flash.h"
 #include "globals.h"
+#include "grid.h"
 #include "help_mode.h"
 #include "keyboard_helper.h"
 #include "live_mode.h"
 #include "pattern_mode.h"
 #include "preset_r_mode.h"
 #include "preset_w_mode.h"
-#include "screensaver_mode.h"
 #include "teletype.h"
 #include "teletype_io.h"
 #include "usb_disk_mode.h"
@@ -49,11 +50,7 @@
 #ifdef TELETYPE_PROFILE
 #include "profile.h"
 
-profile_t
-    prof_Script[SCRIPT_COUNT],
-    prof_Delay[DELAY_SIZE], 
-    prof_CV,
-    prof_ADC,
+profile_t prof_Script[SCRIPT_COUNT], prof_Delay[DELAY_SIZE], prof_CV, prof_ADC,
     prof_ScreenRefresh;
 
 void tele_profile_script(size_t s) {
@@ -71,6 +68,7 @@ void tele_profile_delay(uint8_t d) {
 
 #define RATE_CLOCK 10
 #define RATE_CV 6
+#define SS_TIMEOUT 90 /* minutes */ * 60 * 100
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,14 +77,14 @@ void tele_profile_delay(uint8_t d) {
 scene_state_t scene_state;
 char scene_text[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
 uint8_t preset_select;
-region line[8] = { { .w = 128, .h = 8, .x = 0, .y = 0 },
-                   { .w = 128, .h = 8, .x = 0, .y = 8 },
-                   { .w = 128, .h = 8, .x = 0, .y = 16 },
-                   { .w = 128, .h = 8, .x = 0, .y = 24 },
-                   { .w = 128, .h = 8, .x = 0, .y = 32 },
-                   { .w = 128, .h = 8, .x = 0, .y = 40 },
-                   { .w = 128, .h = 8, .x = 0, .y = 48 },
-                   { .w = 128, .h = 8, .x = 0, .y = 56 } };
+region line[8] = {
+    {.w = 128, .h = 8, .x = 0, .y = 0 },  {.w = 128, .h = 8, .x = 0, .y = 8 },
+    {.w = 128, .h = 8, .x = 0, .y = 16 }, {.w = 128, .h = 8, .x = 0, .y = 24 },
+    {.w = 128, .h = 8, .x = 0, .y = 32 }, {.w = 128, .h = 8, .x = 0, .y = 40 },
+    {.w = 128, .h = 8, .x = 0, .y = 48 }, {.w = 128, .h = 8, .x = 0, .y = 56 }
+};
+char copy_buffer[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
+uint8_t copy_buffer_len = 0;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -95,6 +93,8 @@ region line[8] = { { .w = 128, .h = 8, .x = 0, .y = 0 },
 static tele_mode_t mode = M_LIVE;
 static tele_mode_t last_mode = M_LIVE;
 static uint32_t ss_counter = 0;
+static u8 grid_connected = 0;
+static u8 grid_control_mode = 0;
 
 static uint16_t adc[4];
 
@@ -112,16 +112,19 @@ static aout_t aout[4];
 static bool metro_timer_enabled;
 static uint8_t front_timer;
 static uint8_t mod_key = 0, hold_key, hold_key_count = 0;
-static uint64_t last_in_tick = 0;
+static uint64_t last_adc_tick = 0;
 
 // timers
-static softTimer_t clockTimer = { .next = NULL, .prev = NULL };
-static softTimer_t refreshTimer = { .next = NULL, .prev = NULL };
-static softTimer_t keyTimer = { .next = NULL, .prev = NULL };
-static softTimer_t cvTimer = { .next = NULL, .prev = NULL };
-static softTimer_t adcTimer = { .next = NULL, .prev = NULL };
-static softTimer_t hidTimer = { .next = NULL, .prev = NULL };
-static softTimer_t metroTimer = { .next = NULL, .prev = NULL };
+static softTimer_t clockTimer = {.next = NULL, .prev = NULL };
+static softTimer_t refreshTimer = {.next = NULL, .prev = NULL };
+static softTimer_t keyTimer = {.next = NULL, .prev = NULL };
+static softTimer_t cvTimer = {.next = NULL, .prev = NULL };
+static softTimer_t adcTimer = {.next = NULL, .prev = NULL };
+static softTimer_t hidTimer = {.next = NULL, .prev = NULL };
+static softTimer_t metroTimer = {.next = NULL, .prev = NULL };
+static softTimer_t monomePollTimer = {.next = NULL, .prev = NULL };
+static softTimer_t monomeRefreshTimer = {.next = NULL, .prev = NULL };
+static softTimer_t gridFaderTimer = {.next = NULL, .prev = NULL };
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -135,6 +138,9 @@ static void keyTimer_callback(void* o);
 static void adcTimer_callback(void* o);
 static void hidTimer_callback(void* o);
 static void metroTimer_callback(void* o);
+static void monome_poll_timer_callback(void* obj);
+static void monome_refresh_timer_callback(void* obj);
+static void grid_fader_timer_callback(void* obj);
 
 // event handler prototypes
 static void handler_None(int32_t data);
@@ -157,11 +163,17 @@ static void assign_msc_event_handlers(void);
 static void check_events(void);
 
 // key handling
-static void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key);
+static void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key,
+                             bool is_release);
 static bool process_global_keys(uint8_t key, uint8_t mod_key, bool is_held_key);
+
+// start/stop monome polling/refresh timers
+void timers_set_monome(void);
+void timers_unset_monome(void);
 
 // other
 static void render_init(void);
+static void exit_screensaver(void);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -221,35 +233,66 @@ void cvTimer_callback(void* o) {
 }
 
 void clockTimer_callback(void* o) {
-    event_t e = { .type = kEventTimer, .data = 0 };
+    event_t e = {.type = kEventTimer, .data = 0 };
     event_post(&e);
 }
 
 void refreshTimer_callback(void* o) {
-    event_t e = { .type = kEventScreenRefresh, .data = 0 };
+    event_t e = {.type = kEventScreenRefresh, .data = 0 };
     event_post(&e);
 }
 
 void keyTimer_callback(void* o) {
-    event_t e = { .type = kEventKeyTimer, .data = 0 };
+    event_t e = {.type = kEventKeyTimer, .data = 0 };
     event_post(&e);
 }
 
 void adcTimer_callback(void* o) {
-    event_t e = { .type = kEventPollADC, .data = 0 };
+    event_t e = {.type = kEventPollADC, .data = 0 };
     event_post(&e);
 }
 
 void hidTimer_callback(void* o) {
-    event_t e = { .type = kEventHidTimer, .data = 0 };
+    event_t e = {.type = kEventHidTimer, .data = 0 };
     event_post(&e);
 }
 
 void metroTimer_callback(void* o) {
-    event_t e = { .type = kEventAppCustom, .data = 0 };
+    event_t e = {.type = kEventAppCustom, .data = 0 };
     event_post(&e);
 }
 
+// monome polling callback
+static void monome_poll_timer_callback(void* obj) {
+    // asynchronous, non-blocking read
+    // UHC callback spawns appropriate events
+    ftdi_read();
+}
+
+// monome refresh callback
+static void monome_refresh_timer_callback(void* obj) {
+    if (grid_connected && scene_state.grid.grid_dirty) {
+        static event_t e;
+        e.type = kEventMonomeRefresh;
+        event_post(&e);
+    }
+}
+
+// monome: start polling
+void timers_set_monome(void) {
+    timer_add(&monomePollTimer, 20, &monome_poll_timer_callback, NULL);
+    timer_add(&monomeRefreshTimer, 30, &monome_refresh_timer_callback, NULL);
+}
+
+// monome stop polling
+void timers_unset_monome(void) {
+    timer_remove(&monomePollTimer);
+    timer_remove(&monomeRefreshTimer);
+}
+
+void grid_fader_timer_callback(void* o) {
+    grid_process_fader_slew(&scene_state);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // event handlers
@@ -257,15 +300,23 @@ void metroTimer_callback(void* o) {
 void handler_None(int32_t data) {}
 
 void handler_Front(int32_t data) {
-    ss_counter = 0;
-    if (mode == M_SCREENSAVER) {
-        set_last_mode();
+    if (ss_counter >= SS_TIMEOUT) {
+        exit_screensaver();
         return;
     }
+    ss_counter = 0;
+
     if (data == 0) {
+        if (grid_connected) {
+            grid_control_mode = !grid_control_mode;
+            if (grid_control_mode && mode == M_HELP) set_mode(M_LIVE);
+            grid_set_control_mode(grid_control_mode, mode, &scene_state);
+            return;
+        }
+
         if (mode != M_PRESET_R) {
             front_timer = 0;
-            set_preset_r_mode(adc[1]);
+            set_preset_r_mode(adc[1] >> 7);
             set_mode(M_PRESET_R);
         }
         else
@@ -288,9 +339,9 @@ void handler_PollADC(int32_t data) {
 
     ss_set_in(&scene_state, adc[0] << 2);
 
-    if (mode == M_SCREENSAVER && (adc[1] >> 8 != last_knob >> 8)) {
-        ss_counter = 0;
-        set_last_mode();
+    if (ss_counter >= SS_TIMEOUT && (adc[1] >> 8 != last_knob >> 8)) {
+        exit_screensaver();
+        return;
     }
     last_knob = adc[1];
 
@@ -298,8 +349,12 @@ void handler_PollADC(int32_t data) {
         process_pattern_knob(adc[1], mod_key);
         ss_set_param(&scene_state, adc[1] << 2);
     }
-    else if (mode == M_PRESET_R) {
-        process_preset_r_knob(adc[1], mod_key);
+    else if (mode == M_PRESET_R && !(grid_connected && grid_control_mode)) {
+        uint8_t preset = adc[1] >> 6;
+        uint8_t deadzone = preset & 1;
+        preset >>= 1;
+        if (!deadzone || abs(preset - get_preset()) > 1)
+            process_preset_r_preset(preset);
     }
     else {
         ss_set_param(&scene_state, adc[1] << 2);
@@ -311,8 +366,8 @@ void handler_PollADC(int32_t data) {
 
 void handler_KeyTimer(int32_t data) {
     if (front_timer) {
-        if (front_timer == 1) {
-            if (mode == M_PRESET_R) { process_preset_r_long_front(); }
+        if (front_timer == 1 && !grid_connected) {
+            if (mode == M_PRESET_R) { process_preset_r_load(); }
             front_timer = 0;
         }
         else
@@ -321,7 +376,7 @@ void handler_KeyTimer(int32_t data) {
 
     if (hold_key) {
         if (hold_key_count > 4)
-            process_keypress(hold_key, mod_key, true);
+            process_keypress(hold_key, mod_key, true, false);
         else
             hold_key_count++;
     }
@@ -343,8 +398,9 @@ void handler_HidTimer(int32_t data) {
             if (frame[i] == 0) {
                 mod_key = frame[0];
                 if (i == 2) {
-                    hold_key = 0;
                     hold_key_count = 0;
+                    process_keypress(hold_key, mod_key, false, true);
+                    hold_key = 0;
                 }
 
                 break;
@@ -353,7 +409,7 @@ void handler_HidTimer(int32_t data) {
             if (frame_compare(frame[i]) == false) {
                 hold_key = frame[i];
                 hold_key_count = 0;
-                process_keypress(hold_key, mod_key, false);
+                process_keypress(hold_key, mod_key, false, false);
             }
         }
 
@@ -386,9 +442,7 @@ void handler_MscConnect(int32_t data) {
 }
 
 void handler_Trigger(int32_t data) {
-    if (!ss_get_mute(&scene_state, data)) {
-        run_script(&scene_state, data);
-    }
+    if (!ss_get_mute(&scene_state, data)) { run_script(&scene_state, data); }
 }
 
 void handler_ScreenRefresh(int32_t data) {
@@ -402,22 +456,35 @@ void handler_ScreenRefresh(int32_t data) {
         case M_PRESET_W: screen_dirty = screen_refresh_preset_w(); break;
         case M_PRESET_R: screen_dirty = screen_refresh_preset_r(); break;
         case M_HELP: screen_dirty = screen_refresh_help(); break;
-        case M_LIVE: screen_dirty = screen_refresh_live(); break;
+        case M_LIVE: screen_dirty = screen_refresh_live(&scene_state); break;
         case M_EDIT: screen_dirty = screen_refresh_edit(); break;
-        case M_SCREENSAVER: screen_dirty = screen_refresh_screensaver(); break;
     }
 
+    u8 grid = 0;
     for (size_t i = 0; i < 8; i++)
-        if (screen_dirty & (1 << i)) { region_draw(&line[i]); }
+        if (screen_dirty & (1 << i)) {
+            grid = 1;
+            if (ss_counter < SS_TIMEOUT) region_draw(&line[i]);
+        }
+    if (grid_control_mode && grid) scene_state.grid.grid_dirty = 1;
+
 #ifdef TELETYPE_PROFILE
     profile_update(&prof_ScreenRefresh);
 #endif
 }
 
 void handler_EventTimer(int32_t data) {
-    ss_counter++;
-    if (ss_counter > SS_TIMEOUT) set_mode(M_SCREENSAVER);
     tele_tick(&scene_state, RATE_CLOCK);
+
+    if (ss_counter < SS_TIMEOUT) {
+        ss_counter++;
+        if (ss_counter == SS_TIMEOUT) {
+            u8 empty = 0;
+            for (int i = 0; i < 64; i++)
+                for (int j = 0; j < 64; j++)
+                    screen_draw_region(i << 1, j, 2, 1, &empty);
+        }
+    }
 }
 
 void handler_AppCustom(int32_t data) {
@@ -426,9 +493,53 @@ void handler_AppCustom(int32_t data) {
     if (ss_get_script_len(&scene_state, METRO_SCRIPT)) {
         set_metro_icon(true);
         run_script(&scene_state, METRO_SCRIPT);
+        if (grid_connected && grid_control_mode)
+            grid_metro_triggered(&scene_state);
     }
     else
         set_metro_icon(false);
+}
+
+static void handler_FtdiConnect(s32 data) {
+    ftdi_setup();
+}
+static void handler_FtdiDisconnect(s32 data) {
+    grid_connected = 0;
+    timers_unset_monome();
+}
+
+static void handler_MonomeConnect(s32 data) {
+    hold_key = 0;
+    timers_set_monome();
+    grid_connected = 1;
+
+    if (grid_control_mode && mode == M_HELP) set_mode(M_LIVE);
+    grid_set_control_mode(grid_control_mode, mode, &scene_state);
+
+    scene_state.grid.grid_dirty = 1;
+    grid_clear_held_keys();
+}
+
+static void handler_MonomePoll(s32 data) {
+    monome_read_serial();
+}
+
+static void handler_MonomeRefresh(s32 data) {
+    grid_refresh(&scene_state);
+    monomeFrameDirty = 0b1111;
+    (*monome_refresh)();
+}
+
+static void handler_MonomeGridKey(s32 data) {
+    if (grid_control_mode && ss_counter >= SS_TIMEOUT) {
+        exit_screensaver();
+        return;
+    }
+    if (grid_control_mode) ss_counter = 0;
+
+    u8 x, y, z;
+    monome_grid_key_parse_event_data(data, &x, &y, &z);
+    grid_process_key(&scene_state, x, y, z, 0);
 }
 
 
@@ -455,6 +566,13 @@ void assign_main_event_handlers() {
     app_event_handlers[kEventScreenRefresh] = &handler_ScreenRefresh;
     app_event_handlers[kEventTimer] = &handler_EventTimer;
     app_event_handlers[kEventAppCustom] = &handler_AppCustom;
+    app_event_handlers[kEventFtdiConnect] = &handler_FtdiConnect;
+    app_event_handlers[kEventFtdiDisconnect] = &handler_FtdiDisconnect;
+    app_event_handlers[kEventMonomeConnect] = &handler_MonomeConnect;
+    app_event_handlers[kEventMonomeDisconnect] = &handler_None;
+    app_event_handlers[kEventMonomePoll] = &handler_MonomePoll;
+    app_event_handlers[kEventMonomeRefresh] = &handler_MonomeRefresh;
+    app_event_handlers[kEventMonomeGridKey] = &handler_MonomeGridKey;
 }
 
 static void assign_msc_event_handlers(void) {
@@ -476,7 +594,6 @@ void check_events(void) {
 
 // defined in globals.h
 void set_mode(tele_mode_t m) {
-    if (m == mode && m == M_SCREENSAVER) return;
     last_mode = mode;
     switch (m) {
         case M_LIVE:
@@ -496,45 +613,50 @@ void set_mode(tele_mode_t m) {
             mode = M_PRESET_W;
             break;
         case M_PRESET_R:
-            set_preset_r_mode(adc[1]);
+            set_preset_r_mode(adc[1] >> 7);
             mode = M_PRESET_R;
             break;
         case M_HELP:
             set_help_mode();
             mode = M_HELP;
             break;
-        case M_SCREENSAVER:
-            set_screensaver_mode();
-            mode = M_SCREENSAVER;
-            break;
     }
+    if (mode != M_HELP) flash_update_last_mode(mode);
 }
 
 // defined in globals.h
 void set_last_mode() {
     if (mode == last_mode) return;
 
-    if (mode == M_SCREENSAVER)
-        set_mode(last_mode);
-    else if (last_mode == M_LIVE || last_mode == M_EDIT ||
-             last_mode == M_PATTERN)
+    if (last_mode == M_LIVE || last_mode == M_EDIT || last_mode == M_PATTERN)
         set_mode(last_mode);
     else
         set_mode(M_LIVE);
 }
 
+// defined in globals.h
+void clear_delays_and_slews(scene_state_t* ss) {
+    clear_delays(ss);
+    for (int i = 0; i < 4; i++) { aout[i].step = 1; }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // key handling
 
-void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key) {
+void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key,
+                      bool is_release) {
     // reset inactivity counter
-    ss_counter = 0;
-    if (mode == M_SCREENSAVER) {
-        set_last_mode();
-#if SS_DROP_KEYSTROKE
+    if (ss_counter >= SS_TIMEOUT) {
+        exit_screensaver();
         return;
-#endif
+    }
+    ss_counter = 0;
+
+    // release is a special case for live mode
+    if (is_release) {
+        if (mode == M_LIVE)
+            process_live_keys(key, mod_key, is_held_key, true, &scene_state);
+        return;
     }
 
     // first try global keys
@@ -543,7 +665,9 @@ void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key) {
 
     switch (mode) {
         case M_EDIT: process_edit_keys(key, mod_key, is_held_key); break;
-        case M_LIVE: process_live_keys(key, mod_key, is_held_key); break;
+        case M_LIVE:
+            process_live_keys(key, mod_key, is_held_key, false, &scene_state);
+            break;
         case M_PATTERN: process_pattern_keys(key, mod_key, is_held_key); break;
         case M_PRESET_W:
             process_preset_w_keys(key, mod_key, is_held_key);
@@ -552,7 +676,6 @@ void process_keypress(uint8_t key, uint8_t mod_key, bool is_held_key) {
             process_preset_r_keys(key, mod_key, is_held_key);
             break;
         case M_HELP: process_help_keys(key, mod_key, is_held_key); break;
-        case M_SCREENSAVER: break;  // impossible
     }
 }
 
@@ -586,14 +709,11 @@ bool process_global_keys(uint8_t k, uint8_t m, bool is_held_key) {
     }
     // win-<esc>: clear delays, stack and slews
     else if (match_win(m, k, HID_ESCAPE)) {
-        if (!is_held_key) {
-            clear_delays(&scene_state);
-            for (int i = 0; i < 4; i++) { aout[i].step = 1; }
-        }
+        if (!is_held_key) clear_delays_and_slews(&scene_state);
         return true;
     }
     // <alt>-?: help text, or return to last mode
-    else if (match_shift_alt(m, k, HID_SLASH)) {
+    else if (match_shift_alt(m, k, HID_SLASH) || match_alt(m, k, HID_H)) {
         if (mode == M_HELP)
             set_last_mode();
         else {
@@ -617,13 +737,13 @@ bool process_global_keys(uint8_t k, uint8_t m, bool is_held_key) {
         return true;
     }
     // ctrl-<F1> through ctrl-<F8> mute triggers
-    // ctrl-<F9> toggle metro
     else if (mod_only_ctrl(m) && k >= HID_F1 && k <= HID_F8) {
         bool muted = ss_get_mute(&scene_state, (k - HID_F1));
         ss_set_mute(&scene_state, (k - HID_F1), !muted);
         screen_mutes_updated();
         return true;
     }
+    // ctrl-<F9> toggle metro
     else if (mod_only_ctrl(m) && k == HID_F9) {
         scene_state.variables.m_act = !scene_state.variables.m_act;
         tele_metro_updated();
@@ -666,9 +786,18 @@ void render_init(void) {
     region_alloc(&line[7]);
 }
 
+void exit_screensaver(void) {
+    ss_counter = 0;
+    set_mode(mode);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // teletype_io.h
+
+uint32_t tele_get_ticks() {
+    return get_ticks();
+}
 
 void tele_metro_updated() {
     uint32_t metro_time = scene_state.variables.m;
@@ -694,10 +823,12 @@ void tele_metro_updated() {
         set_metro_icon(true);
     else
         set_metro_icon(false);
+
+    if (grid_connected && grid_control_mode) scene_state.grid.grid_dirty = 1;
 }
 
 void tele_metro_reset() {
-    if (metro_timer_enabled) { timer_reset(&metroTimer); }
+    if (metro_timer_enabled) timer_reset(&metroTimer);
 }
 
 void tele_tr(uint8_t i, int16_t v) {
@@ -737,11 +868,12 @@ void tele_cv_off(uint8_t i, int16_t v) {
     aout[i].off = v;
 }
 
-void tele_update_in(void) {
-    if (get_ticks() == last_in_tick) return;
-    last_in_tick = get_ticks();
+void tele_update_adc(u8 force) {
+    if (!force && get_ticks() == last_adc_tick) return;
+    last_adc_tick = get_ticks();
     adc_convert(&adc);
     ss_set_in(&scene_state, adc[0] << 2);
+    ss_set_param(&scene_state, adc[1] << 2);
 }
 
 void tele_ii_tx(uint8_t addr, uint8_t* data, uint8_t l) {
@@ -776,6 +908,11 @@ void tele_save_calibration() {
     flash_update_cal(&scene_state.cal);
 }
 
+void grid_key_press(uint8_t x, uint8_t y, uint8_t z) {
+    grid_process_key(&scene_state, x, y, z, 1);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // main
 
@@ -796,7 +933,12 @@ int main(void) {
     cpu_irq_enable();
 
     init_usb_host();
+    init_monome();
     init_oled();
+
+    // wait to allow for any i2c devices to fully initalise
+    delay_ms(1500);
+
     init_i2c_master();
 
     print_dbg("\r\n\r\n// teletype! //////////////////////////////// ");
@@ -831,6 +973,10 @@ int main(void) {
     timer_add(&keyTimer, 71, &keyTimer_callback, NULL);
     timer_add(&adcTimer, 61, &adcTimer_callback, NULL);
     timer_add(&refreshTimer, 63, &refreshTimer_callback, NULL);
+    timer_add(&gridFaderTimer, 25, &grid_fader_timer_callback, NULL);
+
+    // update IN and PARAM in case Init uses them
+    tele_update_adc(1);
 
     // manually call tele_metro_updated to sync metro to scene_state
     metro_timer_enabled = false;
@@ -846,11 +992,7 @@ int main(void) {
     aout[3].slew = 1;
 
     init_live_mode();
-    set_mode(M_LIVE);
-
-    // wait 50ms before running the init script to allow for any i2c devices to
-    // fully initalise
-    delay_ms(50);
+    set_mode(flash_last_mode());
 
     run_script(&scene_state, INIT_SCRIPT);
     scene_state.initializing = false;
@@ -881,7 +1023,6 @@ int main(void) {
             print_dbg_ulong(profile_delta_us(&prof_ADC));
             print_dbg("\r\nScreen Refresh:\t");
             print_dbg_ulong(profile_delta_us(&prof_ScreenRefresh));
-
         }
 #endif
     }

@@ -62,7 +62,7 @@ static void op_INIT_get(const void *NOTUSED(data), scene_state_t *ss,
     // At boot, all data is zeroed
     memset(ss, 0, sizeof(scene_state_t));
     ss_init(ss);
-    
+
     ss->cal = caldata;
     // Once calibration data is loaded, the scales need to be reset
     ss_update_param_scale(ss);
@@ -98,13 +98,17 @@ static void op_INIT_SCRIPT_ALL_get(const void *NOTUSED(data), scene_state_t *ss,
 static void op_INIT_P_get(const void *NOTUSED(data), scene_state_t *ss,
                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t v = cs_pop(cs);
-    if (v >= 0 && v < 4) ss_pattern_init(ss, v);
+    if (v >= 0 && v < 4) {
+        ss_pattern_init(ss, v);
+        tele_pattern_updated();
+    }
 }
 
 static void op_INIT_P_ALL_get(const void *NOTUSED(data), scene_state_t *ss,
                               exec_state_t *NOTUSED(es),
                               command_state_t *NOTUSED(cs)) {
     ss_patterns_init(ss);
+    tele_pattern_updated();
 }
 
 static void op_INIT_CV_get(const void *NOTUSED(data), scene_state_t *ss,
@@ -165,6 +169,8 @@ static void op_INIT_TIME_get(const void *NOTUSED(data), scene_state_t *ss,
                              command_state_t *NOTUSED(cs)) {
     clear_delays(ss);
     ss->variables.time = 0;
-    for (uint8_t i = 0; i < TEMP_SCRIPT; i++) ss->scripts[i].last_time = 0;
+    uint32_t ticks = tele_get_ticks();
+    for (uint8_t i = 0; i < TEMP_SCRIPT; i++) ss->scripts[i].last_time = ticks;
+    ss->variables.time = 0;
     ss_sync_every(ss, 0);
 }

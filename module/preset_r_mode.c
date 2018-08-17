@@ -15,44 +15,55 @@
 #include "usb_protocol_hid.h"
 
 static uint8_t offset;
-static uint8_t knob_last;
+static uint8_t preset_last;
 static bool dirty;
 
 static void do_preset_read(void);
 
-void set_preset_r_mode(uint16_t knob) {
-    knob_last = knob >> 7;
+uint8_t get_preset() {
+    return preset_last;
+}
+
+void set_preset_r_mode(uint8_t preset) {
+    preset_last = preset;
     offset = 0;
     dirty = true;
 }
 
-void process_preset_r_knob(uint16_t knob, uint8_t mod_key) {
-    uint8_t knob_now = knob >> 7;
-    if (knob_now != knob_last) {
-        preset_select = knob_now;
-        knob_last = knob_now;
+void process_preset_r_preset(uint8_t preset) {
+    if (preset != preset_last) {
+        preset_select = preset;
+        preset_last = preset;
         dirty = true;
     }
 }
 
-void process_preset_r_long_front() {
+void process_preset_r_load() {
     do_preset_read();
+}
+
+void preset_line_down() {
+    if (offset < SCENE_TEXT_LINES - 8) {
+        offset++;
+        dirty = true;
+    }
+}
+
+void preset_line_up() {
+    if (offset) {
+        offset--;
+        dirty = true;
+    }
 }
 
 void process_preset_r_keys(uint8_t k, uint8_t m, bool is_held_key) {
     // <down> or C-n: line down
     if (match_no_mod(m, k, HID_DOWN) || match_ctrl(m, k, HID_N)) {
-        if (offset < SCENE_TEXT_LINES - 8) {
-            offset++;
-            dirty = true;
-        }
+        preset_line_down();
     }
     // <up> or C-p: line up
     else if (match_no_mod(m, k, HID_UP) || match_ctrl(m, k, HID_P)) {
-        if (offset) {
-            offset--;
-            dirty = true;
-        }
+        preset_line_up();
     }
     // <left> or [: preset down
     else if (match_no_mod(m, k, HID_LEFT) ||
@@ -95,6 +106,7 @@ uint8_t screen_refresh_preset_r() {
 };
 
 void do_preset_read() {
+    ss_grid_init(&scene_state);
     flash_read(preset_select, &scene_state, &scene_text);
     flash_update_last_saved_scene(preset_select);
     ss_set_scene(&scene_state, preset_select);

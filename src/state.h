@@ -9,8 +9,9 @@
 #include "every.h"
 #include "scale.h"
 #include "turtle.h"
+#include "types.h"
 
-#define STACK_SIZE 8
+#define STACK_SIZE 16
 #define CV_COUNT 4
 #define Q_LENGTH 64
 #define TR_COUNT 4
@@ -24,6 +25,27 @@
 #define EXEC_DEPTH 8
 #define WHILE_DEPTH 10000
 
+#define GRID_GROUP_COUNT 64
+#define GRID_MAX_DIMENSION 16
+#define GRID_BUTTON_COUNT 256
+#define GRID_FADER_COUNT 64
+#define GRID_XYPAD_COUNT 8
+#define LED_DIM -1
+#define LED_BRI -2
+#define LED_OFF -3
+// H - horizontal, V - vertical
+// C - coarse, F - fine
+// H must be even, V must be odd
+#define FADER_CH_BAR 0
+#define FADER_CV_BAR 1
+#define FADER_CH_DOT 2
+#define FADER_CV_DOT 3
+#define FADER_COARSE FADER_CV_DOT
+#define FADER_FH_BAR 4
+#define FADER_FV_BAR 5
+#define FADER_FH_DOT 6
+#define FADER_FV_DOT 7
+
 #define METRO_MIN_MS 25
 #define METRO_MIN_UNSUPPORTED_MS 2
 
@@ -31,7 +53,7 @@
 // SCENE STATE /////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-//clang-format off
+// clang-format off
 typedef struct {
     // Maintaining this order allows for efficient access to the group
     // WARNING: DO NOT CHANGE THE ORDER OF VARIABLES a THROUGH t
@@ -68,8 +90,8 @@ typedef struct {
     int16_t r_min;
     int16_t r_max;
     int16_t scene;
-    int16_t time;
-    int16_t time_act;
+    int64_t time;
+    uint8_t time_act;
     int16_t tr[TR_COUNT];
     int16_t tr_pol[TR_COUNT];
     int16_t tr_time[TR_COUNT];
@@ -78,7 +100,7 @@ typedef struct {
     scale_data_t param_range;
     scale_t param_scale;
 } scene_variables_t;
-//clang-format on
+// clang-format on
 
 typedef struct {
     int16_t idx;
@@ -106,10 +128,69 @@ typedef struct {
 typedef struct {
     uint8_t l;
     tele_command_t c[SCRIPT_MAX_COMMANDS];
-    bool comment[SCRIPT_MAX_COMMANDS];
     every_count_t every[SCRIPT_MAX_COMMANDS];
-    int16_t last_time;
+    uint32_t last_time;
 } scene_script_t;
+
+typedef struct {
+    u8 enabled;
+    u8 group;
+    u8 x, y;
+    u8 w, h;
+    s16 level;
+    s8 script;
+} grid_common_t;
+
+typedef struct {
+    u8 enabled;
+    s8 script;
+    s16 fader_min;
+    s16 fader_max;
+} grid_group_t;
+
+typedef struct {
+    grid_common_t common;
+    u8 latch;
+    u8 state;
+} grid_button_t;
+
+typedef struct {
+    grid_common_t common;
+    u8 type;
+    u8 value;
+    u8 slide;
+    u8 slide_acc;
+    u8 slide_end;
+    u8 slide_delta;
+    u8 slide_dir;
+} grid_fader_t;
+
+typedef struct {
+    grid_common_t common;
+    u8 value_x;
+    u8 value_y;
+} grid_xypad_t;
+
+typedef struct {
+    u8 grid_dirty;
+    u8 scr_dirty;
+    u8 clear_held;
+
+    u8 rotate;
+    u8 dim;
+
+    u8 current_group;
+    u8 latest_group;
+    u8 latest_button;
+    u8 latest_fader;
+
+    s8 leds[GRID_MAX_DIMENSION][GRID_MAX_DIMENSION];
+    grid_group_t group[GRID_GROUP_COUNT];
+
+    grid_button_t button[GRID_BUTTON_COUNT];
+    grid_fader_t fader[GRID_FADER_COUNT];
+    grid_xypad_t xypad[GRID_XYPAD_COUNT];
+} scene_grid_t;
 
 typedef struct {
     bool initializing;
@@ -121,6 +202,7 @@ typedef struct {
     scene_script_t scripts[SCRIPT_COUNT];
     scene_turtle_t turtle;
     bool every_last;
+    scene_grid_t grid;
     cal_data_t cal;
 } scene_state_t;
 
@@ -128,6 +210,8 @@ extern void ss_init(scene_state_t *ss);
 extern void ss_variables_init(scene_state_t *ss);
 extern void ss_patterns_init(scene_state_t *ss);
 extern void ss_pattern_init(scene_state_t *ss, size_t pattern_no);
+extern void ss_grid_init(scene_state_t *ss);
+extern void ss_grid_common_init(grid_common_t *gc);
 
 extern void ss_set_in(scene_state_t *ss, int16_t value);
 extern void ss_set_param(scene_state_t *ss, int16_t value);
@@ -159,8 +243,12 @@ uint8_t ss_get_script_len(scene_state_t *ss, script_number_t idx);
 const tele_command_t *ss_get_script_command(scene_state_t *ss,
                                             script_number_t script_idx,
                                             size_t c_idx);
+void ss_copy_script_command(tele_command_t *dest, scene_state_t *ss,
+                            script_number_t script_idx, size_t c_idx);
 bool ss_get_script_comment(scene_state_t *ss, script_number_t script_idx,
                            size_t c_idx);
+void ss_set_script_comment(scene_state_t *ss, script_number_t script_idx,
+                           size_t c_idx, uint8_t on);
 void ss_toggle_script_comment(scene_state_t *ss, script_number_t script_idx,
                               size_t c_idx);
 void ss_overwrite_script_command(scene_state_t *ss, script_number_t script_idx,
@@ -243,9 +331,7 @@ typedef struct {
     int16_t top;
 } command_state_stack_t;
 
-typedef struct {
-    command_state_stack_t stack;
-} command_state_t;
+typedef struct { command_state_stack_t stack; } command_state_t;
 
 extern void cs_init(command_state_t *cs);
 extern int16_t cs_stack_size(command_state_t *cs);

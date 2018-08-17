@@ -4,14 +4,14 @@
 #include "ii.h"
 #include "teletype_io.h"
 
-static void op_WS_REC_get(const void *data, scene_state_t *ss,
-                          exec_state_t *es, command_state_t *cs);
-static void op_WS_REC_set(const void *data, scene_state_t *ss,
-                          exec_state_t *es, command_state_t *cs);
-static void op_WS_PLAY_get(const void *data, scene_state_t *ss, exec_state_t *es,
-                           command_state_t *cs);
-static void op_WS_PLAY_set(const void *data, scene_state_t *ss, exec_state_t *es,
-                           command_state_t *cs);
+static void op_WS_REC_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                          command_state_t *cs);
+static void op_WS_REC_set(const void *data, scene_state_t *ss, exec_state_t *es,
+                          command_state_t *cs);
+static void op_WS_PLAY_get(const void *data, scene_state_t *ss,
+                           exec_state_t *es, command_state_t *cs);
+static void op_WS_PLAY_set(const void *data, scene_state_t *ss,
+                           exec_state_t *es, command_state_t *cs);
 static void op_WS_LOOP_get(const void *data, scene_state_t *ss,
                            exec_state_t *es, command_state_t *cs);
 static void op_WS_LOOP_set(const void *data, scene_state_t *ss,
@@ -29,8 +29,7 @@ const tele_op_t op_WS_CUE  = MAKE_GET_SET_OP(WS.CUE , op_WS_CUE_get , op_WS_CUE_
 // clang-format on
 
 
-static void op_WS_REC_set(const void *NOTUSED(data),
-                          scene_state_t *NOTUSED(ss),
+static void op_WS_REC_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a = cs_pop(cs);
     uint8_t d[] = { WS_REC, a };
@@ -53,8 +52,9 @@ static void op_WS_PLAY_set(const void *NOTUSED(data),
     uint8_t d[] = { WS_PLAY, a };
     tele_ii_tx(WS_ADDR, d, 2);
 }
-static void op_WS_PLAY_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+static void op_WS_PLAY_get(const void *NOTUSED(data),
+                           scene_state_t *NOTUSED(ss),
+                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     uint8_t d[] = { WS_PLAY | II_GET };
     uint8_t addr = WS_ADDR;
     tele_ii_tx(addr, d, 1);
@@ -70,8 +70,9 @@ static void op_WS_LOOP_set(const void *NOTUSED(data),
     uint8_t d[] = { WS_LOOP, a };
     tele_ii_tx(WS_ADDR, d, 2);
 }
-static void op_WS_LOOP_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+static void op_WS_LOOP_get(const void *NOTUSED(data),
+                           scene_state_t *NOTUSED(ss),
+                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     uint8_t d[] = { WS_LOOP | II_GET };
     uint8_t addr = WS_ADDR;
     tele_ii_tx(addr, d, 1);
@@ -80,8 +81,7 @@ static void op_WS_LOOP_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss)
     cs_push(cs, d[0]);
 }
 
-static void op_WS_CUE_set(const void *NOTUSED(data),
-                          scene_state_t *NOTUSED(ss),
+static void op_WS_CUE_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a = cs_pop(cs);
     uint8_t d[] = { WS_CUE, a };

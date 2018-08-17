@@ -11,6 +11,10 @@
 #include "util.h"
 
 
+uint32_t tele_get_ticks() {
+    return 0;
+}
+
 void tele_metro_updated() {
     printf("METRO UPDATED");
     printf("\n");
@@ -36,8 +40,8 @@ void tele_cv_slew(uint8_t i, int16_t v) {
     printf("\n");
 }
 
-void tele_update_in(void) {
-    printf("UPDATE IN");
+void tele_update_adc(uint8_t force) {
+    printf("UPDATE ADC force:%s", force ? "true" : "false");
     printf("\n");
 }
 
@@ -101,6 +105,11 @@ void tele_save_calibration() {}
 
 void tele_profile_script(size_t s) {}
 void tele_profile_delay(uint8_t d) {}
+
+void grid_key_press(uint8_t x, uint8_t y, uint8_t z) {
+    printf("GRID KEY PRESS x:%" PRIu8 " y:%" PRIu8 " z:%" PRIu8, x, y, z);
+    printf("\n");
+}
 
 int main() {
     char *in;

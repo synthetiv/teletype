@@ -1,4 +1,4 @@
-##Patterns
+## Patterns
 Patterns facilitate musical data manipulation– lists of numbers that can be used as sequences, chord sets, rhythms, or whatever you choose. Pattern memory consists four banks of 64 steps. Functions are provided for a variety of pattern creation, transformation, and playback.
 
 New in teletype 2.0, a second version of all Pattern ops have been added. The original `P` ops (`P`, `P.L`, `P.NEXT`, etc.) act upon the ‘working pattern’ as defined by `P.N`. By default the working pattern is assigned to pattern 0 (`P.N 0`), in order to execute a command on pattern 1 using `P` ops you would need to first reassign the working pattern to pattern 1 (`P.N 1`). 

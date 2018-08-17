@@ -11,11 +11,16 @@ void ss_init(scene_state_t *ss) {
     ss->initializing = true;
     ss_variables_init(ss);
     ss_patterns_init(ss);
+    ss_grid_init(ss);
     ss->delay.count = 0;
     for (size_t i = 0; i < TR_COUNT; i++) { ss->tr_pulse_timer[i] = 0; }
     ss->stack_op.top = 0;
     memset(&ss->scripts, 0, ss_scripts_size());
     turtle_init(&ss->turtle);
+    uint32_t ticks = tele_get_ticks();
+    for (size_t i = 0; i < TEMP_SCRIPT; i++) ss->scripts[i].last_time = ticks;
+    ss->variables.time = 0;
+    ss->variables.time_act = 1;
 }
 
 void ss_variables_init(scene_state_t *ss) {
@@ -46,6 +51,7 @@ void ss_variables_init(scene_state_t *ss) {
     };
 
     memcpy(&ss->variables, &default_variables, sizeof(default_variables));
+    tele_update_adc(1);
     ss_update_param_scale(ss);
     ss_update_in_scale(ss);
 }
@@ -64,6 +70,59 @@ void ss_pattern_init(scene_state_t *ss, size_t pattern_no) {
     p->start = 0;
     p->end = 63;
     for (size_t i = 0; i < PATTERN_LENGTH; i++) { p->val[i] = 0; }
+}
+
+// grid
+
+void ss_grid_init(scene_state_t *ss) {
+    ss->grid.rotate = 0;
+    ss->grid.dim = 0;
+
+    ss->grid.current_group = 0;
+    ss->grid.latest_group = 0;
+    ss->grid.latest_button = 0;
+    ss->grid.latest_fader = 0;
+
+    for (u8 i = 0; i < GRID_MAX_DIMENSION; i++)
+        for (u8 j = 0; j < GRID_MAX_DIMENSION; j++)
+            ss->grid.leds[i][j] = LED_OFF;
+
+    for (u8 i = 0; i < GRID_GROUP_COUNT; i++) {
+        ss->grid.group[i].enabled = true;
+        ss->grid.group[i].script = -1;
+        ss->grid.group[i].fader_min = 0;
+        ss->grid.group[i].fader_max = 16383;
+    }
+
+    for (u16 i = 0; i < GRID_BUTTON_COUNT; i++) {
+        ss_grid_common_init(&(ss->grid.button[i].common));
+        ss->grid.button[i].latch = 0;
+        ss->grid.button[i].state = 0;
+    }
+
+    for (u8 i = 0; i < GRID_FADER_COUNT; i++) {
+        ss_grid_common_init(&(ss->grid.fader[i].common));
+        ss->grid.fader[i].type = FADER_CH_BAR;
+        ss->grid.fader[i].value = 0;
+        ss->grid.fader[i].slide = 0;
+    }
+
+    for (u8 i = 0; i < GRID_XYPAD_COUNT; i++) {
+        ss_grid_common_init(&(ss->grid.xypad[i].common));
+        ss->grid.xypad[i].value_x = 0;
+        ss->grid.xypad[i].value_y = 0;
+    }
+
+    ss->grid.grid_dirty = ss->grid.scr_dirty = ss->grid.clear_held = true;
+}
+
+void ss_grid_common_init(grid_common_t *gc) {
+    gc->enabled = false;
+    gc->group = 0;
+    gc->x = gc->y = 0;
+    gc->w = gc->h = 1;
+    gc->level = 5;
+    gc->script = -1;
 }
 
 // Hardware
@@ -168,6 +227,11 @@ const tele_command_t *ss_get_script_command(scene_state_t *ss,
     return &ss->scripts[script_idx].c[c_idx];
 }
 
+void ss_copy_script_command(tele_command_t *dest, scene_state_t *ss,
+                            script_number_t script_idx, size_t c_idx) {
+    memcpy(dest, &ss->scripts[script_idx].c[c_idx], sizeof(tele_command_t));
+}
+
 // private
 static void ss_set_script_command(scene_state_t *ss, script_number_t script_idx,
                                   size_t c_idx, const tele_command_t *cmd) {
@@ -176,13 +240,18 @@ static void ss_set_script_command(scene_state_t *ss, script_number_t script_idx,
 
 bool ss_get_script_comment(scene_state_t *ss, script_number_t script_idx,
                            size_t c_idx) {
-    return ss->scripts[script_idx].comment[c_idx];
+    return ss->scripts[script_idx].c[c_idx].comment;
+}
+
+void ss_set_script_comment(scene_state_t *ss, script_number_t script_idx,
+                           size_t c_idx, uint8_t on) {
+    ss->scripts[script_idx].c[c_idx].comment = on;
 }
 
 void ss_toggle_script_comment(scene_state_t *ss, script_number_t script_idx,
                               size_t c_idx) {
-    ss->scripts[script_idx].comment[c_idx] =
-        !ss->scripts[script_idx].comment[c_idx];
+    ss->scripts[script_idx].c[c_idx].comment =
+        !ss->scripts[script_idx].c[c_idx].comment;
 }
 
 void ss_overwrite_script_command(scene_state_t *ss, script_number_t script_idx,
@@ -233,9 +302,9 @@ void ss_insert_script_command(scene_state_t *ss, script_number_t script_idx,
 
 void ss_delete_script_command(scene_state_t *ss, script_number_t script_idx,
                               size_t command_idx) {
-    if (command_idx >= SCRIPT_MAX_COMMANDS) return;
-
     uint8_t script_len = ss_get_script_len(ss, script_idx);
+    if (command_idx >= SCRIPT_MAX_COMMANDS || command_idx >= script_len) return;
+
     if (script_len &&
         ss_get_script_command(ss, script_idx, command_idx)->length) {
         script_len--;
@@ -249,6 +318,7 @@ void ss_delete_script_command(scene_state_t *ss, script_number_t script_idx,
 
         tele_command_t blank_command;
         blank_command.length = 0;
+        blank_command.comment = false;
         ss_set_script_command(ss, script_idx, script_len, &blank_command);
     }
 }
@@ -266,17 +336,14 @@ size_t ss_scripts_size() {
 }
 
 int16_t ss_get_script_last(scene_state_t *ss, script_number_t idx) {
-    int16_t now = ss->variables.time;
     if (idx < TT_SCRIPT_1) return 0;
     if (idx > INIT_SCRIPT) return 0;
-    int16_t last = ss->scripts[idx].last_time;
-    if (now < last)
-        return (INT16_MAX - last) + (now - INT16_MIN);  // I must be dense?
-    return now - last;
+    uint32_t delta = (tele_get_ticks() - ss->scripts[idx].last_time) & 0x7fff;
+    return delta;
 }
 
 void ss_update_script_last(scene_state_t *ss, script_number_t idx) {
-    ss->scripts[idx].last_time = ss->variables.time;
+    ss->scripts[idx].last_time = tele_get_ticks();
 }
 
 every_count_t *ss_get_every(scene_state_t *ss, script_number_t idx,
@@ -437,7 +504,7 @@ size_t es_push(exec_state_t *es) {
         if (es->exec_depth > 0) {
             es->variables[es->exec_depth].if_else_condition =
                 es->variables[es->exec_depth - 1].if_else_condition;
-            es->variables[es->exec_depth].i = 
+            es->variables[es->exec_depth].i =
                 es->variables[es->exec_depth - 1].i;
         }
         else {

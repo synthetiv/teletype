@@ -1,5 +1,5 @@
-#include "sysclk.h"
 #include "stdbool.h"
+#include "sysclk.h"
 
 typedef struct {
     uint32_t last;
@@ -11,7 +11,7 @@ static inline void profile_update(profile_t *p) {
     uint32_t count = Get_system_register(AVR32_COUNT);
 
     if (count < p->last)
-        p->delta = INT32_MAX - p->last + count; 
+        p->delta = INT32_MAX - p->last + count;
     else
         p->delta = count - p->last;
 

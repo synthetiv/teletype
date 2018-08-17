@@ -1,6 +1,7 @@
 #ifndef _COMMAND_H_
 #define _COMMAND_H_
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #define COMMAND_MAX_LENGTH 16
@@ -16,6 +17,7 @@ typedef struct {
     uint8_t length;
     int8_t separator;
     tele_data_t data[COMMAND_MAX_LENGTH];
+    bool comment;
 } tele_command_t;
 
 void copy_command(tele_command_t *dst, const tele_command_t *src);

@@ -3,6 +3,7 @@
 #include <string.h>
 
 // this
+#include "globals.h"
 #include "keyboard_helper.h"
 
 // teletype
@@ -16,9 +17,6 @@
 // asf
 #include "conf_usb_host.h"  // needed in order to include "usb_protocol_hid.h"
 #include "usb_protocol_hid.h"
-
-// global copy buffer
-static char copy_buffer[LINE_EDITOR_SIZE];
 
 void line_editor_set(line_editor_t *le, const char value[LINE_EDITOR_SIZE]) {
     size_t length = strlen(value);
@@ -66,6 +64,22 @@ bool line_editor_process_keys(line_editor_t *le, uint8_t k, uint8_t m,
         le->cursor = le->length;
         return true;
     }
+    // ctrl-<left>: move cursor to previous word
+    else if (match_ctrl(m, k, HID_LEFT)) {
+        while (le->cursor) {
+            le->cursor--;
+            if (!le->cursor || le->buffer[le->cursor - 1] == ' ') break;
+        }
+        return true;
+    }
+    // ctrl-<right>: move cursor to next word
+    else if (match_ctrl(m, k, HID_RIGHT)) {
+        while (le->cursor < le->length) {
+            le->cursor++;
+            if (le->buffer[le->cursor - 1] == ' ') break;
+        }
+        return true;
+    }
     // <backspace> or ctrl-h: backwards delete one character
     else if (match_no_mod(m, k, HID_BACKSPACE) || match_ctrl(m, k, HID_H)) {
         if (le->cursor) {
@@ -103,7 +117,7 @@ bool line_editor_process_keys(line_editor_t *le, uint8_t k, uint8_t m,
         return true;
     }
     // alt-<backspace> or ctrl-w: delete from cursor to beginning of word
-    else if (match_alt(m, k, HID_DELETE) || match_ctrl(m, k, HID_W)) {
+    else if (match_alt(m, k, HID_BACKSPACE) || match_ctrl(m, k, HID_W)) {
         while (le->cursor) {
             // delete a character
             le->cursor--;
@@ -120,18 +134,20 @@ bool line_editor_process_keys(line_editor_t *le, uint8_t k, uint8_t m,
     }
     // ctrl-x or alt-x: cut
     else if (match_ctrl(m, k, HID_X) || match_alt(m, k, HID_X)) {
-        strcpy(copy_buffer, le->buffer);
+        strcpy(copy_buffer[0], le->buffer);
+        copy_buffer_len = 1;
         line_editor_set(le, "");
         return true;
     }
     // ctrl-c or alt-c: copy
     else if (match_ctrl(m, k, HID_C) || match_alt(m, k, HID_C)) {
-        strcpy(copy_buffer, le->buffer);
+        strcpy(copy_buffer[0], le->buffer);
+        copy_buffer_len = 1;
         return true;
     }
     // ctrl-v or alt-v: paste
     else if (match_ctrl(m, k, HID_V) || match_alt(m, k, HID_V)) {
-        line_editor_set(le, copy_buffer);
+        line_editor_set(le, copy_buffer[0]);
         return true;
     }
     else if (no_mod(m) || mod_only_shift(m)) {
@@ -162,9 +178,5 @@ void line_editor_draw(line_editor_t *le, char prefix, region *reg) {
     strcat(s, " ");
 
     region_fill(reg, 0);
-    font_string_region_clip_hi(reg, s, 0, 0, 0xf, 0, le->cursor + 2);
-}
-
-void line_editor_set_copy_buffer(const char *value) {
-    strcpy(copy_buffer, value);
+    font_string_region_clip_hid(reg, s, 0, 0, 0xf, 0, le->cursor + 2, 3);
 }

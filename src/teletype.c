@@ -147,7 +147,7 @@ process_result_t run_script_with_exec_state(scene_state_t *ss, exec_state_t *es,
 #ifdef TELETYPE_PROFILE
     tele_profile_script(script_no);
 #endif
-    process_result_t result = { .has_value = false, .value = 0 };
+    process_result_t result = {.has_value = false, .value = 0 };
 
     es_set_script_number(es, script_no);
 
@@ -274,6 +274,7 @@ process_result_t process_command(scene_state_t *ss, exec_state_t *es,
             }
             else if (word_type == MOD) {
                 tele_command_t post_command;
+                post_command.comment = false;
                 copy_post_command(&post_command, c);
                 tele_mods[word_value]->func(ss, es, &cs, &post_command);
             }
@@ -284,11 +285,11 @@ process_result_t process_command(scene_state_t *ss, exec_state_t *es,
     // ---------
     // sometimes we have single value left of the stack, if so return it
     if (cs_stack_size(&cs)) {
-        process_result_t o = { .has_value = true, .value = cs_pop(&cs) };
+        process_result_t o = {.has_value = true, .value = cs_pop(&cs) };
         return o;
     }
     else {
-        process_result_t o = { .has_value = false, .value = 0 };
+        process_result_t o = {.has_value = false, .value = 0 };
         return o;
     }
 }
@@ -298,10 +299,6 @@ process_result_t process_command(scene_state_t *ss, exec_state_t *es,
 // TICK /////////////////////////////////////////////////////////
 
 void tele_tick(scene_state_t *ss, uint8_t time) {
-    // time is the basic resolution of all code henceforth called
-    // hardware 2.0: get an RTC!
-    if (ss->variables.time_act) ss->variables.time += time;
-
     // could be a while() if there is reason to expect a user to cascade moves
     // with SCRIPTs without the tick delay
     if (ss->turtle.stepped && ss->turtle.script_number != TEMP_SCRIPT) {

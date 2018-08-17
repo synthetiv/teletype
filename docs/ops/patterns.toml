@@ -184,3 +184,66 @@ short = "return and remove the value from the end of the working pattern (like a
 ["PN.POP"]
 prototype = "PN.POP x"
 short = "return and remove the value from the end of pattern `x` (like a stack), destructive to loop length"
+
+
+["P.MIN"]
+prototype = "P.MIN"
+short = "find the first minimum value in the pattern between the START and END for the working pattern and return its index"
+
+["PN.MIN"]
+prototype = "PN.MIN x"
+short = "find the first minimum value in the pattern between the START and END for pattern `x` and return its index"
+
+
+["P.MAX"]
+prototype = "P.MAX"
+short = "find the first maximum value in the pattern between the START and END for the working pattern and return its index"
+
+["PN.MAX"]
+prototype = "PN.MAX x"
+short = "find the first maximum value in the pattern between the START and END for pattern `x` and return its index"
+
+
+["P.RND"]
+prototype = "P.RND"
+short = "return a value randomly selected between the start and the end position"
+
+["PN.RND"]
+prototype = "PN.RND x"
+short = "return a value randomly selected between the start and the end position of pattern `x`"
+
+
+["P.+"]
+prototype = "P.+ x y"
+short = "increase the value of the working pattern at index `x` by `y`"
+
+["PN.+"]
+prototype = "PN.+ x y z"
+short = "increase the value of pattern `x` at index `y` by `z`"
+
+["P.-"]
+prototype = "P.- x y"
+short = "decrease the value of the working pattern at index `x` by `y`"
+
+["PN.-"]
+prototype = "PN.- x y z"
+short = "decrease the value of pattern `x` at index `y` by `z`"
+
+["P.+W"]
+prototype = "P.+W x y a b"
+short = "increase the value of the working pattern at index `x` by `y` and wrap it to `a`..`b` range"
+
+["PN.+W"]
+prototype = "PN.+W x y z a b"
+short = "increase the value of pattern `x` at index `y` by `z` and wrap it to `a`..`b` range"
+
+["P.-W"]
+prototype = "P.-W x y a b"
+short = "decrease the value of the working pattern at index `x` by `y` and wrap it to `a`..`b` range"
+
+["PN.-W"]
+prototype = "PN.-W x y z a b"
+short = "decrease the value of pattern `x` at index `y` by `z` and wrap it to `a`..`b` range"
+
+
+

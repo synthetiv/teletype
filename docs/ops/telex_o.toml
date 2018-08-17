@@ -247,6 +247,33 @@ If a curve is too small for the range being covered, values above the range will
 
 """
 
+["TO.CV.CALIB"]
+prototype = "TO.CV.CALIB x"
+short = "Locks the current offset (`CV.OFF`) as a calibration offset and saves it to persist between power cycles for output `x`."
+description = """
+
+To calibrate your TXo outputs, follow these steps. Before you start, let your expander warm up for a few minutes. It won't take long - but you want to make sure that it is calibrated at a more representative temperature.
+
+Then, first adjust your offset (CV.OFF) until the output is at zero volts (0). For example:
+
+```
+CV.OFF 1 8
+```
+
+Once that output measures at zero volts, you want to lock it in as the calibration by calling the following operator:
+
+```
+CV.CALIB 1
+```
+
+You will find that the offset is now zero, but the output is at the value that you targeted during your prior adjustment. To reset to normal (and forget this calibration offset), use the `TO.CV.RESET` command.
+
+"""
+
+["TO.CV.RESET"]
+prototype = "TO.CV.RESET x"
+short = "Clears the calibration offset for output `x`."
+
 ["TO.OSC"]
 prototype = "TO.OSC x y"
 short = "targets oscillation for CV output `x` to `y` with the portamento rate determined by the `TO.OSC.SLEW` value; `y` is 1v/oct translated from the standard range (1-16384); a value of `0` disables oscillation; `CV` amplitude is used as the peak for oscillation and needs to be `> 0` for it to be perceivable"
@@ -298,7 +325,7 @@ prototype = "TO.OSC.FQ x y"
 short = "targets oscillation for CV output `x` to frequency `y` with the portamento rate determined by the `TO.OSC.SLEW` value; `y` is in Hz; a value of `0` disables oscillation; `CV` amplitude is used as the peak for oscillation and needs to be `> 0` for it to be perceivable"
 
 ["TO.OSC.FQ.SET"]
-prototype = "TO.OSC.FQ x y"
+prototype = "TO.OSC.FQ.SET x y"
 short = "sets oscillation for CV output `x` to frequency `y` (ignores `CV.OSC.SLEW`); `y` is in Hz; a value of `0` disables oscillation; `CV` amplitude is used as the peak for oscillation and needs to be `> 0` for it to be perceivable"
 
 ["TO.OSC.LFO"]
@@ -359,13 +386,14 @@ description = """
 
 ["TO.OSC.WAVE"]
 prototype = "TO.OSC.WAVE x y"
-short = "set the waveform for output `x` to `y`; `y` values range `0-4999`; values translate to sine (0), triangle (1000), saw (2000), pulse (3000), or noise (4000); oscillator shape between values is a blend of the pure waveforms"
+short = "set the waveform for output `x` to `y`; `y` values range `0-4500`. There are 45 different waveforms, values translate to sine (0), triangle (100), saw (200), pulse (300) all the way to random/noise (4500); oscillator shape between values is a blend of the pure waveforms"
 
 ["TO.OSC.RECT"]
 prototype = "TO.OSC.RECT x y"
 short = "rectifies the polarity of the oscillator for output `x` to `y`; range for `y` is -2 to 2; default is 0 (no rectification); 1 & -1 are partial rectification - omitting all values on the other side of the sign; 2 & -2 are full rectification - inverting values from the other pole"
 description = """
 The rectification command performs a couple of levels of rectification based on how you have it set. The following values for `y` work as follows:
+
 * `y = 2`: "full-positive" - inverts negative values, making them positive
 * `y = 1`: "half-positive" - omits all negative values (values below zero are set to zero)
 * `y = 0`: no rectification (default)
@@ -439,6 +467,10 @@ This will initialize the `CV 1` output to have an envelope that will ramp to `+8
 
 To return your `CV` output to normal function, either deactivate the envelope (`TO.ENV.ACT 1 0`) or reinitialize the output (`TO.CV.INIT 1`).
 """
+
+["TO.ENV"]
+prototype = "TO.ENV x y"
+short = "This parameter essentially allows output `x` to act as a gate between the 0 and 1 state. Changing this value from 0 to 1 causes the envelope to trigger the attack phase and hold at the peak CV value; changing this value from 1 to 0 causes the decay stage of the envelope to be triggered."
 
 ["TO.ENV.TRIG"]
 prototype = "TO.ENV.TRIG x"

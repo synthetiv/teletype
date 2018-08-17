@@ -29,11 +29,15 @@ typedef enum {
     M_PATTERN,
     M_PRESET_W,
     M_PRESET_R,
-    M_HELP,
-    M_SCREENSAVER
+    M_HELP
 } tele_mode_t;
 
 void set_mode(tele_mode_t mode);
 void set_last_mode(void);
+void clear_delays_and_slews(scene_state_t *ss);
+
+// global copy buffer
+extern char copy_buffer[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
+extern uint8_t copy_buffer_len;
 
 #endif

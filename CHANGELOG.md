@@ -1,9 +1,36 @@
 # Changelog
 
-## v2.NEXT
+## v3.0
+
+- **NEW**: grid integration / grid visualizer / grid control mode
+- **NEW**: multiline copy/paste and editing
+- **NEW**: new keybindings to move by words
+- **NEW**: undo in script editing
+- **NEW**: i2c support for ER-301
+- **NEW**: i2c support for 16n Faderbank
+- **NEW**: i2c support for Matrixarchate
+- **NEW**: i2c support for W/
+- **NEW**: new op: ?
+- **NEW**: new ops: P.MIN, PN.MIN, P.MAX, PN.MAX, P.RND, PN.RND, P.+, PN.+, P.-, PN.-. P.+W, PN.+W, P.-W, PN.-W
+- **NEW**: new Telex ops: TO.CV.CALIB, TO.ENV
+- **NEW**: new Kria ops: KR.CV, KR.MUTE, KR.TMUTE, KR.CLK, ME.CV
+- **NEW**: new aliases: $, RND, RRND, WRP, SCL
+- **NEW**: telex, ansible, just friends, w/ added to the help screen
+- **FIX**: i2c initialization delayed to account for ER-301 bootup
+- **FIX**: last screen saved to flash
+- **FIX**: knob jitter when loading/saving scenes reduced
+- **FIX**: [duplicate commands not added to history](https://github.com/monome/teletype/issues/99)
+- **FIX**: `SCALE` precision improved
+- **FIX**: `PARAM` set properly when used in the init script
+- **FIX**: `PARAM` and `IN` won't reset to 0 after `INIT.DATA`
+- **FIX**: [`PN.HERE`, `P.POP`, `PN.POP` will update the tracker screen](https://github.com/monome/teletype/issues/151)
+- **FIX**: [`P.RM` was 1-based, now 0-based](https://github.com/monome/teletype/issues/149)
+- **FIX**: [`P.RM` / `PN.RM` will not change pattern length if deleting outside of length range](https://github.com/monome/teletype/issues/150)
+- **FIX**: [`JI` op fixed](https://llllllll.co/t/teletype-the-ji-op/10553)
+- **FIX**: [`TIME` and `LAST` are now 1ms accurate](https://github.com/monome/teletype/issues/144)
+- **FIX**: [`RAND` / `RRAND` will properly work with large range values](https://github.com/monome/teletype/issues/143)
+- **FIX**: [`L .. 32767` won't freeze](https://github.com/monome/teletype/issues/148)
 - **FIX**: I now accessible to child SCRIPTS
-- **NEW**: new ops for Ansible: KR.CV, KR.MUTE, KR.TMUTE, KR.CLK, ME.CV
-- **NEW**: new ops for W/: WS.PLAY, WS.REC, WS.LOOP, WS.CUE
 
 ## v2.2
 - **NEW**: added a cheat sheet PDF

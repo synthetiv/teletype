@@ -19,9 +19,9 @@ TEMPLATE_DIR = ROOT_DIR / "utils" / "templates"
 DOCS_DIR = ROOT_DIR / "docs"
 OP_DOCS_DIR = DOCS_DIR / "ops"
 FONTS_DIR = ROOT_DIR / "utils" / "fonts"
-_VERSION_ = get_tt_version()
-_VERSION_STR_ = "Teletype " + \
-              _VERSION_["tag"] + " " + _VERSION_["hash"] + " Cheatsheet"
+TT_VERSION = get_tt_version()
+VERSION_STR = " ".join(["Teletype", TT_VERSION["tag"], TT_VERSION["hash"],
+                        "Documentation"])
 
 
 # We want to run inject_latex in parallel as it's quite slow, and we must run
@@ -45,7 +45,8 @@ env = jinja2.Environment(
     lstrip_blocks=True
 )
 
-# determines the order in which sections are displayed
+# determines the order in which sections are displayed,
+# final column indicates that a new page is inserted _after_ that section
 OPS_SECTIONS = [
     ("variables",     "Variables",     False),
     ("hardware",      "Hardware",      False),
@@ -57,13 +58,17 @@ OPS_SECTIONS = [
     ("stack",         "Stack",         False),
     ("queue",         "Queue",         False),
     ("turtle",        "Turtle",        True),
+    ("grid",          "Grid",          True),
     ("ansible",       "Ansible",       False),
     ("whitewhale",    "Whitewhale",    False),
     ("meadowphysics", "Meadowphysics", False),
     ("earthsea",      "Earthsea",      False),
-    ("orca",          "Orca",          False),
-    ("justfriends",   "Just Friends",  True),
-    ("wslash",        "W/",            True),
+    ("orca",          "Orca",          True),
+    ("justfriends",   "Just Friends",  False),
+    ("wslash",        "W/",            False),
+    ("er301",         "ER-301",        False),
+    ("fader",         "Fader",         False),
+    ("matrixarchate", "Matrixarchate", True),
     ("telex_i",       "TELEXi",        False),
     ("telex_o",       "TELEXo",        False)
 ]
@@ -71,9 +76,11 @@ OPS_SECTIONS = [
 
 def latex_safe(s):
     # backslash must be first, otherwise it will duplicate itself
-    unsafe = ["\\", "&", "%", "$", "#", "_", "{", "}", "~", "^"]
+    unsafe = ["\\", "&", "%", "$", "#", "_", "{", "}", "^"]
     for u in unsafe:
         s = s.replace(u, "\\" + u)
+    # ~ is special
+    s = s.replace("~", "\\~{}")
     return s
 
 
@@ -82,18 +89,18 @@ def cheatsheet_tex():
     print(f"Using ops docs directory: {OP_DOCS_DIR}")
     print()
 
-    output = _VERSION_STR_ + "\n\n"
+    output = VERSION_STR + "\n\n"
     for (section, title, new_page) in OPS_SECTIONS:
         toml_file = Path(OP_DOCS_DIR, section + ".toml")
         if toml_file.exists() and toml_file.is_file():
-            output += f"\group{{{ title }}}\n\n"
+            output += f"\\group{{{ title }}}\n\n"
             print(f"Reading {toml_file}")
             # n.b. Python 3.6 dicts maintain insertion order
             ops = toml.loads(toml_file.read_text())
             validate_toml(ops)
             ops_array = pool.map(inject_latex, ops.values())
             for op in ops_array:
-                prototype = op["prototype"]
+                prototype = latex_safe(op["prototype"])
                 if "prototype_set" in op:
                     prototype += " / " + op["prototype_set"]
                 output += "\\begin{op}"
@@ -105,7 +112,7 @@ def cheatsheet_tex():
                 output += "\\end{op}"
                 output += "\n\n"
             if new_page:
-                output += "\pagebreak\n\n"
+                output += "\\pagebreak\n\n"
     return output
 
 
