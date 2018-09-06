@@ -1,5 +1,11 @@
 # What's new?
 
+## Version 3.x
+
+### Bug fixes
+
+[some keyboards losing keystrokes](https://github.com/monome/teletype/issues/156)
+
 ## Version 3.0
 
 ### Major new features
