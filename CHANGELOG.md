@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.x
+
+- **FIX**: [some keyboards losing keystrokes](https://github.com/monome/teletype/issues/156)
+
 ## v3.0
 
 - **NEW**: grid integration / grid visualizer / grid control mode

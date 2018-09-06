@@ -394,19 +394,16 @@ void handler_HidTimer(int32_t data) {
     if (hid_get_frame_dirty()) {
         const int8_t* frame = (const int8_t*)hid_get_frame_data();
 
+        mod_key = frame[0];
         for (size_t i = 2; i < 8; i++) {
             if (frame[i] == 0) {
-                mod_key = frame[0];
                 if (i == 2) {
                     hold_key_count = 0;
                     process_keypress(hold_key, mod_key, false, true);
                     hold_key = 0;
                 }
-
-                break;
             }
-
-            if (frame_compare(frame[i]) == false) {
+            else if (frame_compare(frame[i]) == false) {
                 hold_key = frame[i];
                 hold_key_count = 0;
                 process_keypress(hold_key, mod_key, false, false);
