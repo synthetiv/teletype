@@ -212,7 +212,7 @@ const tele_mod_t *tele_mods[E_MOD__LENGTH] = {
     &mod_OTHER, &mod_PROB,
 
     // delay
-    &mod_DEL, &mod_RAT
+    &mod_DEL, &mod_RAT,
 
     // stack
     &mod_S
