@@ -525,6 +525,7 @@ typedef enum {
     E_MOD_OTHER,
     E_MOD_PROB,
     E_MOD_DEL,
+    E_MOD_RAT,
     E_MOD_S,
     E_MOD__LENGTH,
 } tele_mod_idx_t;
