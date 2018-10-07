@@ -35,6 +35,7 @@ void tele_profile_delay(uint8_t d)  {}
 bool tele_get_input_state(uint8_t n) {
     return false;
 }
+void device_flip() {}
 
 void tele_save_calibration() {}
 

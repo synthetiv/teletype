@@ -21,5 +21,9 @@ tele_mode_t flash_last_mode(void);
 void flash_update_last_mode(tele_mode_t mode);
 void flash_update_cal(cal_data_t *);
 void flash_get_cal(cal_data_t *);
+void flash_update_cal(cal_data_t *);
+void flash_get_cal(cal_data_t *);
+void flash_update_device_config(device_config_t *);
+void flash_get_device_config(device_config_t *);
 
 #endif

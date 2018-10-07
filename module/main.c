@@ -90,6 +90,7 @@ uint8_t copy_buffer_len = 0;
 ////////////////////////////////////////////////////////////////////////////////
 // locals
 
+static device_config_t device_config;
 static tele_mode_t mode = M_LIVE;
 static tele_mode_t last_mode = M_LIVE;
 static uint32_t ss_counter = 0;
@@ -174,6 +175,7 @@ void timers_unset_monome(void);
 // other
 static void render_init(void);
 static void exit_screensaver(void);
+static void update_device_config(u8 refresh);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -204,10 +206,19 @@ void cvTimer_callback(void* o) {
     set_slew_icon(slewing);
 
     if (updated) {
-        uint16_t a0 = aout[0].now >> 2;
-        uint16_t a1 = aout[1].now >> 2;
-        uint16_t a2 = aout[2].now >> 2;
-        uint16_t a3 = aout[3].now >> 2;
+        uint16_t a0, a1, a2, a3;
+
+        if (device_config.flip) {
+            a0 = aout[3].now >> 2;
+            a1 = aout[2].now >> 2;
+            a2 = aout[1].now >> 2;
+            a3 = aout[0].now >> 2;
+        } else {
+            a0 = aout[0].now >> 2;
+            a1 = aout[1].now >> 2;
+            a2 = aout[2].now >> 2;
+            a3 = aout[3].now >> 2;
+        }
 
         spi_selectChip(DAC_SPI, DAC_SPI_NPCS);
         spi_write(DAC_SPI, 0x31);
@@ -439,7 +450,8 @@ void handler_MscConnect(int32_t data) {
 }
 
 void handler_Trigger(int32_t data) {
-    if (!ss_get_mute(&scene_state, data)) { run_script(&scene_state, data); }
+    u8 input = device_config.flip ? 7 - data : data;
+    if (!ss_get_mute(&scene_state, input)) { run_script(&scene_state, input); }
 }
 
 void handler_ScreenRefresh(int32_t data) {
@@ -788,6 +800,12 @@ void exit_screensaver(void) {
     set_mode(mode);
 }
 
+void update_device_config(u8 refresh) {
+    screen_set_direction(device_config.flip);
+    if (refresh) set_mode(mode);
+    flash_update_device_config(&device_config);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // teletype_io.h
@@ -829,10 +847,12 @@ void tele_metro_reset() {
 }
 
 void tele_tr(uint8_t i, int16_t v) {
+    uint32_t pin = B08 + (device_config.flip ? 3 - i : i);
+    
     if (v)
-        gpio_set_pin_high(B08 + i);
+        gpio_set_pin_high(pin);
     else
-        gpio_set_pin_low(B08 + i);
+        gpio_set_pin_low(pin);
 }
 
 void tele_cv(uint8_t i, int16_t v, uint8_t s) {
@@ -909,6 +929,10 @@ void grid_key_press(uint8_t x, uint8_t y, uint8_t z) {
     grid_process_key(&scene_state, x, y, z, 1);
 }
 
+void device_flip() {
+    device_config.flip = !device_config.flip;
+    update_device_config(1);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // main
@@ -945,6 +969,10 @@ int main(void) {
     // prepare flash (if needed)
     flash_prepare();
 
+    // load device config
+    flash_get_device_config(&device_config);
+    update_device_config(0);
+    
     // load calibration data from flash
     flash_get_cal(&scene_state.cal);
     ss_update_param_scale(&scene_state);
