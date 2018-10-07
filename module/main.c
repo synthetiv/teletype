@@ -213,7 +213,8 @@ void cvTimer_callback(void* o) {
             a1 = aout[2].now >> 2;
             a2 = aout[1].now >> 2;
             a3 = aout[0].now >> 2;
-        } else {
+        }
+        else {
             a0 = aout[0].now >> 2;
             a1 = aout[1].now >> 2;
             a2 = aout[2].now >> 2;
@@ -848,7 +849,7 @@ void tele_metro_reset() {
 
 void tele_tr(uint8_t i, int16_t v) {
     uint32_t pin = B08 + (device_config.flip ? 3 - i : i);
-    
+
     if (v)
         gpio_set_pin_high(pin);
     else
@@ -972,7 +973,7 @@ int main(void) {
     // load device config
     flash_get_device_config(&device_config);
     update_device_config(0);
-    
+
     // load calibration data from flash
     flash_get_cal(&scene_state.cal);
     ss_update_param_scale(&scene_state);

@@ -61,8 +61,9 @@ void flash_prepare() {
 
     cal_data_t cal = { 0, 16383, 0, 16383 };
     flashc_memcpy((void *)&f.cal, &cal, sizeof(cal), true);
-    device_config_t device_config = { .flip = 0 };
-    flashc_memcpy((void *)&f.device_config, &device_config, sizeof(device_config), true);
+    device_config_t device_config = {.flip = 0 };
+    flashc_memcpy((void *)&f.device_config, &device_config,
+                  sizeof(device_config), true);
     flash_update_last_saved_scene(0);
     flash_update_last_mode(M_LIVE);
     flashc_memset8((void *)&f.fresh, FIRSTRUN_KEY, 1, true);
@@ -129,7 +130,8 @@ void flash_get_cal(cal_data_t *cal) {
 }
 
 void flash_update_device_config(device_config_t *device_config) {
-    flashc_memcpy((void *)&f.device_config, device_config, sizeof(device_config_t), true);
+    flashc_memcpy((void *)&f.device_config, device_config,
+                  sizeof(device_config_t), true);
 }
 
 void flash_get_device_config(device_config_t *device_config) {

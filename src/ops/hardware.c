@@ -63,8 +63,8 @@ static void op_MUTE_set(const void *data, scene_state_t *ss, exec_state_t *es,
                         command_state_t *cs);
 static void op_STATE_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
-static void op_DEVICE_FLIP_get(const void *data, scene_state_t *ss, 
-                            exec_state_t *es, command_state_t *cs);
+static void op_DEVICE_FLIP_get(const void *data, scene_state_t *ss,
+                               exec_state_t *es, command_state_t *cs);
 
 
 // clang-format off
@@ -495,7 +495,8 @@ static void op_STATE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
         cs_push(cs, 0);
 }
 
-static void op_DEVICE_FLIP_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+static void op_DEVICE_FLIP_get(const void *NOTUSED(data),
+                               scene_state_t *NOTUSED(ss),
+                               exec_state_t *NOTUSED(es), command_state_t *cs) {
     device_flip();
 }
