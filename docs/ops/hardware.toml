@@ -159,3 +159,10 @@ description = """
 Read the current state of trigger input `x` (0=low, 1=high). 
 """
 
+["DEVICE.FLIP"]
+prototype = "DEVICE.FLIP"
+short = "Flip the screen/inputs/outputs"
+description = """
+Flip the screen, the inputs and the outputs. This op is useful if you want to mount your Teletype upside down.
+The new state will be saved to flash. 
+"""

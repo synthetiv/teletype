@@ -2,6 +2,7 @@
 
 ## v3.x
 
+- **NEW**: new op: DEVICE.FLIP
 - **FIX**: [some keyboards losing keystrokes](https://github.com/monome/teletype/issues/156)
 
 ## v3.0
