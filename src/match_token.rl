@@ -153,6 +153,7 @@
         "CV.SET"      => { MATCH_OP(E_OP_CV_SET); };
         "MUTE"        => { MATCH_OP(E_OP_MUTE); };
         "STATE"       => { MATCH_OP(E_OP_STATE); };
+        "DEVICE.FLIP" => { MATCH_OP(E_OP_DEVICE_FLIP); };
 
         # maths
         "ADD"         => { MATCH_OP(E_OP_ADD); };

@@ -52,4 +52,7 @@ void tele_profile_delay(uint8_t);
 // emulate grid key press
 extern void grid_key_press(uint8_t x, uint8_t y, uint8_t z);
 
+// manage device config
+extern void device_flip(void);
+
 #endif

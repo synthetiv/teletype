@@ -128,6 +128,7 @@ typedef enum {
     E_OP_CV_SET,
     E_OP_MUTE,
     E_OP_STATE,
+    E_OP_DEVICE_FLIP,
     E_OP_ADD,
     E_OP_SUB,
     E_OP_MUL,

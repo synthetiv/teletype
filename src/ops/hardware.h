@@ -26,5 +26,6 @@ extern const tele_op_t op_TR_P;
 extern const tele_op_t op_CV_SET;
 extern const tele_op_t op_MUTE;
 extern const tele_op_t op_STATE;
+extern const tele_op_t op_DEVICE_FLIP;
 
 #endif
