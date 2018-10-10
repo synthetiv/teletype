@@ -585,7 +585,8 @@
         # delay
         "PROB"        => { MATCH_MOD(E_MOD_PROB); };
         "DEL"         => { MATCH_MOD(E_MOD_DEL); };
-        "RAT"         => { MATCH_MOD(E_MOD_RAT); };
+        "XDEL"        => { MATCH_MOD(E_MOD_XDEL); };
+        "XDEL.R"      => { MATCH_MOD(E_MOD_XDEL_R); };
 
         # matrixarchate
         "MA.SELECT"   => { MATCH_OP(E_OP_MA_SELECT); };
