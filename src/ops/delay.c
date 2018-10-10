@@ -4,8 +4,8 @@
 #include "teletype.h"
 #include "teletype_io.h"
 
-static void add_delay_helper(scene_state_t *ss, exec_state_t *es, 
-                        int i, int delay_time,
+static void delay_common_add(scene_state_t *ss, exec_state_t *es, 
+                        int16_t i, int16_t delay_time,
                         const tele_command_t *post_command);
 
 static void mod_DEL_func(scene_state_t *ss, exec_state_t *es,
@@ -28,8 +28,10 @@ const tele_op_t op_DEL_CLR = MAKE_GET_OP(DEL.CLR, op_DEL_CLR_get, 0, false);
 const tele_mod_t mod_XDEL = MAKE_MOD(XDEL, mod_XDEL_func, 2);
 const tele_mod_t mod_XDEL_R = MAKE_MOD(XDEL.R, mod_XDEL_R_func, 2);
 
-static void add_delay_helper(scene_state_t *ss, exec_state_t *es, 
-                        int i, int delay_time,
+//common code to queue a delay shared between all delay ops
+//NOTE it is the responsibility of the callee to call tele_has_delays
+static void delay_common_add(scene_state_t *ss, exec_state_t *es, 
+                        int16_t i, int16_t delay_time,
                         const tele_command_t *post_command) {
         ss->delay.count++;
         ss->delay.time[i] = delay_time;
@@ -51,12 +53,12 @@ static void mod_DEL_func(scene_state_t *ss, exec_state_t *es,
     while (ss->delay.time[i] != 0 && i != DELAY_SIZE) i++;
 
     if (i < DELAY_SIZE) {
-        ss->delay.count++;
+        /*ss->delay.count++;
         ss->delay.time[i] = a;
         ss->delay.origin_script[i] = es_variables(es)->script_number;
         ss->delay.origin_i[i] = es_variables(es)->i;
-        copy_command(&ss->delay.commands[i], post_command);
-        add_delay_helper(ss, es, i, a, post_command);
+        copy_command(&ss->delay.commands[i], post_command);*/
+        delay_common_add(ss, es, i, a, post_command);
         tele_has_delays(ss->delay.count > 0);
     }
 }
@@ -91,9 +93,12 @@ static void mod_XDEL_func(scene_state_t *ss, exec_state_t *es,
         ss->delay.origin_i[i] = es_variables(es)->i;
         copy_command(&ss->delay.commands[i], post_command);
 	    */
-        add_delay_helper(ss, es, i, c, post_command); 
-	    c += b; //increment delay time for next delay
-	    a--; //decrement delay chain count
+
+        delay_common_add(ss, es, i, c, post_command); 
+        //increment delay time for next delay
+        //normalise incremented value to stop negative wrap from increment
+        c = normalise_value(1, 32767, 1, c+b); 
+        a--; //decrement delay chain count
 	    i++;
     }
 
@@ -124,8 +129,10 @@ static void mod_XDEL_R_func(scene_state_t *ss, exec_state_t *es,
         ss->delay.origin_i[i] = es_variables(es)->i;
         copy_command(&ss->delay.commands[i], post_command);
 	    */
-        add_delay_helper(ss, es, i, c, post_command); 
-	    c += b; //increment delay time for next delay
+        delay_common_add(ss, es, i, c, post_command); 
+        //increment delay time for next delay
+        //normalise incremented value to stop negative wrap from increment
+        c = normalise_value(1, 32767, 1, c+b); 
 	    a--; //decrement delay chain count
 	    i++;
     }
