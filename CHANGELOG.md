@@ -6,7 +6,7 @@
 - **FIX**: [some keyboards losing keystrokes](https://github.com/monome/teletype/issues/156)
 - **NEW**: new op: DEL.X
 - **NEW**: new op: DEL.R
-- **IMP**: DELAY_SIZE incresed to 16 from 8
+- **IMP**: DELAY_SIZE increased to 16 from 8
 
 ## v3.0
 
