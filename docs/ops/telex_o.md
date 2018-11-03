@@ -1,4 +1,4 @@
-## TELEXo Teletype Output Expander
+## TELEXo
 
 The TELEXo (or TXo) is an output expander that adds an additional 4 Trigger and 4 CV jacks to the Teletype. There are jumpers on the back so you can hook more than one TXo to your Teletype simultaneously.
 

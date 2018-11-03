@@ -1,4 +1,4 @@
-## TELEXi Teletype Input Expander
+## TELEXi
 
 The TELEXi (or TXi) is an input expander that adds 4 IN jacks and 4 PARAM knobs to the Teletype. There are jumpers on the back so you can hook more than one TXi to your Teletype simultaneously.
 
