@@ -76,8 +76,8 @@ def common_md():
     print(f"Using ops docs directory: {OP_DOCS_DIR}")
     print()
 
+    op_list_template = env.get_template("op_list.jinja2.md")
     op_table_template = env.get_template("op_table.jinja2.md")
-    op_extended_template = env.get_template("op_extended.jinja2.md")
 
     output = ""
     output += Path(DOCS_DIR / "intro.md") \
@@ -116,11 +116,8 @@ def common_md():
                 ops_with_docs.add(key)
                 if "aliases" in ops[key]:
                     ops_with_docs |= set(ops[key]["aliases"])
-                if "description" in ops[key]:
-                    render = op_extended_template.render(name=key, **ops[key])
-                    extended.append((key, render))
 
-            output += op_table_template.render(ops=ops.values())
+            output += op_list_template.render(ops=ops.values())
             output += "\n"
             output += "\n".join([e[1] for e in extended]) + "\n\n"
 
@@ -171,7 +168,7 @@ def main():
                             "--toc-depth=2",
                             "--css=" + str(TEMPLATE_DIR / "docs.css"),
                             "--template=" + str(TEMPLATE_DIR /
-                                                "template.html5")])
+                                                "template.html")])
         elif ext == ".pdf" or ext == ".tex":
             latex_preamble = env.get_template("latex_preamble.jinja2.md")
             latex = latex_preamble \

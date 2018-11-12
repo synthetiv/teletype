@@ -1,4 +1,4 @@
-# What's new?
+# Updates
 
 ## Version 3.x
 
@@ -160,29 +160,29 @@ Screen saver engages after 90 minutes of inactivity
 
 #### New Operators
 
-   • `IN.SCALE min max` sets the min/max values of the CV Input jack
-   • `PARAM.SCALE min max` set the min/max scale of the Parameter Knob
-   • `IN.CAL.MIN` sets the zero point when calibrating the CV Input jack
-   • `IN.CAL.MAX` sets the max point (16383) when calibrating the CV Input jack
-   • `PARAM.CAL.MIN` sets the zero point when calibrating the Parameter Kob
-   • `PARAM.CAL.MAX` sets the max point (16383) when calibrating the Parameter Kob
-   • `R` generate a random number
-   • `R.MIN` set the low end of the random number generator
-   • `R.MAX` set the upper end of the random number generator
+  - `IN.SCALE min max` sets the min/max values of the CV Input jack
+  - `PARAM.SCALE min max` set the min/max scale of the Parameter Knob
+  - `IN.CAL.MIN` sets the zero point when calibrating the CV Input jack
+  - `IN.CAL.MAX` sets the max point (16383) when calibrating the CV Input jack
+  - `PARAM.CAL.MIN` sets the zero point when calibrating the Parameter Kob
+  - `PARAM.CAL.MAX` sets the max point (16383) when calibrating the Parameter Kob
+  - `R` generate a random number
+  - `R.MIN` set the low end of the random number generator
+  - `R.MAX` set the upper end of the random number generator
 
 #### Fixes
 
-   • Multiply now saturates at limits (-32768 / 32767) while previous behavior returned 0 at overflow
-   • Entered values now saturate at Int16 limits which are -32768 / 32767
-   • Reduced flash memory consumption by not storing TEMP script
-   • I now carries across `DEL` commands
-   • Corrected functionality of `JI` (Just Intonation) op for 1V/Oct tuning
-   • Reduced latency of `IN` op
+  - Multiply now saturates at limits (-32768 / 32767) while previous behavior returned 0 at overflow
+  - Entered values now saturate at Int16 limits which are -32768 / 32767
+  - Reduced flash memory consumption by not storing TEMP script
+  - I now carries across `DEL` commands
+  - Corrected functionality of `JI` (Just Intonation) op for 1V/Oct tuning
+  - Reduced latency of `IN` op
 
 #### Improvements
 
-   • Profiling code (optional developer feature)
-   • Screen now redraws only lines that have changed
+  - Profiling code (optional developer feature)
+  - Screen now redraws only lines that have changed
 
 ## Version 2.1
 
