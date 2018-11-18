@@ -18,7 +18,6 @@
         $endif$
 
         <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
-        <style type="text/css">code{white-space: pre;}</style>
 
         $if(quotes)$
             <style type="text/css">q { quotes: "“" "”" "‘" "’"; }</style>
@@ -286,16 +285,27 @@
                 };
 
                 // Fix <br/> issue with code blocks
+                // As well as issue where multi-line code blocks non-first
+                // lines were starting with spaces
                 var fixBr = function () {
                     var codeTags = document.getElementsByTagName("code");
                     for (var i = 0; i < codeTags.length; i++) {
                         var breaks = codeTags[i].innerText.split("<br/>");
+                        for (var j = 0; j < breaks.length; j++) {
+                            if (breaks[j].split("\n").length > 1) {
+                                splitBreak = breaks[j].split("\n");
+                                for (var k = 0; k < splitBreak.length; k++) {
+                                    splitBreak[k] = splitBreak[k].trim();
+                                }
+                                breaks[j] = splitBreak.join("\n");
+                            }
+                        }
                         if (breaks.length > 1) {
                             codeTags[i].innerText = breaks
                                 .slice(1, breaks.length - 1).join("\n");
-                            codeTags[i].outerHTML = "<pre><code>" +
-                                codeTags[i].innerText +
-                                "</code></pre>";
+                            codeTags[i].outerHTML = "<pre><code>" + codeTags[i].innerText + "</code></pre>";
+                        } else {
+                            codeTags[i].innerText = breaks;
                         }
                     }
                 };
