@@ -20,8 +20,7 @@ DOCS_DIR = ROOT_DIR / "docs"
 OP_DOCS_DIR = DOCS_DIR / "ops"
 FONTS_DIR = ROOT_DIR / "utils" / "fonts"
 TT_VERSION = get_tt_version()
-VERSION_STR = " ".join(["Teletype", TT_VERSION["tag"], TT_VERSION["hash"],
-                        "Documentation"])
+VERSION_STR = " ".join(["Teletype", TT_VERSION["tag"], "Documentation"])
 
 
 # We want to run inject_latex in parallel as it's quite slow, and we must run
