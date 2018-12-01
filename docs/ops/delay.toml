@@ -13,18 +13,18 @@ description = """
 Clear the delay buffer, cancelling the pending commands.
 """
 ["DEL.X"]
-prototype = "DEL.X x y: ..."
-short = "Queue 'x' delayed commands at 'y' ms intervals"
+prototype = "DEL.X x delay_time: ..."
+short = "Delay `x` commands at `delay_time` ms intervals"
 description = """
-Delay the command following the colon 'x' times at intervals of `y` ms by placing it into a buffer. 
+Delay the command following the colon `x` times at intervals of `delay_time` ms by placing it into a buffer. 
 The buffer can hold up to 16 commands. If the buffer is full, additional commands
 will be discarded.
 """
 ["DEL.R"]
-prototype = "DEL.R x y: ..."
-short = "Trigger '1' command immediately, and queue 'x' minus '1' delayed commands at 'y' ms intervals"
+prototype = "DEL.R x delay_time: ..."
+short = "Trigger the command following the colon once immediately, and delay `x - 1` commands at `delay_time` ms intervals"
 description = """
-Delay the command following the colon once immediately, and 'x' minus '1' times at intervals of `y` ms by placing it into a buffer. 
+Delay the command following the colon once immediately, and `x - 1` times at intervals of `delay_time` ms by placing it into a buffer. 
 The buffer can hold up to 16 commands. If the buffer is full, additional commands
 will be discarded.
 """
