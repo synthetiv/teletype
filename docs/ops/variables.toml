@@ -166,7 +166,7 @@ prototype = "J"
 prototype_set = "J x"
 short = """get / set the variable `J`"""
 description="""
-Get / set the variable `J`, Each script gets its own `J` variable, so if you call
+get / set the variable `J`, each script gets its own `J` variable, so if you call
 a script from another script you can still use and modify `J` without affecting the calling script. 
 """
 
@@ -175,6 +175,6 @@ prototype = "K"
 prototype_set = "K x"
 short = """get / set the variable `K`"""
 description="""
-Get / set the variable `K`, Each script gets its own `K` variable, so if you call
+get / set the variable `K`, each script gets its own `K` variable, so if you call
 a script from another script you can still use and modify `K` without affecting the calling script. 
 """
