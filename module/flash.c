@@ -4,6 +4,7 @@
 
 // asf
 #include "flashc.h"
+#include "gpio.h"
 #include "init_teletype.h"
 #include "print_funcs.h"
 
@@ -44,7 +45,21 @@ static void unpack_grid(scene_state_t *scene);
 
 void flash_prepare() {
     // if it's not empty return
-    if (f.fresh == FIRSTRUN_KEY) return;
+    if (f.fresh != FIRSTRUN_KEY) {
+      int confirm = 1;
+      uint32_t counter = 0;
+      int toggle = 0;
+      #define TIMEOUT 50000
+      while(confirm==1 && (++counter < TIMEOUT)) {
+        confirm = gpio_get_pin_value(NMI);
+        if((counter % 1000) == 0) {
+          if(++toggle % 2) gpio_set_pin_low(B11);
+          else gpio_set_pin_high(B11);
+        }
+        print_dbg_ulong(confirm);
+      }
+      if(counter >= TIMEOUT) return;
+    }
 
     print_dbg("\r\n:::: first run, clearing flash");
     print_dbg("\r\nflash size: ");
