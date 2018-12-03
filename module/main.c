@@ -109,6 +109,7 @@ typedef struct {
     uint32_t a;
 } aout_t;
 
+static u8 ignore_front_press = 0;
 static aout_t aout[4];
 static bool metro_timer_enabled;
 static uint8_t front_timer;
@@ -319,6 +320,11 @@ void handler_Front(int32_t data) {
     ss_counter = 0;
 
     if (data == 0) {
+        if (ignore_front_press) {
+            ignore_front_press = 0;
+            return;
+        }
+        
         if (grid_connected) {
             grid_control_mode = !grid_control_mode;
             if (grid_control_mode && mode == M_HELP) set_mode(M_LIVE);
@@ -967,6 +973,28 @@ int main(void) {
 
     ss_init(&scene_state);
 
+    // screen init
+    render_init();
+
+    if (is_flash_fresh()) {
+        char s[36];
+        strcpy(s, "SCENES WILL BE OVERWRITTEN!");
+        region_fill(&line[5], 0);
+        font_string_region_clip(&line[5], s, 0, 0, 0x4, 0);
+        region_draw(&line[5]);
+        
+        strcpy(s, "PRESS TO CONFIRM");
+        region_fill(&line[6], 0);
+        font_string_region_clip(&line[6], s, 0, 0, 0x4, 0);
+        region_draw(&line[6]);
+        
+        strcpy(s, "DO NOT PRESS OTHERWISE!");
+        region_fill(&line[7], 0);
+        font_string_region_clip(&line[7], s, 0, 0, 0x4, 0);
+        region_draw(&line[7]);
+        ignore_front_press = 1;
+    }
+    
     // prepare flash (if needed)
     flash_prepare();
 
@@ -983,9 +1011,6 @@ int main(void) {
     preset_select = flash_last_saved_scene();
     ss_set_scene(&scene_state, preset_select);
     flash_read(preset_select, &scene_state, &scene_text);
-
-    // screen init
-    render_init();
 
     // setup daisy chain for two dacs
     spi_selectChip(DAC_SPI, DAC_SPI_NPCS);
@@ -1018,7 +1043,7 @@ int main(void) {
     aout[3].slew = 1;
 
     init_live_mode();
-    set_mode(flash_last_mode());
+    set_mode(M_LIVE);
 
     run_script(&scene_state, INIT_SCRIPT);
     scene_state.initializing = false;
