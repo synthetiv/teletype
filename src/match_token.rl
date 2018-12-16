@@ -228,6 +228,7 @@
         ">>"          => { MATCH_OP(E_OP_SYM_RIGHT_ANGLED_x2); };
         "&&"          => { MATCH_OP(E_OP_SYM_AMPERSAND_x2); };
         "||"          => { MATCH_OP(E_OP_SYM_PIPE_x2); };
+        "SEED"        => { MATCH_OP(E_OP_SEED); };
 
         # stack
         "S.ALL"       => { MATCH_OP(E_OP_S_ALL); };

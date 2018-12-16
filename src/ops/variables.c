@@ -1,6 +1,6 @@
 #include "ops/variables.h"
 
-#include <stdlib.h>  // rand
+#include "random.h"
 
 #include "helpers.h"
 #include "ops/op.h"
@@ -119,7 +119,8 @@ static void op_DRUNK_get(const void *NOTUSED(data), scene_state_t *ss,
     cs_push(cs, current_value);
 
     // calculate new value
-    int16_t new_value = current_value + (rand() % 3) - 1;
+    int16_t new_value =
+        current_value + (random_next(&ss->rand_states.drunk) % 3) - 1;
     ss->variables.drunk = normalise_value(min, max, wrap, new_value);
 }
 

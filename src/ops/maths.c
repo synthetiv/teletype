@@ -1,6 +1,7 @@
 #include "ops/maths.h"
 
-#include <stdlib.h>  // rand
+#include <stdlib.h>  // abs
+#include "random.h"
 
 #include "chaos.h"
 #include "euclidean/euclidean.h"
@@ -227,18 +228,18 @@ static void op_MOD_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     cs_push(cs, out);
 }
 
-static void op_RAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+static void op_RAND_get(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a = cs_pop(cs);
     if (a < 0)
-        cs_push(cs, -(rand() % (1 - a)));
+        cs_push(cs, -(random_next(&ss->rand_states.rand) % (1 - a)));
     else if (a == 32767)
-        cs_push(cs, rand());
+        cs_push(cs, random_next(&ss->rand_states.rand));
     else
-        cs_push(cs, rand() % (a + 1));
+        cs_push(cs, random_next(&ss->rand_states.rand) % (a + 1));
 }
 
-static int16_t push_random(int16_t a, int16_t b) {
+static int16_t push_random(int16_t a, int16_t b, scene_state_t *ss) {
     int16_t min, max;
     if (a < b) {
         min = a;
@@ -251,23 +252,24 @@ static int16_t push_random(int16_t a, int16_t b) {
     int64_t range = max - min + 1;
     if (range == 0 || min == max) return min;
 
-    int64_t rrand = ((int64_t)rand() << 15) + rand();
+    int64_t rrand = ((int64_t)random_next(&ss->rand_states.rand) << 15) +
+                    random_next(&ss->rand_states.rand);
     rrand = rrand % range + min;
     return rrand;
 }
 
-static void op_RRAND_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+static void op_RRAND_get(const void *NOTUSED(data), scene_state_t *ss,
                          exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a, b;
     a = cs_pop(cs);
     b = cs_pop(cs);
-    cs_push(cs, push_random(a, b));
+    cs_push(cs, push_random(a, b, ss));
 }
 
 
 static void op_R_get(const void *NOTUSED(data), scene_state_t *ss,
                      exec_state_t *NOTUSED(es), command_state_t *cs) {
-    cs_push(cs, push_random(ss->variables.r_min, ss->variables.r_max));
+    cs_push(cs, push_random(ss->variables.r_min, ss->variables.r_max, ss));
 }
 
 static void op_R_MIN_get(const void *NOTUSED(data), scene_state_t *ss,
@@ -290,9 +292,9 @@ static void op_R_MAX_set(const void *NOTUSED(data), scene_state_t *ss,
     ss->variables.r_max = cs_pop(cs);
 }
 
-static void op_TOSS_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+static void op_TOSS_get(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
-    cs_push(cs, rand() & 1);
+    cs_push(cs, random_next(&ss->rand_states.toss) & 1);
 }
 
 static void op_MIN_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
@@ -696,4 +698,25 @@ static void op_TIF_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     s16 a = cs_pop(cs);
     s16 b = cs_pop(cs);
     cs_push(cs, condition ? a : b);
+}
+
+static void op_SEED_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                        command_state_t *cs);
+static void op_SEED_set(const void *data, scene_state_t *ss, exec_state_t *es,
+                        command_state_t *cs);
+
+const tele_op_t op_SEED =
+    MAKE_GET_SET_OP(SEED, op_SEED_get, op_SEED_set, 0, true);
+
+static void op_SEED_get(const void *NOTUSED(data), scene_state_t *ss,
+                        exec_state_t *NOTUSED(es), command_state_t *cs) {
+    cs_push(cs, ss->variables.rand_seed);
+}
+
+static void op_SEED_set(const void *NOTUSED(data), scene_state_t *ss,
+                        exec_state_t *NOTUSED(es), command_state_t *cs) {
+    uint16_t s = cs_pop(cs);
+
+    ss->variables.rand_seed = s;
+    random_seed(&ss->rand_states.rand, s);
 }

@@ -1,6 +1,6 @@
 #include "ops/controlflow.h"
 
-#include <stdlib.h>
+#include "random.h"
 
 #include "helpers.h"
 #include "teletype.h"
@@ -75,7 +75,9 @@ static void mod_PROB_func(scene_state_t *ss, exec_state_t *es,
                           const tele_command_t *post_command) {
     int16_t a = cs_pop(cs);
 
-    if (rand() % 101 < a) { process_command(ss, es, post_command); }
+    if (random_next(&ss->rand_states.prob) % 101 < a) {
+        process_command(ss, es, post_command);
+    }
 }
 
 static void mod_IF_func(scene_state_t *ss, exec_state_t *es,

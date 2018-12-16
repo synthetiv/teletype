@@ -124,6 +124,7 @@ CSRCS = \
 	../libavr32/src/timers.c				\
 	../libavr32/src/usb.c					\
 	../libavr32/src/util.c					\
+	../libavr32/src/random.c					\
 	../libavr32/src/usb/ftdi/ftdi.c				\
 	../libavr32/src/usb/ftdi/uhi_ftdi.c			\
 	../libavr32/src/usb/hid/hid.c				\

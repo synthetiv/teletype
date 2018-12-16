@@ -1,6 +1,6 @@
 #include "ops/patterns.h"
 
-#include <stdlib.h>  // rand
+#include "random.h"
 
 #include "helpers.h"
 #include "teletype.h"
@@ -766,7 +766,9 @@ static int16_t p_rnd_get(scene_state_t *ss, int16_t pn) {
     int16_t start = ss_get_pattern_start(ss, pn);
     int16_t end = ss_get_pattern_end(ss, pn);
     if (end < start) return 0;
-    return ss_get_pattern_val(ss, pn, rand() % (end - start + 1) + start);
+    return ss_get_pattern_val(
+        ss, pn,
+        random_next(&ss->rand_states.pattern) % (end - start + 1) + start);
 }
 
 static void op_P_RND_get(const void *NOTUSED(data), scene_state_t *ss,
