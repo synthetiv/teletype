@@ -99,11 +99,6 @@ typedef struct {
     int16_t tr_pol[TR_COUNT];
     int16_t tr_time[TR_COUNT];
 		int16_t seed;
-		int16_t rand_seed;
-		int16_t prob_seed;
-		int16_t toss_seed;
-		int16_t pattern_seed;
-		int16_t drunk_seed;
     scale_data_t in_range;
     scale_t in_scale;
     scale_data_t param_range;
@@ -203,10 +198,15 @@ typedef struct {
 
 typedef struct {
     random_state_t rand;
-    random_state_t prob;
-    random_state_t toss;
-    random_state_t pattern;
-    random_state_t drunk;
+    int16_t seed;
+} scene_seed_t;
+
+typedef struct {
+    scene_seed_t rand;
+    scene_seed_t prob;
+    scene_seed_t toss;
+    scene_seed_t pattern;
+    scene_seed_t drunk;
 } scene_rand_t;
 
 typedef struct {
@@ -230,6 +230,7 @@ extern void ss_patterns_init(scene_state_t *ss);
 extern void ss_pattern_init(scene_state_t *ss, size_t pattern_no);
 extern void ss_grid_init(scene_state_t *ss);
 extern void ss_grid_common_init(grid_common_t *gc);
+extern void ss_rand_init(scene_state_t *ss);
 
 extern void ss_set_in(scene_state_t *ss, int16_t value);
 extern void ss_set_param(scene_state_t *ss, int16_t value);

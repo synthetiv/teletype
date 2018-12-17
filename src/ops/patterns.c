@@ -768,7 +768,7 @@ static int16_t p_rnd_get(scene_state_t *ss, int16_t pn) {
     if (end < start) return 0;
     return ss_get_pattern_val(
         ss, pn,
-        random_next(&ss->rand_states.pattern) % (end - start + 1) + start);
+        random_next(&ss->rand_states.pattern.rand) % (end - start + 1) + start);
 }
 
 static void op_P_RND_get(const void *NOTUSED(data), scene_state_t *ss,
@@ -785,6 +785,7 @@ static void op_PN_RND_get(const void *NOTUSED(data), scene_state_t *ss,
 // Make ops
 const tele_op_t op_P_RND = MAKE_GET_OP(P.RND, op_P_RND_get, 0, true);
 const tele_op_t op_PN_RND = MAKE_GET_OP(PN.RND, op_PN_RND_get, 1, true);
+const tele_op_t op_P_SEED = MAKE_SEED_OP(P.SEED, rand_states.pattern);
 
 ////////////////////////////////////////////////////////////////////////////////
 // P.+ P.+W ////////////////////////////////////////////////////////////////////

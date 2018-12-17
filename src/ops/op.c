@@ -1,6 +1,7 @@
 #include "ops/op.h"
 
 #include <stddef.h>  // offsetof
+#include "random.h"
 
 #include "helpers.h"
 #include "teletype_io.h"
@@ -38,9 +39,9 @@
 const tele_op_t *tele_ops[E_OP__LENGTH] = {
     // variables
     &op_A, &op_B, &op_C, &op_D, &op_DRUNK, &op_DRUNK_MAX, &op_DRUNK_MIN,
-    &op_DRUNK_WRAP, &op_FLIP, &op_I, &op_O, &op_O_INC, &op_O_MAX, &op_O_MIN,
-    &op_O_WRAP, &op_T, &op_TIME, &op_TIME_ACT, &op_LAST, &op_X, &op_Y, &op_Z,
-    &op_J, &op_K,
+    &op_DRUNK_WRAP, &op_DRUNK_SEED, &op_FLIP, &op_I, &op_O, &op_O_INC,
+    &op_O_MAX, &op_O_MIN, &op_O_WRAP, &op_T, &op_TIME, &op_TIME_ACT, &op_LAST,
+    &op_X, &op_Y, &op_Z, &op_J, &op_K, &op_SEED,
 
     // init
     &op_INIT, &op_INIT_SCENE, &op_INIT_SCRIPT, &op_INIT_SCRIPT_ALL, &op_INIT_P,
@@ -62,8 +63,8 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     &op_P_HERE, &op_PN_HERE, &op_P_NEXT, &op_PN_NEXT, &op_P_PREV, &op_PN_PREV,
     &op_P_INS, &op_PN_INS, &op_P_RM, &op_PN_RM, &op_P_PUSH, &op_PN_PUSH,
     &op_P_POP, &op_PN_POP, &op_P_MIN, &op_PN_MIN, &op_P_MAX, &op_PN_MAX,
-    &op_P_RND, &op_PN_RND, &op_P_ADD, &op_PN_ADD, &op_P_SUB, &op_PN_SUB,
-    &op_P_ADDW, &op_PN_ADDW, &op_P_SUBW, &op_PN_SUBW,
+    &op_P_RND, &op_PN_RND, &op_P_SEED, &op_P_ADD, &op_PN_ADD, &op_P_SUB,
+    &op_PN_SUB, &op_P_ADDW, &op_PN_ADDW, &op_P_SUBW, &op_PN_SUBW,
 
     // queue
     &op_Q, &op_Q_AVG, &op_Q_N,
@@ -77,24 +78,25 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
 
     // maths
     &op_ADD, &op_SUB, &op_MUL, &op_DIV, &op_MOD, &op_RAND, &op_RND, &op_RRAND,
-    &op_RRND, &op_R, &op_R_MIN, &op_R_MAX, &op_TOSS, &op_MIN, &op_MAX, &op_LIM,
-    &op_WRAP, &op_WRP, &op_QT, &op_AVG, &op_EQ, &op_NE, &op_LT, &op_GT, &op_LTE,
-    &op_GTE, &op_NZ, &op_EZ, &op_RSH, &op_LSH, &op_EXP, &op_ABS, &op_AND,
-    &op_OR, &op_JI, &op_SCALE, &op_SCL, &op_N, &op_V, &op_VV, &op_ER, &op_BPM,
-    &op_BIT_OR, &op_BIT_AND, &op_BIT_NOT, &op_BIT_XOR, &op_BSET, &op_BGET,
-    &op_BCLR, &op_XOR, &op_CHAOS, &op_CHAOS_R, &op_CHAOS_ALG, &op_SYM_PLUS,
-    &op_SYM_DASH, &op_SYM_STAR, &op_SYM_FORWARD_SLASH, &op_SYM_PERCENTAGE,
-    &op_SYM_EQUAL_x2, &op_SYM_EXCLAMATION_EQUAL, &op_SYM_LEFT_ANGLED,
-    &op_SYM_RIGHT_ANGLED, &op_SYM_LEFT_ANGLED_EQUAL, &op_SYM_RIGHT_ANGLED_EQUAL,
-    &op_SYM_EXCLAMATION, &op_SYM_LEFT_ANGLED_x2, &op_SYM_RIGHT_ANGLED_x2,
-    &op_SYM_AMPERSAND_x2, &op_SYM_PIPE_x2, &op_TIF, &op_SEED,
+    &op_RRND, &op_R, &op_R_MIN, &op_R_MAX, &op_RAND_SEED, &op_TOSS,
+    &op_TOSS_SEED, &op_MIN, &op_MAX, &op_LIM, &op_WRAP, &op_WRP, &op_QT,
+    &op_AVG, &op_EQ, &op_NE, &op_LT, &op_GT, &op_LTE, &op_GTE, &op_NZ, &op_EZ,
+    &op_RSH, &op_LSH, &op_EXP, &op_ABS, &op_AND, &op_OR, &op_JI, &op_SCALE,
+    &op_SCL, &op_N, &op_V, &op_VV, &op_ER, &op_BPM, &op_BIT_OR, &op_BIT_AND,
+    &op_BIT_NOT, &op_BIT_XOR, &op_BSET, &op_BGET, &op_BCLR, &op_XOR, &op_CHAOS,
+    &op_CHAOS_R, &op_CHAOS_ALG, &op_SYM_PLUS, &op_SYM_DASH, &op_SYM_STAR,
+    &op_SYM_FORWARD_SLASH, &op_SYM_PERCENTAGE, &op_SYM_EQUAL_x2,
+    &op_SYM_EXCLAMATION_EQUAL, &op_SYM_LEFT_ANGLED, &op_SYM_RIGHT_ANGLED,
+    &op_SYM_LEFT_ANGLED_EQUAL, &op_SYM_RIGHT_ANGLED_EQUAL, &op_SYM_EXCLAMATION,
+    &op_SYM_LEFT_ANGLED_x2, &op_SYM_RIGHT_ANGLED_x2, &op_SYM_AMPERSAND_x2,
+    &op_SYM_PIPE_x2, &op_TIF,
 
     // stack
     &op_S_ALL, &op_S_POP, &op_S_CLR, &op_S_L,
 
     // controlflow
     &op_SCRIPT, &op_SYM_DOLLAR, &op_KILL, &op_SCENE, &op_BREAK, &op_BRK,
-    &op_SYNC,
+    &op_SYNC, &op_PROB_SEED,
 
     // delay
     &op_DEL_CLR,
@@ -238,6 +240,26 @@ void op_poke_i16(const void *data, scene_state_t *ss, exec_state_t *NOTUSED(es),
     int16_t *ptr = (int16_t *)(base + offset);
     *ptr = cs_pop(cs);
     tele_vars_updated();
+}
+
+void op_peek_seed_i16(const void *data, scene_state_t *ss,
+                      exec_state_t *NOTUSED(es), command_state_t *cs) {
+    char *base = (char *)ss;
+    size_t offset = (size_t)data;
+    scene_seed_t *ptr = (scene_seed_t *)(base + offset);
+    cs_push(cs, ptr->seed);
+}
+
+void op_poke_seed_i16(const void *data, scene_state_t *ss,
+                      exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t s = cs_pop(cs);
+
+    char *base = (char *)ss;
+    size_t offset = (size_t)data;
+    scene_seed_t *ptr = (scene_seed_t *)(base + offset);
+    ptr->seed = s;
+
+    random_seed(&ptr->rand, s);
 }
 
 void op_simple_i2c(const void *data, scene_state_t *NOTUSED(ss),

@@ -12,6 +12,7 @@ void ss_init(scene_state_t *ss) {
     ss_variables_init(ss);
     ss_patterns_init(ss);
     ss_grid_init(ss);
+    ss_rand_init(ss);
     ss->delay.count = 0;
     for (size_t i = 0; i < TR_COUNT; i++) { ss->tr_pulse_timer[i] = 0; }
     ss->stack_op.top = 0;
@@ -21,11 +22,6 @@ void ss_init(scene_state_t *ss) {
     for (size_t i = 0; i < TEMP_SCRIPT; i++) ss->scripts[i].last_time = ticks;
     ss->variables.time = 0;
     ss->variables.time_act = 1;
-    random_init(&ss->rand_states.rand, ss->variables.rand_seed, 0, 16383);
-    random_init(&ss->rand_states.prob, ss->variables.prob_seed, 0, 16383);
-    random_init(&ss->rand_states.toss, ss->variables.toss_seed, 0, 16383);
-    random_init(&ss->rand_states.pattern, ss->variables.pattern_seed, 0, 16383);
-    random_init(&ss->rand_states.drunk, ss->variables.drunk_seed, 0, 16383);
 }
 
 void ss_variables_init(scene_state_t *ss) {
@@ -53,11 +49,6 @@ void ss_variables_init(scene_state_t *ss) {
         .tr_time = { 100, 100, 100, 100 },
         .in_range = { 0, 16383 },
         .param_range = { 0, 16383 },
-        .rand_seed = 111,
-        .prob_seed = 111,
-        .toss_seed = 111,
-        .pattern_seed = 111,
-        .drunk_seed = 111,
     };
 
     memcpy(&ss->variables, &default_variables, sizeof(default_variables));
@@ -133,6 +124,30 @@ void ss_grid_common_init(grid_common_t *gc) {
     gc->w = gc->h = 1;
     gc->level = 5;
     gc->script = -1;
+}
+
+// rand
+
+void ss_rand_init(scene_state_t *ss) {
+    ss->rand_states.rand.seed = 111;
+    random_init(&ss->rand_states.rand.rand, ss->rand_states.rand.seed, -32767,
+                32767);
+
+    ss->rand_states.prob.seed = 111;
+    random_init(&ss->rand_states.prob.rand, ss->rand_states.prob.seed, -32767,
+                32767);
+
+    ss->rand_states.toss.seed = 111;
+    random_init(&ss->rand_states.toss.rand, ss->rand_states.toss.seed, -32767,
+                32767);
+
+    ss->rand_states.pattern.seed = 111;
+    random_init(&ss->rand_states.pattern.rand, ss->rand_states.pattern.seed,
+                -32767, 32767);
+
+    ss->rand_states.drunk.seed = 111;
+    random_init(&ss->rand_states.drunk.rand, ss->rand_states.drunk.seed, -32767,
+                32767);
 }
 
 // Hardware

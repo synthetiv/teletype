@@ -42,6 +42,10 @@ static void op_K_get(const void *data, scene_state_t *ss, exec_state_t *es,
                      command_state_t *cs);
 static void op_K_set(const void *data, scene_state_t *ss, exec_state_t *es,
                      command_state_t *cs);
+static void op_SEED_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                        command_state_t *cs);
+static void op_SEED_set(const void *data, scene_state_t *ss, exec_state_t *es,
+                        command_state_t *cs);
 
 // clang-format off
 const tele_op_t op_A          = MAKE_SIMPLE_VARIABLE_OP(A         , variables.a         );
@@ -51,6 +55,7 @@ const tele_op_t op_D          = MAKE_SIMPLE_VARIABLE_OP(D         , variables.d 
 const tele_op_t op_DRUNK_MAX  = MAKE_SIMPLE_VARIABLE_OP(DRUNK.MAX , variables.drunk_max );
 const tele_op_t op_DRUNK_MIN  = MAKE_SIMPLE_VARIABLE_OP(DRUNK.MIN , variables.drunk_min );
 const tele_op_t op_DRUNK_WRAP = MAKE_SIMPLE_VARIABLE_OP(DRUNK.WRAP, variables.drunk_wrap);
+const tele_op_t op_DRUNK_SEED = MAKE_SEED_OP(DRUNK.SEED, rand_states.drunk);
 const tele_op_t op_O_INC      = MAKE_SIMPLE_VARIABLE_OP(O.INC     , variables.o_inc     );
 const tele_op_t op_O_MAX      = MAKE_SIMPLE_VARIABLE_OP(O.MAX     , variables.o_max     );
 const tele_op_t op_O_MIN      = MAKE_SIMPLE_VARIABLE_OP(O.MIN     , variables.o_min     );
@@ -69,6 +74,7 @@ const tele_op_t op_O     = MAKE_GET_SET_OP(O    , op_O_get    , op_O_set    , 0,
 const tele_op_t op_I     = MAKE_GET_SET_OP(I    , op_I_get, op_I_set, 0, true);
 const tele_op_t op_J     = MAKE_GET_SET_OP(J    , op_J_get, op_J_set, 0, true);
 const tele_op_t op_K     = MAKE_GET_SET_OP(K    , op_K_get, op_K_set, 0, true);
+const tele_op_t op_SEED  = MAKE_GET_SET_OP(SEED, op_SEED_get, op_SEED_set, 0, true);
 // clang-format on
 
 static void op_TIME_get(const void *NOTUSED(data), scene_state_t *ss,
@@ -120,7 +126,7 @@ static void op_DRUNK_get(const void *NOTUSED(data), scene_state_t *ss,
 
     // calculate new value
     int16_t new_value =
-        current_value + (random_next(&ss->rand_states.drunk) % 3) - 1;
+        current_value + (random_next(&ss->rand_states.drunk.rand) % 3) - 1;
     ss->variables.drunk = normalise_value(min, max, wrap, new_value);
 }
 
@@ -193,4 +199,31 @@ static void op_K_set(const void *NOTUSED(data), scene_state_t *ss,
                      exec_state_t *es, command_state_t *cs) {
     int16_t sn = es_variables(es)->script_number;
     ss->variables.k[sn] = cs_pop(cs);
+}
+
+static void op_SEED_get(const void *NOTUSED(data), scene_state_t *ss,
+                        exec_state_t *NOTUSED(es), command_state_t *cs) {
+    cs_push(cs, ss->variables.seed);
+}
+
+static void op_SEED_set(const void *NOTUSED(data), scene_state_t *ss,
+                        exec_state_t *NOTUSED(es), command_state_t *cs) {
+    uint16_t s = cs_pop(cs);
+
+    ss->variables.seed = s;
+
+    ss->rand_states.rand.seed = s;
+    random_seed(&ss->rand_states.rand.rand, s);
+
+    ss->rand_states.rand.seed = s;
+    random_seed(&ss->rand_states.rand.rand, s);
+
+    ss->rand_states.rand.seed = s;
+    random_seed(&ss->rand_states.rand.rand, s);
+
+    ss->rand_states.rand.seed = s;
+    random_seed(&ss->rand_states.rand.rand, s);
+
+    ss->rand_states.rand.seed = s;
+    random_seed(&ss->rand_states.rand.rand, s);
 }

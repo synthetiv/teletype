@@ -55,6 +55,18 @@ void op_poke_i16(const void *data, scene_state_t *ss, exec_state_t *es,
                  command_state_t *cs);
 
 
+#define MAKE_SEED_OP(n, v)                                                    \
+    {                                                                         \
+        .name = #n, .get = op_peek_seed_i16, .set = op_poke_seed_i16,         \
+        .params = 0, .returns = 1, .data = (void *)offsetof(scene_state_t, v) \
+    }
+
+void op_peek_seed_i16(const void *data, scene_state_t *ss, exec_state_t *es,
+                      command_state_t *cs);
+void op_poke_seed_i16(const void *data, scene_state_t *ss, exec_state_t *es,
+                      command_state_t *cs);
+
+
 // Alias one OP to another
 #define MAKE_ALIAS_OP(n, g, s, p, r) \
     { .name = #n, .get = g, .set = s, .params = p, .returns = r, .data = NULL }
