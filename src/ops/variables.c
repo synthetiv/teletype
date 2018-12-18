@@ -55,7 +55,7 @@ const tele_op_t op_D          = MAKE_SIMPLE_VARIABLE_OP(D         , variables.d 
 const tele_op_t op_DRUNK_MAX  = MAKE_SIMPLE_VARIABLE_OP(DRUNK.MAX , variables.drunk_max );
 const tele_op_t op_DRUNK_MIN  = MAKE_SIMPLE_VARIABLE_OP(DRUNK.MIN , variables.drunk_min );
 const tele_op_t op_DRUNK_WRAP = MAKE_SIMPLE_VARIABLE_OP(DRUNK.WRAP, variables.drunk_wrap);
-const tele_op_t op_DRUNK_SEED = MAKE_SEED_OP(DRUNK.SEED, rand_states.drunk);
+const tele_op_t op_DRUNK_SEED = MAKE_SEED_OP(DRUNK.SEED, rand_states.s.drunk);
 const tele_op_t op_O_INC      = MAKE_SIMPLE_VARIABLE_OP(O.INC     , variables.o_inc     );
 const tele_op_t op_O_MAX      = MAKE_SIMPLE_VARIABLE_OP(O.MAX     , variables.o_max     );
 const tele_op_t op_O_MIN      = MAKE_SIMPLE_VARIABLE_OP(O.MIN     , variables.o_min     );
@@ -126,7 +126,7 @@ static void op_DRUNK_get(const void *NOTUSED(data), scene_state_t *ss,
 
     // calculate new value
     int16_t new_value =
-        current_value + (random_next(&ss->rand_states.drunk.rand) % 3) - 1;
+        current_value + (random_next(&ss->rand_states.s.drunk.rand) % 3) - 1;
     ss->variables.drunk = normalise_value(min, max, wrap, new_value);
 }
 
@@ -210,20 +210,26 @@ static void op_SEED_set(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     uint16_t s = cs_pop(cs);
 
-    ss->variables.seed = s;
+    for (u8 i = 0; i < RAND_COUNT; i++) {
+        random_seed(&ss->rand_states.a[i].rand, s);
+    }
+    /*
 
-    ss->rand_states.rand.seed = s;
-    random_seed(&ss->rand_states.rand.rand, s);
+ss->variables.seed = s;
 
-    ss->rand_states.rand.seed = s;
-    random_seed(&ss->rand_states.rand.rand, s);
+ss->rand_states.rand.seed = s;
+random_seed(&ss->rand_states.rand.rand, s);
 
-    ss->rand_states.rand.seed = s;
-    random_seed(&ss->rand_states.rand.rand, s);
+ss->rand_states.rand.seed = s;
+random_seed(&ss->rand_states.rand.rand, s);
 
-    ss->rand_states.rand.seed = s;
-    random_seed(&ss->rand_states.rand.rand, s);
+ss->rand_states.rand.seed = s;
+random_seed(&ss->rand_states.rand.rand, s);
 
-    ss->rand_states.rand.seed = s;
-    random_seed(&ss->rand_states.rand.rand, s);
+ss->rand_states.rand.seed = s;
+random_seed(&ss->rand_states.rand.rand, s);
+
+ss->rand_states.rand.seed = s;
+random_seed(&ss->rand_states.rand.rand, s);
+    */
 }
