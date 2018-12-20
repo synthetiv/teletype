@@ -129,32 +129,13 @@ void ss_grid_common_init(grid_common_t *gc) {
 // rand
 
 void ss_rand_init(scene_state_t *ss) {
-    for (u8 i = 0; i < RAND_COUNT; i++) {
-        random_init(&ss->rand_states.a[i].rand, ss->rand_states.a[i].seed,
-                    -32767, 32767);
+    for (u8 i = 0; i < RAND_STATES_COUNT; i++) {
+        rand_set_t *r = &ss->rand_states.a[i];
+        r->seed = 112;
+        random_init(&r->rand, r->seed, -32767, 32767);
     }
 
-    /*
-ss->rand_states.rand.seed = 111;
-random_init(&ss->rand_states.rand.rand, ss->rand_states.rand.seed, -32767,
-    32767);
-
-ss->rand_states.prob.seed = 111;
-random_init(&ss->rand_states.prob.rand, ss->rand_states.prob.seed, -32767,
-    32767);
-
-ss->rand_states.toss.seed = 111;
-random_init(&ss->rand_states.toss.rand, ss->rand_states.toss.seed, -32767,
-    32767);
-
-ss->rand_states.pattern.seed = 111;
-random_init(&ss->rand_states.pattern.rand, ss->rand_states.pattern.seed,
-    -32767, 32767);
-
-ss->rand_states.drunk.seed = 111;
-random_init(&ss->rand_states.drunk.rand, ss->rand_states.drunk.seed, -32767,
-    32767);
-    */
+    ss->variables.seed = 112;
 }
 
 // Hardware

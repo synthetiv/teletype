@@ -765,11 +765,12 @@ static int16_t p_rnd_get(scene_state_t *ss, int16_t pn) {
     pn = normalise_pn(pn);
     int16_t start = ss_get_pattern_start(ss, pn);
     int16_t end = ss_get_pattern_end(ss, pn);
+    random_state_t *r = &ss->rand_states.s.pattern.rand;
+
     if (end < start) return 0;
-    return ss_get_pattern_val(
-        ss, pn,
-        random_next(&ss->rand_states.s.pattern.rand) % (end - start + 1) +
-            start);
+
+    return ss_get_pattern_val(ss, pn,
+                              random_next(r) % (end - start + 1) + start);
 }
 
 static void op_P_RND_get(const void *NOTUSED(data), scene_state_t *ss,

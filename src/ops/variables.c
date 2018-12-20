@@ -118,6 +118,7 @@ static void op_DRUNK_get(const void *NOTUSED(data), scene_state_t *ss,
     int16_t min = ss->variables.drunk_min;
     int16_t max = ss->variables.drunk_max;
     int16_t wrap = ss->variables.drunk_wrap;
+    random_state_t *r = &ss->rand_states.s.drunk.rand;
 
     // restrict current_value to (wrapped) bounds
     int16_t current_value =
@@ -125,8 +126,7 @@ static void op_DRUNK_get(const void *NOTUSED(data), scene_state_t *ss,
     cs_push(cs, current_value);
 
     // calculate new value
-    int16_t new_value =
-        current_value + (random_next(&ss->rand_states.s.drunk.rand) % 3) - 1;
+    int16_t new_value = current_value + (random_next(r) % 3) - 1;
     ss->variables.drunk = normalise_value(min, max, wrap, new_value);
 }
 
@@ -210,26 +210,11 @@ static void op_SEED_set(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     uint16_t s = cs_pop(cs);
 
-    for (u8 i = 0; i < RAND_COUNT; i++) {
-        random_seed(&ss->rand_states.a[i].rand, s);
+    for (u8 i = 0; i < RAND_STATES_COUNT; i++) {
+        rand_set_t *r = &ss->rand_states.a[i];
+        r->seed = s;
+        random_seed(&r->rand, r->seed);
     }
-    /*
 
-ss->variables.seed = s;
-
-ss->rand_states.rand.seed = s;
-random_seed(&ss->rand_states.rand.rand, s);
-
-ss->rand_states.rand.seed = s;
-random_seed(&ss->rand_states.rand.rand, s);
-
-ss->rand_states.rand.seed = s;
-random_seed(&ss->rand_states.rand.rand, s);
-
-ss->rand_states.rand.seed = s;
-random_seed(&ss->rand_states.rand.rand, s);
-
-ss->rand_states.rand.seed = s;
-random_seed(&ss->rand_states.rand.rand, s);
-    */
+    ss->variables.seed = s;
 }

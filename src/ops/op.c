@@ -246,7 +246,7 @@ void op_peek_seed_i16(const void *data, scene_state_t *ss,
                       exec_state_t *NOTUSED(es), command_state_t *cs) {
     char *base = (char *)ss;
     size_t offset = (size_t)data;
-    scene_seed_t *ptr = (scene_seed_t *)(base + offset);
+    rand_set_t *ptr = (rand_set_t *)(base + offset);
     cs_push(cs, ptr->seed);
 }
 
@@ -256,7 +256,7 @@ void op_poke_seed_i16(const void *data, scene_state_t *ss,
 
     char *base = (char *)ss;
     size_t offset = (size_t)data;
-    scene_seed_t *ptr = (scene_seed_t *)(base + offset);
+    rand_set_t *ptr = (rand_set_t *)(base + offset);
     ptr->seed = s;
 
     random_seed(&ptr->rand, s);

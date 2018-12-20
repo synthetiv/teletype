@@ -13,7 +13,7 @@ OBJ = tt.o ../src/teletype.o ../src/command.o ../src/helpers.o \
 	../src/ops/init.o ../src/ops/grid_ops.o ../src/ops/er301.o \
 	../src/ops/fader.o ../src/ops/matrixarchate.o ../src/ops/wslash.o \
 	../libavr32/src/euclidean/euclidean.o ../libavr32/src/euclidean/data.o \
-	../libavr32/src/util.o
+	../libavr32/src/util.o ../libavr32/src/random.o 
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

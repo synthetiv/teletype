@@ -25,7 +25,7 @@
 #define SCRIPT_COUNT 11
 #define EXEC_DEPTH 8
 #define WHILE_DEPTH 10000
-#define RAND_COUNT 5
+#define RAND_STATES_COUNT 5
 
 #define GRID_GROUP_COUNT 64
 #define GRID_MAX_DIMENSION 16
@@ -200,18 +200,18 @@ typedef struct {
 typedef struct {
     random_state_t rand;
     int16_t seed;
-} scene_seed_t;
+} rand_set_t;
 
 typedef union {
     struct {
-        scene_seed_t rand;
-        scene_seed_t prob;
-        scene_seed_t toss;
-        scene_seed_t pattern;
-        scene_seed_t drunk;
+        rand_set_t rand;
+        rand_set_t prob;
+        rand_set_t toss;
+        rand_set_t pattern;
+        rand_set_t drunk;
     } s;
 
-    scene_seed_t a[RAND_COUNT];
+    rand_set_t a[RAND_STATES_COUNT];
 } scene_rand_t;
 
 typedef struct {

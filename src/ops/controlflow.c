@@ -73,10 +73,9 @@ static void mod_PROB_func(scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs,
                           const tele_command_t *post_command) {
     int16_t a = cs_pop(cs);
+    random_state_t *r = &ss->rand_states.s.prob.rand;
 
-    if (random_next(&ss->rand_states.s.prob.rand) % 101 < a) {
-        process_command(ss, es, post_command);
-    }
+    if (random_next(r) % 101 < a) { process_command(ss, es, post_command); }
 }
 
 static void mod_IF_func(scene_state_t *ss, exec_state_t *es,
