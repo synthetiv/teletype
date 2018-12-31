@@ -255,10 +255,10 @@ static int16_t push_random(int16_t a, int16_t b, scene_state_t *ss) {
         min = b;
         max = a;
     }
-    int64_t range = max - min + 1;
+    int32_t range = max - min + 1;
     if (range == 0 || min == max) return min;
 
-    int64_t rrand = ((int64_t)random_next(r) << 15) + random_next(r);
+    int32_t rrand = (int32_t)random_next(r);
     rrand = rrand % range + min;
     return rrand;
 }
@@ -300,7 +300,7 @@ static void op_R_MAX_set(const void *NOTUSED(data), scene_state_t *ss,
 static void op_TOSS_get(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     random_state_t *r = &ss->rand_states.s.toss.rand;
-    cs_push(cs, random_next(r) & 1);
+    cs_push(cs, (random_next(r) >> 3) & 1);
 }
 
 static void op_MIN_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
