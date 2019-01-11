@@ -173,7 +173,7 @@
         "R"           => { MATCH_OP(E_OP_R); };
         "R.MIN"       => { MATCH_OP(E_OP_R_MIN); };
         "R.MAX"       => { MATCH_OP(E_OP_R_MAX); };
-        "RAND.SEED"   => { MATCH_OP(E_OP_RAND_SEED); };
+        "R.SEED"			=> { MATCH_OP(E_OP_R_SEED); };
         "TOSS"        => { MATCH_OP(E_OP_TOSS); };
         "TOSS.SEED"   => { MATCH_OP(E_OP_TOSS_SEED); };
         "MIN"         => { MATCH_OP(E_OP_MIN); };

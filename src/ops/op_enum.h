@@ -146,7 +146,7 @@ typedef enum {
     E_OP_R,
     E_OP_R_MIN,
     E_OP_R_MAX,
-    E_OP_RAND_SEED,
+    E_OP_R_SEED,
     E_OP_TOSS,
     E_OP_TOSS_SEED,
     E_OP_MIN,

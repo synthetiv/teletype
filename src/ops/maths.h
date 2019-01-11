@@ -15,7 +15,7 @@ extern const tele_op_t op_RRND;
 extern const tele_op_t op_R;
 extern const tele_op_t op_R_MIN;
 extern const tele_op_t op_R_MAX;
-extern const tele_op_t op_RAND_SEED;
+extern const tele_op_t op_R_SEED;
 extern const tele_op_t op_TOSS;
 extern const tele_op_t op_TOSS_SEED;
 extern const tele_op_t op_MIN;
