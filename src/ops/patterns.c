@@ -787,7 +787,6 @@ static void op_PN_RND_get(const void *NOTUSED(data), scene_state_t *ss,
 // Make ops
 const tele_op_t op_P_RND = MAKE_GET_OP(P.RND, op_P_RND_get, 0, true);
 const tele_op_t op_PN_RND = MAKE_GET_OP(PN.RND, op_PN_RND_get, 1, true);
-const tele_op_t op_P_SEED = MAKE_SEED_OP(P.SEED, rand_states.s.pattern);
 
 ////////////////////////////////////////////////////////////////////////////////
 // P.+ P.+W ////////////////////////////////////////////////////////////////////

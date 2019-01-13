@@ -107,6 +107,7 @@ CSRCS = \
 	../src/ops/whitewhale.c					\
 	../src/ops/wslash.c					\
 	../src/ops/turtle.c					\
+	../src/ops/seed.c					\
 	../libavr32/src/adc.c					\
 	../libavr32/src/events.c				\
 	../libavr32/src/euclidean/euclidean.c			\

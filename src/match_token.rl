@@ -27,7 +27,6 @@
         "DRUNK.MAX"   => { MATCH_OP(E_OP_DRUNK_MAX); };
         "DRUNK.MIN"   => { MATCH_OP(E_OP_DRUNK_MIN); };
         "DRUNK.WRAP"  => { MATCH_OP(E_OP_DRUNK_WRAP); };
-        "DRUNK.SEED"  => { MATCH_OP(E_OP_DRUNK_SEED); };
         "FLIP"        => { MATCH_OP(E_OP_FLIP); };
         "I"           => { MATCH_OP(E_OP_I); };
         "O"           => { MATCH_OP(E_OP_O); };
@@ -44,7 +43,6 @@
         "Z"           => { MATCH_OP(E_OP_Z); };
         "J"           => { MATCH_OP(E_OP_J); };
         "K"           => { MATCH_OP(E_OP_K); };
-        "SEED"        => { MATCH_OP(E_OP_SEED); };
 
         # init
         "INIT"            => { MATCH_OP(E_OP_INIT); };
@@ -119,7 +117,6 @@
         "PN.MAX"      => { MATCH_OP(E_OP_PN_MAX); };
         "P.RND"       => { MATCH_OP(E_OP_P_RND); };
         "PN.RND"      => { MATCH_OP(E_OP_PN_RND); };
-        "P.SEED"      => { MATCH_OP(E_OP_P_SEED); };
         "P.+"         => { MATCH_OP(E_OP_P_ADD); };
         "PN.+"        => { MATCH_OP(E_OP_PN_ADD); };
         "P.-"         => { MATCH_OP(E_OP_P_SUB); };
@@ -173,9 +170,7 @@
         "R"           => { MATCH_OP(E_OP_R); };
         "R.MIN"       => { MATCH_OP(E_OP_R_MIN); };
         "R.MAX"       => { MATCH_OP(E_OP_R_MAX); };
-        "R.SEED"			=> { MATCH_OP(E_OP_R_SEED); };
         "TOSS"        => { MATCH_OP(E_OP_TOSS); };
-        "TOSS.SEED"   => { MATCH_OP(E_OP_TOSS_SEED); };
         "MIN"         => { MATCH_OP(E_OP_MIN); };
         "MAX"         => { MATCH_OP(E_OP_MAX); };
         "LIM"         => { MATCH_OP(E_OP_LIM); };
@@ -579,6 +574,20 @@
         "WS.CUE"      => { MATCH_OP(E_OP_WS_CUE); };
         "WS.LOOP"     => { MATCH_OP(E_OP_WS_LOOP); };
 
+				# seed
+        "SEED"        => { MATCH_OP(E_OP_SEED); };
+        "RAND.SEED"		=> { MATCH_OP(E_OP_RAND_SEED); };
+        "RAND.SD"			=> { MATCH_OP(E_OP_SYM_RAND_SD); };
+        "R.SD"				=> { MATCH_OP(E_OP_SYM_R_SD); };
+        "TOSS.SEED"   => { MATCH_OP(E_OP_TOSS_SEED); };
+        "TOSS.SD"			=> { MATCH_OP(E_OP_SYM_TOSS_SD); };
+        "PROB.SEED"   => { MATCH_OP(E_OP_PROB_SEED); };
+        "PROB.SD"			=> { MATCH_OP(E_OP_SYM_PROB_SD); };
+        "DRUNK.SEED"  => { MATCH_OP(E_OP_DRUNK_SEED); };
+        "DRUNK.SD"		=> { MATCH_OP(E_OP_SYM_DRUNK_SD); };
+        "P.SEED"      => { MATCH_OP(E_OP_P_SEED); };
+        "P.SD"				=> { MATCH_OP(E_OP_SYM_P_SD); };
+
         # MODS
         # controlflow
         "IF"          => { MATCH_MOD(E_MOD_IF); };
@@ -592,7 +601,6 @@
 
         # delay
         "PROB"        => { MATCH_MOD(E_MOD_PROB); };
-        "PROB.SEED"   => { MATCH_OP(E_OP_PROB_SEED); };
         "DEL"         => { MATCH_MOD(E_MOD_DEL); };
         "DEL.X"       => { MATCH_MOD(E_MOD_DEL_X); };
         "DEL.R"       => { MATCH_MOD(E_MOD_DEL_R); };

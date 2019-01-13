@@ -7,7 +7,6 @@
 #include "teletype.h"
 #include "teletype_io.h"
 
-
 static void op_LAST_get(const void *data, scene_state_t *ss, exec_state_t *es,
                         command_state_t *cs);
 static void op_DRUNK_get(const void *data, scene_state_t *ss, exec_state_t *es,
@@ -42,10 +41,6 @@ static void op_K_get(const void *data, scene_state_t *ss, exec_state_t *es,
                      command_state_t *cs);
 static void op_K_set(const void *data, scene_state_t *ss, exec_state_t *es,
                      command_state_t *cs);
-static void op_SEED_get(const void *data, scene_state_t *ss, exec_state_t *es,
-                        command_state_t *cs);
-static void op_SEED_set(const void *data, scene_state_t *ss, exec_state_t *es,
-                        command_state_t *cs);
 
 // clang-format off
 const tele_op_t op_A          = MAKE_SIMPLE_VARIABLE_OP(A         , variables.a         );
@@ -55,7 +50,6 @@ const tele_op_t op_D          = MAKE_SIMPLE_VARIABLE_OP(D         , variables.d 
 const tele_op_t op_DRUNK_MAX  = MAKE_SIMPLE_VARIABLE_OP(DRUNK.MAX , variables.drunk_max );
 const tele_op_t op_DRUNK_MIN  = MAKE_SIMPLE_VARIABLE_OP(DRUNK.MIN , variables.drunk_min );
 const tele_op_t op_DRUNK_WRAP = MAKE_SIMPLE_VARIABLE_OP(DRUNK.WRAP, variables.drunk_wrap);
-const tele_op_t op_DRUNK_SEED = MAKE_SEED_OP(DRUNK.SEED, rand_states.s.drunk);
 const tele_op_t op_O_INC      = MAKE_SIMPLE_VARIABLE_OP(O.INC     , variables.o_inc     );
 const tele_op_t op_O_MAX      = MAKE_SIMPLE_VARIABLE_OP(O.MAX     , variables.o_max     );
 const tele_op_t op_O_MIN      = MAKE_SIMPLE_VARIABLE_OP(O.MIN     , variables.o_min     );
@@ -74,7 +68,6 @@ const tele_op_t op_O     = MAKE_GET_SET_OP(O    , op_O_get    , op_O_set    , 0,
 const tele_op_t op_I     = MAKE_GET_SET_OP(I    , op_I_get, op_I_set, 0, true);
 const tele_op_t op_J     = MAKE_GET_SET_OP(J    , op_J_get, op_J_set, 0, true);
 const tele_op_t op_K     = MAKE_GET_SET_OP(K    , op_K_get, op_K_set, 0, true);
-const tele_op_t op_SEED  = MAKE_GET_SET_OP(SEED, op_SEED_get, op_SEED_set, 0, true);
 // clang-format on
 
 static void op_TIME_get(const void *NOTUSED(data), scene_state_t *ss,
@@ -201,20 +194,3 @@ static void op_K_set(const void *NOTUSED(data), scene_state_t *ss,
     ss->variables.k[sn] = cs_pop(cs);
 }
 
-static void op_SEED_get(const void *NOTUSED(data), scene_state_t *ss,
-                        exec_state_t *NOTUSED(es), command_state_t *cs) {
-    cs_push(cs, ss->variables.seed);
-}
-
-static void op_SEED_set(const void *NOTUSED(data), scene_state_t *ss,
-                        exec_state_t *NOTUSED(es), command_state_t *cs) {
-    uint16_t s = cs_pop(cs);
-
-    for (u8 i = 0; i < RAND_STATES_COUNT; i++) {
-        rand_set_t *r = &ss->rand_states.a[i];
-        r->seed = s;
-        random_seed(&r->rand, r->seed);
-    }
-
-    ss->variables.seed = s;
-}

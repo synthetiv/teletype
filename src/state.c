@@ -1,7 +1,7 @@
 #include "state.h"
 
+#include <stdlib.h>
 #include <string.h>
-
 #include "teletype_io.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -131,11 +131,11 @@ void ss_grid_common_init(grid_common_t *gc) {
 void ss_rand_init(scene_state_t *ss) {
     for (u8 i = 0; i < RAND_STATES_COUNT; i++) {
         rand_set_t *r = &ss->rand_states.a[i];
-        r->seed = 112;
-        random_init(&r->rand, r->seed, 0x0000, 0x7FFE);
+        r->seed = rand();
+        random_init(&r->rand, r->seed, 0, 32767);
     }
 
-    ss->variables.seed = 112;
+    ss->variables.seed = rand();
 }
 
 // Hardware

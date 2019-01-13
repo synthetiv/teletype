@@ -50,7 +50,6 @@ static void op_SYNC_get(const void *data, scene_state_t *ss, exec_state_t *es,
 
 // clang-format off
 const tele_mod_t mod_PROB = MAKE_MOD(PROB, mod_PROB_func, 1);
-const tele_op_t op_PROB_SEED = MAKE_SEED_OP(PROB.SEED, rand_states.s.prob);
 const tele_mod_t mod_IF = MAKE_MOD(IF, mod_IF_func, 1);
 const tele_mod_t mod_ELIF = MAKE_MOD(ELIF, mod_ELIF_func, 1);
 const tele_mod_t mod_ELSE = MAKE_MOD(ELSE, mod_ELSE_func, 0);

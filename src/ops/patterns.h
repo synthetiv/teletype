@@ -38,7 +38,6 @@ extern const tele_op_t op_PN_MAX;
 
 extern const tele_op_t op_P_RND;
 extern const tele_op_t op_PN_RND;
-extern const tele_op_t op_P_SEED;
 extern const tele_op_t op_P_ADD;
 extern const tele_op_t op_PN_ADD;
 extern const tele_op_t op_P_ADDW;
