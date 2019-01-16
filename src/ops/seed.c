@@ -1,6 +1,16 @@
 #include "ops/seed.h"
 #include "helpers.h"
 
+#define MAKE_SEED_OP(n, v)                                                    \
+    {                                                                         \
+        .name = #n, .get = op_peek_seed_i16, .set = op_poke_seed_i16,         \
+        .params = 0, .returns = 1, .data = (void *)offsetof(scene_state_t, v) \
+    }
+
+static void op_peek_seed_i16(const void *data, scene_state_t *ss,
+                             exec_state_t *es, command_state_t *cs);
+static void op_poke_seed_i16(const void *data, scene_state_t *ss,
+                             exec_state_t *es, command_state_t *cs);
 static void op_SEED_get(const void *data, scene_state_t *ss, exec_state_t *es,
                         command_state_t *cs);
 static void op_SEED_set(const void *data, scene_state_t *ss, exec_state_t *es,
@@ -20,6 +30,26 @@ const tele_op_t op_SYM_DRUNK_SD		= MAKE_SEED_OP(DRUNK.SD, rand_states.s.drunk);
 const tele_op_t op_P_SEED					= MAKE_SEED_OP(P.SEED, rand_states.s.pattern);  
 const tele_op_t op_SYM_P_SD				= MAKE_SEED_OP(P.SD, rand_states.s.pattern);
 // clang-format on
+
+static void op_peek_seed_i16(const void *data, scene_state_t *ss,
+                             exec_state_t *NOTUSED(es), command_state_t *cs) {
+    char *base = (char *)ss;
+    size_t offset = (size_t)data;
+    rand_set_t *ptr = (rand_set_t *)(base + offset);
+    cs_push(cs, ptr->seed);
+}
+
+static void op_poke_seed_i16(const void *data, scene_state_t *ss,
+                             exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t s = cs_pop(cs);
+
+    char *base = (char *)ss;
+    size_t offset = (size_t)data;
+    rand_set_t *ptr = (rand_set_t *)(base + offset);
+    ptr->seed = s;
+
+    random_seed(&ptr->rand, s);
+}
 
 static void op_SEED_get(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {

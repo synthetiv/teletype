@@ -98,7 +98,7 @@ typedef struct {
     uint8_t time_act;
     int16_t tr[TR_COUNT];
     int16_t tr_pol[TR_COUNT];
-    int16_t tr_time[TR_COUNT];
+		int16_t tr_time[TR_COUNT];
 		int16_t seed;
     scale_data_t in_range;
     scale_t in_scale;

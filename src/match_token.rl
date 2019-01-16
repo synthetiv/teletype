@@ -586,7 +586,7 @@
         "DRUNK.SEED"  => { MATCH_OP(E_OP_DRUNK_SEED); };
         "DRUNK.SD"		=> { MATCH_OP(E_OP_SYM_DRUNK_SD); };
         "P.SEED"      => { MATCH_OP(E_OP_P_SEED); };
-        "P.SD"				=> { MATCH_OP(E_OP_SYM_P_SD); };
+	      "P.SD"				=> { MATCH_OP(E_OP_SYM_P_SD); };
 
         # MODS
         # controlflow

@@ -134,8 +134,6 @@ void ss_rand_init(scene_state_t *ss) {
         r->seed = rand();
         random_init(&r->rand, r->seed, 0, 32767);
     }
-
-    ss->variables.seed = rand();
 }
 
 // Hardware

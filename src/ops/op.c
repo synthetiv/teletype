@@ -247,26 +247,6 @@ void op_poke_i16(const void *data, scene_state_t *ss, exec_state_t *NOTUSED(es),
     tele_vars_updated();
 }
 
-void op_peek_seed_i16(const void *data, scene_state_t *ss,
-                      exec_state_t *NOTUSED(es), command_state_t *cs) {
-    char *base = (char *)ss;
-    size_t offset = (size_t)data;
-    rand_set_t *ptr = (rand_set_t *)(base + offset);
-    cs_push(cs, ptr->seed);
-}
-
-void op_poke_seed_i16(const void *data, scene_state_t *ss,
-                      exec_state_t *NOTUSED(es), command_state_t *cs) {
-    int16_t s = cs_pop(cs);
-
-    char *base = (char *)ss;
-    size_t offset = (size_t)data;
-    rand_set_t *ptr = (rand_set_t *)(base + offset);
-    ptr->seed = s;
-
-    random_seed(&ptr->rand, s);
-}
-
 void op_simple_i2c(const void *data, scene_state_t *NOTUSED(ss),
                    exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t message = (intptr_t)data;
