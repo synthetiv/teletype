@@ -576,17 +576,17 @@
 
 				# seed
         "SEED"        => { MATCH_OP(E_OP_SEED); };
-        "RAND.SEED"		=> { MATCH_OP(E_OP_RAND_SEED); };
-        "RAND.SD"			=> { MATCH_OP(E_OP_SYM_RAND_SD); };
-        "R.SD"				=> { MATCH_OP(E_OP_SYM_R_SD); };
+        "RAND.SEED"	  => { MATCH_OP(E_OP_RAND_SEED); };
+        "RAND.SD"	  => { MATCH_OP(E_OP_SYM_RAND_SD); };
+        "R.SD"		  => { MATCH_OP(E_OP_SYM_R_SD); };
         "TOSS.SEED"   => { MATCH_OP(E_OP_TOSS_SEED); };
-        "TOSS.SD"			=> { MATCH_OP(E_OP_SYM_TOSS_SD); };
+        "TOSS.SD"	  => { MATCH_OP(E_OP_SYM_TOSS_SD); };
         "PROB.SEED"   => { MATCH_OP(E_OP_PROB_SEED); };
-        "PROB.SD"			=> { MATCH_OP(E_OP_SYM_PROB_SD); };
+        "PROB.SD"	  => { MATCH_OP(E_OP_SYM_PROB_SD); };
         "DRUNK.SEED"  => { MATCH_OP(E_OP_DRUNK_SEED); };
-        "DRUNK.SD"		=> { MATCH_OP(E_OP_SYM_DRUNK_SD); };
+        "DRUNK.SD"	  => { MATCH_OP(E_OP_SYM_DRUNK_SD); };
         "P.SEED"      => { MATCH_OP(E_OP_P_SEED); };
-	      "P.SD"				=> { MATCH_OP(E_OP_SYM_P_SD); };
+	    "P.SD"		  => { MATCH_OP(E_OP_SYM_P_SD); };
 
         # MODS
         # controlflow

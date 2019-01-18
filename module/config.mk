@@ -108,6 +108,7 @@ CSRCS = \
 	../src/ops/wslash.c					\
 	../src/ops/turtle.c					\
 	../src/ops/seed.c					\
+	../src/tele_rand.c					\
 	../libavr32/src/adc.c					\
 	../libavr32/src/events.c				\
 	../libavr32/src/euclidean/euclidean.c			\
@@ -125,7 +126,6 @@ CSRCS = \
 	../libavr32/src/timers.c				\
 	../libavr32/src/usb.c					\
 	../libavr32/src/util.c					\
-	../libavr32/src/random.c					\
 	../libavr32/src/usb/ftdi/ftdi.c				\
 	../libavr32/src/usb/ftdi/uhi_ftdi.c			\
 	../libavr32/src/usb/hid/hid.c				\

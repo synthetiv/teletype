@@ -1,7 +1,6 @@
 #include "ops/op.h"
 
 #include <stddef.h>  // offsetof
-#include "random.h"
 
 #include "helpers.h"
 #include "teletype_io.h"
