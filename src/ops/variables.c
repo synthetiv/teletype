@@ -56,7 +56,7 @@ const tele_op_t op_O_WRAP     = MAKE_SIMPLE_VARIABLE_OP(O.WRAP    , variables.o_
 const tele_op_t op_T          = MAKE_SIMPLE_VARIABLE_OP(T         , variables.t         );
 const tele_op_t op_TIME       = MAKE_GET_SET_OP(TIME, op_TIME_get, op_TIME_set, 0, true);
 const tele_op_t op_TIME_ACT   = MAKE_GET_SET_OP(TIME.ACT, op_TIME_ACT_get, op_TIME_ACT_set, 0, true);
-const tele_op_t op_LAST       =             MAKE_GET_OP(LAST  , op_LAST_get, 1, true);
+const tele_op_t op_LAST       = MAKE_GET_OP(LAST  , op_LAST_get, 1, true);
 const tele_op_t op_X          = MAKE_SIMPLE_VARIABLE_OP(X         , variables.x         );
 const tele_op_t op_Y          = MAKE_SIMPLE_VARIABLE_OP(Y         , variables.y         );
 const tele_op_t op_Z          = MAKE_SIMPLE_VARIABLE_OP(Z         , variables.z         );
@@ -118,7 +118,7 @@ static void op_DRUNK_get(const void *NOTUSED(data), scene_state_t *ss,
     cs_push(cs, current_value);
 
     // calculate new value
-    int16_t new_value = current_value + (tele_rand_next(r) % 3) - 1;
+    int16_t new_value = current_value + (tele_rand(r) % 3) - 1;
     ss->variables.drunk = normalise_value(min, max, wrap, new_value);
 }
 

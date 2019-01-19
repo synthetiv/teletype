@@ -83,6 +83,7 @@ CSRCS = \
 	../src/teletype.c					\
 	../src/turtle.c					\
 	../src/chaos.c					\
+	../src/tele_rand.c					\
 	../src/ops/op.c						\
 	../src/ops/ansible.c					\
 	../src/ops/controlflow.c				\
@@ -108,7 +109,6 @@ CSRCS = \
 	../src/ops/wslash.c					\
 	../src/ops/turtle.c					\
 	../src/ops/seed.c					\
-	../src/tele_rand.c					\
 	../libavr32/src/adc.c					\
 	../libavr32/src/events.c				\
 	../libavr32/src/euclidean/euclidean.c			\

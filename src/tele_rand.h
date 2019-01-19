@@ -9,8 +9,8 @@ typedef struct {
     s16 seed;
 } tele_rand_t;
 
-extern void tele_rand_init(tele_rand_t *r, u32 seed);
+extern void tele_srand(tele_rand_t *r, s16 seed);
 
-extern s16 tele_rand_next(tele_rand_t *r);
+extern s32 tele_rand(tele_rand_t *r);
 
 #endif /* _TELE_RAND_H_ */

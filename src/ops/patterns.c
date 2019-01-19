@@ -768,8 +768,7 @@ static int16_t p_rnd_get(scene_state_t *ss, int16_t pn) {
 
     if (end < start) return 0;
 
-    return ss_get_pattern_val(ss, pn,
-                              tele_rand_next(r) % (end - start + 1) + start);
+    return ss_get_pattern_val(ss, pn, tele_rand(r) % (end - start + 1) + start);
 }
 
 static void op_P_RND_get(const void *NOTUSED(data), scene_state_t *ss,

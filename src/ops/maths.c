@@ -234,11 +234,11 @@ static void op_RAND_get(const void *NOTUSED(data), scene_state_t *ss,
     tele_rand_t *r = &ss->rand_states.s.rand;
 
     if (a < 0)
-        cs_push(cs, -(tele_rand_next(r) % (1 - a)));
+        cs_push(cs, -(tele_rand(r) % (1 - a)));
     else if (a == 32767)
-        cs_push(cs, tele_rand_next(r));
+        cs_push(cs, tele_rand(r));
     else
-        cs_push(cs, tele_rand_next(r) % (a + 1));
+        cs_push(cs, tele_rand(r) % (a + 1));
 }
 
 static int16_t push_random(int16_t a, int16_t b, scene_state_t *ss) {
@@ -256,7 +256,7 @@ static int16_t push_random(int16_t a, int16_t b, scene_state_t *ss) {
     int32_t range = max - min + 1;
     if (range == 0 || min == max) return min;
 
-    int32_t rrand = (int32_t)tele_rand_next(r);
+    int32_t rrand = (int32_t)tele_rand(r);
     rrand = rrand % range + min;
     return rrand;
 }
@@ -298,7 +298,7 @@ static void op_R_MAX_set(const void *NOTUSED(data), scene_state_t *ss,
 static void op_TOSS_get(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     tele_rand_t *r = &ss->rand_states.s.toss;
-    cs_push(cs, (tele_rand_next(r) >> 3) & 1);
+    cs_push(cs, (tele_rand(r) >> 3) & 1);
 }
 
 static void op_MIN_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),

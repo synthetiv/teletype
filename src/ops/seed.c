@@ -50,7 +50,7 @@ static void op_poke_seed_i16(const void *data, scene_state_t *ss,
     size_t offset = (size_t)data;
     tele_rand_t *ptr = (tele_rand_t *)(base + offset);
 
-    tele_rand_init(ptr, s);
+    tele_srand(ptr, s);
 }
 
 static void op_SEED_get(const void *NOTUSED(data), scene_state_t *ss,
@@ -64,7 +64,7 @@ static void op_SEED_set(const void *NOTUSED(data), scene_state_t *ss,
 
     for (u8 i = 0; i < RAND_STATES_COUNT; i++) {
         tele_rand_t *r = &ss->rand_states.a[i];
-        tele_rand_init(r, s);
+        tele_srand(r, s);
     }
 
     ss->variables.seed = s;
