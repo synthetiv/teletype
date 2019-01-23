@@ -7,8 +7,8 @@
 
 #include "command.h"
 #include "every.h"
+#include "random.h"
 #include "scale.h"
-#include "tele_rand.h"
 #include "turtle.h"
 #include "types.h"
 
@@ -197,6 +197,10 @@ typedef struct {
     grid_xypad_t xypad[GRID_XYPAD_COUNT];
 } scene_grid_t;
 
+typedef struct {
+    random_state_t rand;
+    s16 seed;
+} tele_rand_t;
 
 typedef union {
     struct {

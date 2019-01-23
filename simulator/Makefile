@@ -4,7 +4,6 @@ DEPS =
 OBJ = tt.o ../src/teletype.o ../src/command.o ../src/helpers.o \
 	../src/every.o ../src/match_token.o ../src/scanner.o \
 	../src/state.o ../src/table.o ../src/turtle.o ../src/chaos.o \
-	../src/tele_rand.o \
 	../src/ops/op.o ../src/ops/ansible.c ../src/ops/controlflow.o \
 	../src/ops/delay.o ../src/ops/earthsea.o ../src/ops/hardware.o \
 	../src/ops/justfriends.o ../src/ops/meadowphysics.o ../src/ops/turtle.o \
@@ -15,7 +14,7 @@ OBJ = tt.o ../src/teletype.o ../src/command.o ../src/helpers.o \
 	../src/ops/fader.o ../src/ops/matrixarchate.o ../src/ops/wslash.o \
 	../src/ops/seed.o \
 	../libavr32/src/euclidean/euclidean.o ../libavr32/src/euclidean/data.o \
-	../libavr32/src/util.o 
+	../libavr32/src/util.o ../libavr32/src/random.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

@@ -1,7 +1,7 @@
 #include "ops/maths.h"
 
 #include <stdlib.h>  // abs
-#include "tele_rand.h"
+#include "random.h"
 
 #include "chaos.h"
 #include "euclidean/euclidean.h"
@@ -231,19 +231,19 @@ static void op_MOD_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
 static void op_RAND_get(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t a = cs_pop(cs);
-    tele_rand_t *r = &ss->rand_states.s.rand;
+    random_state_t *r = &ss->rand_states.s.rand.rand;
 
     if (a < 0)
-        cs_push(cs, -(tele_rand(r) % (1 - a)));
+        cs_push(cs, -(random_next(r) % (1 - a)));
     else if (a == 32767)
-        cs_push(cs, tele_rand(r));
+        cs_push(cs, random_next(r));
     else
-        cs_push(cs, tele_rand(r) % (a + 1));
+        cs_push(cs, random_next(r) % (a + 1));
 }
 
 static int16_t push_random(int16_t a, int16_t b, scene_state_t *ss) {
     int16_t min, max;
-    tele_rand_t *r = &ss->rand_states.s.rand;
+    random_state_t *r = &ss->rand_states.s.rand.rand;
 
     if (a < b) {
         min = a;
@@ -256,7 +256,7 @@ static int16_t push_random(int16_t a, int16_t b, scene_state_t *ss) {
     int32_t range = max - min + 1;
     if (range == 0 || min == max) return min;
 
-    int32_t rrand = (int32_t)tele_rand(r);
+    int32_t rrand = (int32_t)random_next(r);
     rrand = rrand % range + min;
     return rrand;
 }
@@ -297,8 +297,8 @@ static void op_R_MAX_set(const void *NOTUSED(data), scene_state_t *ss,
 
 static void op_TOSS_get(const void *NOTUSED(data), scene_state_t *ss,
                         exec_state_t *NOTUSED(es), command_state_t *cs) {
-    tele_rand_t *r = &ss->rand_states.s.toss;
-    cs_push(cs, (tele_rand(r) >> 3) & 1);
+    random_state_t *r = &ss->rand_states.s.toss.rand;
+    cs_push(cs, random_next(r) & 1);
 }
 
 static void op_MIN_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),

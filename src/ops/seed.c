@@ -1,6 +1,6 @@
 #include "ops/seed.h"
 #include "helpers.h"
-#include "tele_rand.h"
+#include "random.h"
 
 #define MAKE_SEED_OP(n, v)                                                    \
     {                                                                         \
@@ -50,7 +50,8 @@ static void op_poke_seed_i16(const void *data, scene_state_t *ss,
     size_t offset = (size_t)data;
     tele_rand_t *ptr = (tele_rand_t *)(base + offset);
 
-    tele_srand(ptr, s);
+    ptr->seed = s;
+    random_seed(&ptr->rand, ptr->seed);
 }
 
 static void op_SEED_get(const void *NOTUSED(data), scene_state_t *ss,
@@ -64,7 +65,8 @@ static void op_SEED_set(const void *NOTUSED(data), scene_state_t *ss,
 
     for (u8 i = 0; i < RAND_STATES_COUNT; i++) {
         tele_rand_t *r = &ss->rand_states.a[i];
-        tele_srand(r, s);
+        r->seed = s;
+        random_seed(&r->rand, r->seed);
     }
 
     ss->variables.seed = s;

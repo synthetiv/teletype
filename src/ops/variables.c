@@ -2,7 +2,7 @@
 
 #include "helpers.h"
 #include "ops/op.h"
-#include "tele_rand.h"
+#include "random.h"
 #include "teletype.h"
 #include "teletype_io.h"
 
@@ -110,7 +110,7 @@ static void op_DRUNK_get(const void *NOTUSED(data), scene_state_t *ss,
     int16_t min = ss->variables.drunk_min;
     int16_t max = ss->variables.drunk_max;
     int16_t wrap = ss->variables.drunk_wrap;
-    tele_rand_t *r = &ss->rand_states.s.drunk;
+    random_state_t *r = &ss->rand_states.s.drunk.rand;
 
     // restrict current_value to (wrapped) bounds
     int16_t current_value =
@@ -118,7 +118,7 @@ static void op_DRUNK_get(const void *NOTUSED(data), scene_state_t *ss,
     cs_push(cs, current_value);
 
     // calculate new value
-    int16_t new_value = current_value + (tele_rand(r) % 3) - 1;
+    int16_t new_value = current_value + (random_next(r) % 3) - 1;
     ss->variables.drunk = normalise_value(min, max, wrap, new_value);
 }
 
