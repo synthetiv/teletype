@@ -132,7 +132,7 @@ void ss_rand_init(scene_state_t *ss) {
     for (u8 i = 0; i < RAND_STATES_COUNT; i++) {
         tele_rand_t *r = &ss->rand_states.a[i];
         r->seed = rand();
-        random_init(&r->rand, r->seed, 0, 32767);
+        random_seed(&r->rand, r->seed);
     }
 }
 
