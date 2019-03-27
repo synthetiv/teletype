@@ -135,7 +135,7 @@ const char* help4[HELP4_LENGTH] = { "4/13 DATA AND TABLES",
                                     "BPM 2-MAX|MS PER BPM",
                                     "EXP X|EXPO LOOKUP" };
 
-#define HELP5_LENGTH 56
+#define HELP5_LENGTH 64
 const char* help5[HELP5_LENGTH] = { "5/13 OPERATORS",
                                     " ",
                                     "RAND A|RANDOM 0 - A",
@@ -189,11 +189,19 @@ const char* help5[HELP5_LENGTH] = { "5/13 OPERATORS",
                                     "   I = STEP (ANY)",
                                     "   RETURNS 0 OR 1",
                                     " ",
+                                    "// SEED OPERATORS",
+                                    "GET/SET RNG SEED",
+                                    "SEED",
+                                    "RAND.SEED|R, RAND, RRAND",
+                                    "TOSS.SEED|TOSS",
+                                    "PROB.SEED|PROB",
+                                    "DRUNK.SEED|DRUNK",
+                                    "P.SEED|PATTERN"
                                     "// SPECIAL OPERATORS",
                                     "TR.TOG X|FLIP STATE OF TR X",
                                     "TR.PULSE X|PULSE TR X" };
 
-#define HELP6_LENGTH 33
+#define HELP6_LENGTH 38
 const char* help6[HELP6_LENGTH] = { "6/13 PRE :",
                                     " ",
                                     "EACH PRE NEEDS A : FOLLOWED",
@@ -203,8 +211,13 @@ const char* help6[HELP6_LENGTH] = { "6/13 PRE :",
                                     " ",
                                     "DEL A: |DELAY BY A (MS)",
                                     "DEL.CLR|KILL ALL DELAYS",
-                                    "DEL.X A B: |A DELAYS BY B (MS)",
-                                    "DEL.R A B: |A-1 DELAYS BY B (MS)",
+                                    "DEL.X A B: |A DELAYS",
+                                    "		A NUMBER OF DELAYS",
+                                    "		B TIME(MS) BETWEEN DELAYS",
+                                    "DEL.R A B: |A-1 DELAYS",
+                                    "		SAME AS DEL.X BUT THE COMMAND",
+                                    "		IS EXECUTED ONCE IMMEDIATELY",
+                                    "		THEN A-1 TIMES",
                                     " ",
                                     "S: |PUSH ONTO STACK",
                                     "S.CLR|CLEAR S",

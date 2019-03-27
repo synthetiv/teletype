@@ -212,7 +212,6 @@ short = "return a value randomly selected between the start and the end position
 prototype = "PN.RND x"
 short = "return a value randomly selected between the start and the end position of pattern `x`"
 
-
 ["P.+"]
 prototype = "P.+ x y"
 short = "increase the value of the working pattern at index `x` by `y`"

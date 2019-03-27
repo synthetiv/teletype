@@ -1,7 +1,7 @@
 #include "state.h"
 
+#include <stdlib.h>
 #include <string.h>
-
 #include "teletype_io.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,6 +12,7 @@ void ss_init(scene_state_t *ss) {
     ss_variables_init(ss);
     ss_patterns_init(ss);
     ss_grid_init(ss);
+    ss_rand_init(ss);
     ss->delay.count = 0;
     for (size_t i = 0; i < TR_COUNT; i++) { ss->tr_pulse_timer[i] = 0; }
     ss->stack_op.top = 0;
@@ -123,6 +124,16 @@ void ss_grid_common_init(grid_common_t *gc) {
     gc->w = gc->h = 1;
     gc->level = 5;
     gc->script = -1;
+}
+
+// rand
+
+void ss_rand_init(scene_state_t *ss) {
+    for (u8 i = 0; i < RAND_STATES_COUNT; i++) {
+        tele_rand_t *r = &ss->rand_states.a[i];
+        r->seed = rand();
+        random_seed(&r->rand, r->seed);
+    }
 }
 
 // Hardware
