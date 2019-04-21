@@ -5,6 +5,11 @@
 #include "teletype_io.h"
 
 
+static void op_ANS_G_get(const void* data, scene_state_t *ss, exec_state_t *es,
+                            command_state_t *cs);
+static void op_ANS_G_set(const void* data, scene_state_t *ss, exec_state_t *es,
+                            command_state_t *cs);
+
 static void op_KR_PRE_get(const void *data, scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs);
 static void op_KR_PRE_set(const void *data, scene_state_t *ss, exec_state_t *es,
@@ -136,6 +141,8 @@ static void op_ARP_ER_get(const void *data, scene_state_t *ss, exec_state_t *es,
 
 
 // clang-format off
+const tele_op_t op_ANS_G       = MAKE_GET_SET_OP(ANS.G      , op_ANS_G_get       , op_ANS_G_set       , 2, true);
+
 const tele_op_t op_KR_PRE      = MAKE_GET_SET_OP(KR.PRE     , op_KR_PRE_get      , op_KR_PRE_set      , 0, true);
 const tele_op_t op_KR_PAT      = MAKE_GET_SET_OP(KR.PAT     , op_KR_PAT_get      , op_KR_PAT_set      , 0, true);
 const tele_op_t op_KR_SCALE    = MAKE_GET_SET_OP(KR.SCALE   , op_KR_SCALE_get    , op_KR_SCALE_set    , 0, true);
@@ -186,6 +193,27 @@ const tele_op_t op_ARP_ROT     = MAKE_GET_OP(ARP.ROT        , op_ARP_ROT_get    
 const tele_op_t op_ARP_ER      = MAKE_GET_OP(ARP.ER         , op_ARP_ER_get                           , 4, false);
 // clang-format on
 
+
+static void op_ANS_G_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t x = cs_pop(cs);
+    int16_t y = cs_pop(cs);
+    int16_t z = cs_pop(cs);
+    uint8_t d[] = { II_GRID, x, y, z };
+    tele_ii_tx(II_KR_ADDR, d, 4);
+}
+
+static void op_ANS_G_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
+    int16_t x = cs_pop(cs);
+    int16_t y = cs_pop(cs);
+    uint8_t d[] = { II_GRID | II_GET, x, y };
+    uint8_t addr = II_KR_ADDR;
+    tele_ii_tx(addr, d, 3);
+    d[0] = 0;
+    tele_ii_rx(addr, d, 1);
+    cs_push(cs, d[0]);
+}
 
 static void op_KR_PRE_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                           exec_state_t *NOTUSED(es), command_state_t *cs) {

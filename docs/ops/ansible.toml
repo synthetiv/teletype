@@ -1,3 +1,8 @@
+["ANS.G"]
+prototype = "ANS.G"
+prototype_set = "ANS.G x y z"
+short = "read grid state / simulate grid press at position (`x`, `y`)"
+
 ["KR.PRE"]
 prototype = "KR.PRE"
 prototype_set = "KR.PRE x"

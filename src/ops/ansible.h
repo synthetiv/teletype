@@ -3,6 +3,8 @@
 
 #include "ops/op.h"
 
+extern const tele_op_t op_ANS_G;
+
 extern const tele_op_t op_KR_PRE;
 extern const tele_op_t op_KR_PAT;
 extern const tele_op_t op_KR_SCALE;

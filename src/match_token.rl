@@ -57,7 +57,7 @@
         "INIT.TR.ALL"     => { MATCH_OP(E_OP_INIT_TR_ALL); };
         "INIT.DATA"       => { MATCH_OP(E_OP_INIT_DATA); };
         "INIT.TIME"       => { MATCH_OP(E_OP_INIT_TIME); };
-        
+
         # turtle
         "@"           => { MATCH_OP(E_OP_TURTLE); };
         "@X"          => { MATCH_OP(E_OP_TURTLE_X); };
@@ -298,6 +298,7 @@
         "OR.CVB"      => { MATCH_OP(E_OP_OR_CVB); };
 
         # ansible
+        "ANS.G"       => { MATCH_OP(E_OP_ANS_G); };
         "KR.PRE"      => { MATCH_OP(E_OP_KR_PRE); };
         "KR.PAT"      => { MATCH_OP(E_OP_KR_PAT); };
         "KR.SCALE"    => { MATCH_OP(E_OP_KR_SCALE); };
@@ -405,8 +406,8 @@
         "TO.INIT"          => { MATCH_OP(E_OP_TO_INIT); };
 
         "TO.TR.P"          => { MATCH_OP(E_OP_TO_TR_P); };
-        "TO.TR.P.DIV"      => { MATCH_OP(E_OP_TO_TR_P_DIV); }; 
-        "TO.TR.P.MUTE"     => { MATCH_OP(E_OP_TO_TR_P_MUTE); };       
+        "TO.TR.P.DIV"      => { MATCH_OP(E_OP_TO_TR_P_DIV); };
+        "TO.TR.P.MUTE"     => { MATCH_OP(E_OP_TO_TR_P_MUTE); };
 
         "TO.OSC"           => { MATCH_OP(E_OP_TO_OSC); };
         "TO.OSC.SET"       => { MATCH_OP(E_OP_TO_OSC_SET); };

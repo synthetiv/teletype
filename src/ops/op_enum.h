@@ -255,6 +255,7 @@ typedef enum {
     E_OP_OR_GRST,
     E_OP_OR_CVA,
     E_OP_OR_CVB,
+    E_OP_ANS_G,
     E_OP_KR_PRE,
     E_OP_KR_PAT,
     E_OP_KR_SCALE,
