@@ -1,7 +1,22 @@
+["ANS.G.LED"]
+prototype = "ANS.G.LED"
+prototype_get = "ANS.G.LED x y"
+short = "get grid LED buffer at position `x`, `y`"
+
 ["ANS.G"]
 prototype = "ANS.G"
 prototype_set = "ANS.G x y z"
-short = "read grid state / simulate grid press at position (`x`, `y`)"
+short = "send grid on/off (`z`) at position `x`, `y`"
+
+["ANS.G.P"]
+prototype = "ANS.G.P"
+prototype_set = "ANS.G.P x y"
+short = "simulate grid key press at position (`x`, `y`)"
+
+["ANS.A.E"]
+prototype = "ANS.A.E"
+prototype_set = "ANS.A.E n d"
+short = "send arc encoder event for ring `n`, delta `d`"
 
 ["KR.PRE"]
 prototype = "KR.PRE"

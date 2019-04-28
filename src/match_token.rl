@@ -298,7 +298,10 @@
         "OR.CVB"      => { MATCH_OP(E_OP_OR_CVB); };
 
         # ansible
+        "ANS.G.LED"     => { MATCH_OP(E_OP_ANS_G_LED); };
         "ANS.G"       => { MATCH_OP(E_OP_ANS_G); };
+        "ANS.G.P"     => { MATCH_OP(E_OP_ANS_G_P); };
+        "ANS.A.E"     => { MATCH_OP(E_OP_ANS_A_E); };
         "KR.PRE"      => { MATCH_OP(E_OP_KR_PRE); };
         "KR.PAT"      => { MATCH_OP(E_OP_KR_PAT); };
         "KR.SCALE"    => { MATCH_OP(E_OP_KR_SCALE); };
