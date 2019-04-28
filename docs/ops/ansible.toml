@@ -13,9 +13,14 @@ prototype = "ANS.G.P"
 prototype_set = "ANS.G.P x y"
 short = "simulate grid key press at position (`x`, `y`)"
 
-["ANS.A.E"]
-prototype = "ANS.A.E"
-prototype_set = "ANS.A.E n d"
+["ANS.A.LED"]
+prototype = "ANS.A.LED"
+prototype_get = "ANS.A n x"
+short = "read arc LED buffer for ring `n`, LED `x` clockwise from north"
+
+["ANS.A"]
+prototype = "ANS.A"
+prototype_set = "ANS.A n d"
 short = "send arc encoder event for ring `n`, delta `d`"
 
 ["KR.PRE"]

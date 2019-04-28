@@ -625,7 +625,7 @@ const char* help11[HELP11_LENGTH] = { "11/13 TELEX OUTPUT",
                                       "TO.CV.RESET X",
                                       "    RESET CV CALIB" };
 
-#define HELP12_LENGTH 127
+#define HELP12_LENGTH 130
 const char* help12[HELP12_LENGTH] = { "12/13 ANSIBLE",
                                       " ",
                                       "ANS.G.LED X Y",
@@ -637,7 +637,10 @@ const char* help12[HELP12_LENGTH] = { "12/13 ANSIBLE",
                                       "ANS.G.P X Y",
                                       "    SIMULATE GRID KEY PRESS",
                                       "    AT POS X, Y",
-                                      "ANS.A.E N D",
+                                      "ANS.A.LED N X",
+                                      "    READ ARC LED STATE",
+                                      "    RING N, LED X CW",
+                                      "ANS.A N D",
                                       "    SEND ARC ENCODER EVT",
                                       "    RING N, DELTA D",
                                       "KR.PRE / KR.PRE X",

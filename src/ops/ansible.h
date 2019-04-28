@@ -6,7 +6,8 @@
 extern const tele_op_t op_ANS_G_LED;
 extern const tele_op_t op_ANS_G;
 extern const tele_op_t op_ANS_G_P;
-extern const tele_op_t op_ANS_A_E;
+extern const tele_op_t op_ANS_A;
+extern const tele_op_t op_ANS_A_LED;
 
 extern const tele_op_t op_KR_PRE;
 extern const tele_op_t op_KR_PAT;

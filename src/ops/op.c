@@ -118,7 +118,7 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
 
     // ansible
     &op_ANS_G_LED, &op_ANS_G, &op_ANS_G_P,
-    &op_ANS_A_E,
+    &op_ANS_A_LED, &op_ANS_A,
     &op_KR_PRE, &op_KR_PAT, &op_KR_SCALE, &op_KR_PERIOD, &op_KR_POS,
     &op_KR_L_ST, &op_KR_L_LEN, &op_KR_RES, &op_KR_CV, &op_KR_MUTE, &op_KR_TMUTE,
     &op_KR_CLK, &op_ME_PRE, &op_ME_RES, &op_ME_STOP, &op_ME_SCALE,
