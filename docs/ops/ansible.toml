@@ -6,7 +6,7 @@ short = "get grid LED buffer at position `x`, `y`"
 ["ANS.G"]
 prototype = "ANS.G"
 prototype_set = "ANS.G x y z"
-short = "send grid on/off (`z`) at position `x`, `y`"
+short = "get/set grid key on/off state (`z`) at position `x`, `y`"
 
 ["ANS.G.P"]
 prototype = "ANS.G.P"
@@ -113,7 +113,7 @@ short = "advance the clock for channel `x` (channel must have teletype clocking 
 ["KR.PG"]
 prototype = "KR.PG"
 prototype = "KR.PG x"
-short = "get/set the active page, returning previous page value"
+short = "get/set the active page"
 description = """
 Get or change the current parameter page. Numbering:
 

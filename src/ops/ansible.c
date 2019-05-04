@@ -13,13 +13,9 @@ static void op_ANS_G_set(const void* data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
 static void op_ANS_G_P_get(const void* data, scene_state_t *ss, exec_state_t *es,
                            command_state_t *cs);
-static void op_ANS_G_P_set(const void* data, scene_state_t *ss, exec_state_t *es,
-                           command_state_t *cs);
 static void op_ANS_A_LED_get(const void* data, scene_state_t *ss, exec_state_t *es,
                              command_state_t *cs);
 static void op_ANS_A_get(const void* data, scene_state_t *ss, exec_state_t *es,
-                         command_state_t *cs);
-static void op_ANS_A_set(const void* data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
 static void op_ANS_APP_get(const void* data, scene_state_t *ss, exec_state_t *es,
                            command_state_t *cs);
@@ -161,10 +157,10 @@ static void op_ARP_ER_get(const void *data, scene_state_t *ss, exec_state_t *es,
 
 // clang-format off
 const tele_op_t op_ANS_G_LED   = MAKE_GET_OP(    ANS.G.LED  , op_ANS_G_LED_get                        , 2, true);
-const tele_op_t op_ANS_G       = MAKE_GET_SET_OP(ANS.G      , op_ANS_G_get       , op_ANS_G_set       , 3, false);
-const tele_op_t op_ANS_G_P     = MAKE_GET_SET_OP(ANS.G.P    , op_ANS_G_P_get     , op_ANS_G_P_set     , 2, false);
+const tele_op_t op_ANS_G       = MAKE_GET_SET_OP(ANS.G      , op_ANS_G_get       , op_ANS_G_set       , 2, true);
+const tele_op_t op_ANS_G_P     = MAKE_GET_OP(    ANS.G.P    , op_ANS_G_P_get                          , 2, false);
 const tele_op_t op_ANS_A_LED   = MAKE_GET_OP(    ANS.A.LED  , op_ANS_A_LED_get                        , 2, true);
-const tele_op_t op_ANS_A       = MAKE_GET_SET_OP(ANS.A      , op_ANS_A_get       , op_ANS_A_set       , 2, false);
+const tele_op_t op_ANS_A       = MAKE_GET_OP(    ANS.A      , op_ANS_A_get                            , 2, false);
 const tele_op_t op_ANS_APP     = MAKE_GET_SET_OP(ANS.APP    , op_ANS_APP_get     , op_ANS_APP_set     , 0, true);
 
 const tele_op_t op_KR_PRE      = MAKE_GET_SET_OP(KR.PRE     , op_KR_PRE_get      , op_KR_PRE_set      , 0, true);
@@ -238,7 +234,19 @@ static void op_ANS_G_LED_get(const void *NOTUSED(data), scene_state_t *NOTUSED(s
 
 static void op_ANS_G_get(const void *data, scene_state_t *ss,
                          exec_state_t *es, command_state_t *cs) {
-    op_ANS_G_set(data, ss, es, cs);
+    int16_t x = cs_pop(cs);
+    int16_t y = cs_pop(cs);
+
+    uint8_t d[] = { II_GRID_KEY | II_GET, x, y };
+    tele_ii_tx(II_KR_ADDR, d, 4);
+    tele_ii_tx(II_MP_ADDR, d, 4);
+    tele_ii_tx(ES, d, 4);
+
+    d[0] = 0;
+    tele_ii_rx(II_KR_ADDR, d, 1);
+    tele_ii_rx(II_MP_ADDR, d, 1);
+    tele_ii_rx(ES, d, 1);
+    cs_push(cs, d[0]);
 }
 
 static void op_ANS_G_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
@@ -253,12 +261,7 @@ static void op_ANS_G_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     tele_ii_tx(ES, d, 4);
 }
 
-static void op_ANS_G_P_get(const void *data, scene_state_t *ss,
-                           exec_state_t *es, command_state_t *cs) {
-    op_ANS_G_P_set(data, ss, es, cs);
-}
-
-static void op_ANS_G_P_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+static void op_ANS_G_P_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
                            exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t x = cs_pop(cs);
     int16_t y = cs_pop(cs);
@@ -288,13 +291,8 @@ static void op_ANS_A_LED_get(const void *NOTUSED(data), scene_state_t *NOTUSED(s
     cs_push(cs, d[0]);
 }
 
-static void op_ANS_A_get(const void *data, scene_state_t *ss,
-                         exec_state_t *es, command_state_t *cs) {
-    op_ANS_A_set(data, ss, es, cs);
-}
-
-static void op_ANS_A_set(const void* data, scene_state_t *ss, exec_state_t *es,
-                           command_state_t *cs) {
+static void op_ANS_A_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t n = cs_pop(cs);
     int16_t delta = cs_pop(cs);
 
@@ -560,10 +558,6 @@ static void op_KR_PG_set(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
 
     uint8_t d[] = { II_KR_PAGE, n };
     tele_ii_tx(II_KR_ADDR, d, 2);
-
-    d[0] = 0;
-    tele_ii_rx(II_KR_ADDR, d, 1);
-    cs_push(cs, d[0]);
 }
 
 static void op_ME_PRE_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
