@@ -901,11 +901,29 @@ void tele_update_adc(u8 force) {
 }
 
 void tele_ii_tx(uint8_t addr, uint8_t* data, uint8_t l) {
+	print_dbg("\r\nii/tx (");
+	print_dbg_ulong(l);
+    print_dbg("to ");
+    print_dbg_ulong(addr);
+	print_dbg(") ");
+	for(int i=0;i<l;i++) {
+		print_dbg_ulong(data[i]);
+		print_dbg(" ");
+	}
     i2c_master_tx(addr, data, l);
 }
 
 void tele_ii_rx(uint8_t addr, uint8_t* data, uint8_t l) {
     i2c_master_rx(addr, data, l);
+	print_dbg("\r\nii/rx (");
+	print_dbg_ulong(l);
+    print_dbg("from ");
+    print_dbg_ulong(addr);
+	print_dbg(") ");
+	for(int i=0;i<l;i++) {
+		print_dbg_ulong(data[i]);
+		print_dbg(" ");
+	}
 }
 
 void tele_scene(uint8_t i) {

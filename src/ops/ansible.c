@@ -223,10 +223,12 @@ static void op_ANS_G_LED_get(const void *NOTUSED(data), scene_state_t *NOTUSED(s
                              exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t x = cs_pop(cs);
     int16_t y = cs_pop(cs);
+
     uint8_t d[] = { II_GRID_LED | II_GET, x, y };
     tele_ii_tx(II_KR_ADDR, d, 3);
     tele_ii_tx(II_MP_ADDR, d, 3);
     tele_ii_tx(ES, d, 3);
+
     d[0] = 0;
     tele_ii_rx(II_KR_ADDR, d, 1);
     tele_ii_rx(II_MP_ADDR, d, 1);
@@ -234,16 +236,9 @@ static void op_ANS_G_LED_get(const void *NOTUSED(data), scene_state_t *NOTUSED(s
     cs_push(cs, d[0]);
 }
 
-static void op_ANS_G_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                         exec_state_t *NOTUSED(es), command_state_t *cs) {
-    int16_t x = cs_pop(cs);
-    int16_t y = cs_pop(cs);
-    int16_t z = cs_pop(cs);
-    uint8_t d[] = { II_GRID_KEY, x, y, z };
-    tele_ii_tx(II_KR_ADDR, d, 4);
-    tele_ii_tx(II_MP_ADDR, d, 4);
-    tele_ii_tx(ES, d, 4);
-    cs_push(cs, 0);
+static void op_ANS_G_get(const void *data, scene_state_t *ss,
+                         exec_state_t *es, command_state_t *cs) {
+    op_ANS_G_set(data, ss, es, cs);
 }
 
 static void op_ANS_G_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
@@ -251,26 +246,16 @@ static void op_ANS_G_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     int16_t x = cs_pop(cs);
     int16_t y = cs_pop(cs);
     int16_t z = cs_pop(cs);
+
     uint8_t d[] = { II_GRID_KEY, x, y, z };
     tele_ii_tx(II_KR_ADDR, d, 4);
     tele_ii_tx(II_MP_ADDR, d, 4);
     tele_ii_tx(ES, d, 4);
 }
 
-static void op_ANS_G_P_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                           exec_state_t *NOTUSED(es), command_state_t *cs) {
-    int16_t x = cs_pop(cs);
-    int16_t y = cs_pop(cs);
-
-    uint8_t d[] = { II_GRID_KEY, x, y, 1 };
-    tele_ii_tx(II_KR_ADDR, d, 4);
-    tele_ii_tx(II_MP_ADDR, d, 4);
-    tele_ii_tx(ES, d, 4);
-    d[3] = 0;
-    tele_ii_tx(II_KR_ADDR, d, 4);
-    tele_ii_tx(II_MP_ADDR, d, 4);
-    tele_ii_tx(ES, d, 4);
-    cs_push(cs, 0);
+static void op_ANS_G_P_get(const void *data, scene_state_t *ss,
+                           exec_state_t *es, command_state_t *cs) {
+    op_ANS_G_P_set(data, ss, es, cs);
 }
 
 static void op_ANS_G_P_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
@@ -303,16 +288,9 @@ static void op_ANS_A_LED_get(const void *NOTUSED(data), scene_state_t *NOTUSED(s
     cs_push(cs, d[0]);
 }
 
-static void op_ANS_A_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                           exec_state_t *NOTUSED(es),
-                           command_state_t *cs) {
-    int16_t n = cs_pop(cs);
-    int16_t delta = cs_pop(cs);
-
-    uint8_t d[] = { II_ARC_ENC, n, delta };
-    tele_ii_tx(II_LV_ADDR, d, 3);
-    tele_ii_tx(II_CY_ADDR, d, 3);
-    cs_push(cs, 0);
+static void op_ANS_A_get(const void *data, scene_state_t *ss,
+                         exec_state_t *es, command_state_t *cs) {
+    op_ANS_A_set(data, ss, es, cs);
 }
 
 static void op_ANS_A_set(const void* data, scene_state_t *ss, exec_state_t *es,
@@ -325,97 +303,45 @@ static void op_ANS_A_set(const void* data, scene_state_t *ss, exec_state_t *es,
     tele_ii_tx(II_CY_ADDR, d, 3);
 }
 
-static uint8_t ansible_addrs[] = {
-    II_ANSIBLE_ADDR,
-    II_KR_ADDR,
-    II_MP_ADDR,
-    II_LV_ADDR,
-    II_CY_ADDR,
-    II_MID_ADDR,
-    II_ARP_ADDR,
-    ES,
-};
-
 static void op_ANS_APP_get(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
                            exec_state_t *NOTUSED(es),
                            command_state_t *cs) {
-    uint8_t cmd = II_ANSIBLE_APP | II_GET;
-    uint8_t d[] = { cmd };
-
-    /* for (uint8_t i = 0; i < sizeof(ansible_addrs); i++) { */
-    /*     tele_ii_tx(ansible_addrs[i], d, 1); */
-    /*     d[0] = 255; */
-    /*     tele_ii_rx(ansible_addrs[i], d, 1); */
-    /*     if (d[0] < 27) { */
-    /*         cs_push(cs, d[0]); */
-    /*         return; */
-    /*     } */
-
-    /*     d[0] = cmd; */
-    /* } */
-
-    /* // no valid response */
-    /* cs_push(cs, -1); */
-
-    /* tele_ii_tx(II_ANSIBLE_ADDR, d, 1); */
-    tele_ii_tx(II_MP_ADDR, d, 1);
+    uint8_t d[] = { II_ANSIBLE_APP | II_GET };
+    tele_ii_tx(II_ANSIBLE_ADDR, d, 1);
     tele_ii_tx(II_LV_ADDR, d, 1);
     tele_ii_tx(II_CY_ADDR, d, 1);
+    tele_ii_tx(II_MP_ADDR, d, 1);
+    tele_ii_tx(II_KR_ADDR, d, 1);
     tele_ii_tx(II_MID_ADDR, d, 1);
     tele_ii_tx(II_ARP_ADDR, d, 1);
-    tele_ii_tx(II_KR_ADDR, d, 1);
-    /* tele_ii_tx(ES, d, 1); */
+    tele_ii_tx(ES, d, 1);
 
     d[0] = 0;
-    /* tele_ii_rx(II_ANSIBLE_ADDR, d, 1); */
-    tele_ii_rx(II_MP_ADDR, d, 1);
+    tele_ii_rx(II_ANSIBLE_ADDR, d, 1);
     tele_ii_rx(II_LV_ADDR, d, 1);
     tele_ii_rx(II_CY_ADDR, d, 1);
-    tele_ii_tx(II_MID_ADDR, d, 1);
-    tele_ii_tx(II_ARP_ADDR, d, 1);
     tele_ii_rx(II_KR_ADDR, d, 1);
-    /* /\* tele_ii_rx(ES, d, 1); *\/ */
+    tele_ii_rx(II_MP_ADDR, d, 1);
+    tele_ii_rx(II_MID_ADDR, d, 1);
+    tele_ii_rx(II_ARP_ADDR, d, 1);
+    tele_ii_rx(ES, d, 1);
     cs_push(cs, d[0]);
 }
 
 static void op_ANS_APP_set(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
                            exec_state_t *NOTUSED(es),
                            command_state_t *cs) {
-    uint8_t cmd = II_ANSIBLE_APP;
     int16_t n = cs_pop(cs);
-    uint8_t d[] = { cmd, n };
 
-    for (uint8_t i = 0; i < sizeof(ansible_addrs); i++) {
-        tele_ii_tx(ansible_addrs[i], d, 2);
-        d[0] = 255;
-        tele_ii_rx(ansible_addrs[i], d, 1);
-        if (d[0] < 27) {
-            cs_push(cs, d[0]);
-            return;
-        }
-        d[0] = cmd;
-    }
-    cs_push(cs, -1);
-
-    /* tele_ii_tx(II_ANSIBLE_ADDR, d, 2); */
-    tele_ii_tx(II_KR_ADDR, d, 2);
-    tele_ii_tx(II_MP_ADDR, d, 2);
+    uint8_t d[] = { II_ANSIBLE_APP, n };
+    tele_ii_tx(II_ANSIBLE_ADDR, d, 2);
     tele_ii_tx(II_LV_ADDR, d, 2);
     tele_ii_tx(II_CY_ADDR, d, 2);
+    tele_ii_tx(II_KR_ADDR, d, 2);
+    tele_ii_tx(II_MP_ADDR, d, 2);
     tele_ii_tx(II_MID_ADDR, d, 2);
     tele_ii_tx(II_ARP_ADDR, d, 2);
-    /* tele_ii_tx(ES, d, 2); */
-
-    d[0] = 0;
-    /* tele_ii_rx(II_ANSIBLE_ADDR, d, 1); */
-    tele_ii_rx(II_KR_ADDR, d, 1);
-    tele_ii_rx(II_MP_ADDR, d, 1);
-    tele_ii_rx(II_LV_ADDR, d, 1);
-    tele_ii_rx(II_CY_ADDR, d, 1);
-    tele_ii_tx(II_MID_ADDR, d, 1);
-    tele_ii_tx(II_ARP_ADDR, d, 1);
-    /* tele_ii_rx(ES, d, 1); */
-    cs_push(cs, d[0]);
+    tele_ii_tx(ES, d, 2);
 }
 
 static void op_KR_PRE_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
