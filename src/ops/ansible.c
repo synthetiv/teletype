@@ -161,10 +161,10 @@ static void op_ARP_ER_get(const void *data, scene_state_t *ss, exec_state_t *es,
 
 // clang-format off
 const tele_op_t op_ANS_G_LED   = MAKE_GET_OP(    ANS.G.LED  , op_ANS_G_LED_get                        , 2, true);
-const tele_op_t op_ANS_G       = MAKE_GET_SET_OP(ANS.G      , op_ANS_G_get       , op_ANS_G_set       , 3, true);
-const tele_op_t op_ANS_G_P     = MAKE_GET_SET_OP(ANS.G.P    , op_ANS_G_P_get     , op_ANS_G_P_set     , 2, true);
+const tele_op_t op_ANS_G       = MAKE_GET_SET_OP(ANS.G      , op_ANS_G_get       , op_ANS_G_set       , 3, false);
+const tele_op_t op_ANS_G_P     = MAKE_GET_SET_OP(ANS.G.P    , op_ANS_G_P_get     , op_ANS_G_P_set     , 2, false);
 const tele_op_t op_ANS_A_LED   = MAKE_GET_OP(    ANS.A.LED  , op_ANS_A_LED_get                        , 2, true);
-const tele_op_t op_ANS_A       = MAKE_GET_SET_OP(ANS.A      , op_ANS_A_get       , op_ANS_A_set       , 2, true);
+const tele_op_t op_ANS_A       = MAKE_GET_SET_OP(ANS.A      , op_ANS_A_get       , op_ANS_A_set       , 2, false);
 const tele_op_t op_ANS_APP     = MAKE_GET_SET_OP(ANS.APP    , op_ANS_APP_get     , op_ANS_APP_set     , 0, true);
 
 const tele_op_t op_KR_PRE      = MAKE_GET_SET_OP(KR.PRE     , op_KR_PRE_get      , op_KR_PRE_set      , 0, true);
@@ -179,7 +179,7 @@ const tele_op_t op_KR_CV       = MAKE_GET_OP    (KR.CV      , op_KR_CV_get      
 const tele_op_t op_KR_MUTE     = MAKE_GET_SET_OP(KR.MUTE    , op_KR_MUTE_get     , op_KR_MUTE_set     , 1, true);
 const tele_op_t op_KR_TMUTE    = MAKE_GET_OP    (KR.TMUTE   , op_KR_TMUTE_get                         , 1, false);
 const tele_op_t op_KR_CLK      = MAKE_GET_OP    (KR.CLK     , op_KR_CLK_get                           , 1, false);
-const tele_op_t op_KR_PG       = MAKE_GET_SET_OP(KR.PG      , op_KR_PG_get       , op_KR_PG_set       , 0, false);
+const tele_op_t op_KR_PG       = MAKE_GET_SET_OP(KR.PG      , op_KR_PG_get       , op_KR_PG_set       , 0, true);
 
 const tele_op_t op_ME_PRE      = MAKE_GET_SET_OP(ME.PRE     , op_ME_PRE_get      , op_ME_PRE_set      , 0, true);
 const tele_op_t op_ME_RES      = MAKE_GET_OP    (ME.RES     , op_ME_RES_get                           , 1, false);
@@ -325,47 +325,96 @@ static void op_ANS_A_set(const void* data, scene_state_t *ss, exec_state_t *es,
     tele_ii_tx(II_CY_ADDR, d, 3);
 }
 
+static uint8_t ansible_addrs[] = {
+    II_ANSIBLE_ADDR,
+    II_KR_ADDR,
+    II_MP_ADDR,
+    II_LV_ADDR,
+    II_CY_ADDR,
+    II_MID_ADDR,
+    II_ARP_ADDR,
+    ES,
+};
+
 static void op_ANS_APP_get(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
                            exec_state_t *NOTUSED(es),
                            command_state_t *cs) {
-    uint8_t d[] = { II_ANSIBLE_APP | II_GET };
-    tele_ii_tx(II_ANSIBLE_ADDR, d, 1);
-    tele_ii_tx(II_KR_ADDR, d, 1);
+    uint8_t cmd = II_ANSIBLE_APP | II_GET;
+    uint8_t d[] = { cmd };
+
+    /* for (uint8_t i = 0; i < sizeof(ansible_addrs); i++) { */
+    /*     tele_ii_tx(ansible_addrs[i], d, 1); */
+    /*     d[0] = 255; */
+    /*     tele_ii_rx(ansible_addrs[i], d, 1); */
+    /*     if (d[0] < 27) { */
+    /*         cs_push(cs, d[0]); */
+    /*         return; */
+    /*     } */
+
+    /*     d[0] = cmd; */
+    /* } */
+
+    /* // no valid response */
+    /* cs_push(cs, -1); */
+
+    /* tele_ii_tx(II_ANSIBLE_ADDR, d, 1); */
     tele_ii_tx(II_MP_ADDR, d, 1);
     tele_ii_tx(II_LV_ADDR, d, 1);
     tele_ii_tx(II_CY_ADDR, d, 1);
-    tele_ii_tx(ES, d, 1);
+    tele_ii_tx(II_MID_ADDR, d, 1);
+    tele_ii_tx(II_ARP_ADDR, d, 1);
+    tele_ii_tx(II_KR_ADDR, d, 1);
+    /* tele_ii_tx(ES, d, 1); */
 
     d[0] = 0;
-    tele_ii_rx(II_ANSIBLE_ADDR, d, 1);
-    tele_ii_rx(II_KR_ADDR, d, 1);
+    /* tele_ii_rx(II_ANSIBLE_ADDR, d, 1); */
     tele_ii_rx(II_MP_ADDR, d, 1);
     tele_ii_rx(II_LV_ADDR, d, 1);
     tele_ii_rx(II_CY_ADDR, d, 1);
-    tele_ii_rx(ES, d, 1);
+    tele_ii_tx(II_MID_ADDR, d, 1);
+    tele_ii_tx(II_ARP_ADDR, d, 1);
+    tele_ii_rx(II_KR_ADDR, d, 1);
+    /* /\* tele_ii_rx(ES, d, 1); *\/ */
     cs_push(cs, d[0]);
 }
 
 static void op_ANS_APP_set(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
                            exec_state_t *NOTUSED(es),
                            command_state_t *cs) {
+    uint8_t cmd = II_ANSIBLE_APP;
     int16_t n = cs_pop(cs);
+    uint8_t d[] = { cmd, n };
 
-    uint8_t d[] = { II_ANSIBLE_APP, n };
-    tele_ii_tx(II_ANSIBLE_ADDR, d, 2);
+    for (uint8_t i = 0; i < sizeof(ansible_addrs); i++) {
+        tele_ii_tx(ansible_addrs[i], d, 2);
+        d[0] = 255;
+        tele_ii_rx(ansible_addrs[i], d, 1);
+        if (d[0] < 27) {
+            cs_push(cs, d[0]);
+            return;
+        }
+        d[0] = cmd;
+    }
+    cs_push(cs, -1);
+
+    /* tele_ii_tx(II_ANSIBLE_ADDR, d, 2); */
     tele_ii_tx(II_KR_ADDR, d, 2);
     tele_ii_tx(II_MP_ADDR, d, 2);
     tele_ii_tx(II_LV_ADDR, d, 2);
     tele_ii_tx(II_CY_ADDR, d, 2);
-    tele_ii_tx(ES, d, 2);
+    tele_ii_tx(II_MID_ADDR, d, 2);
+    tele_ii_tx(II_ARP_ADDR, d, 2);
+    /* tele_ii_tx(ES, d, 2); */
 
     d[0] = 0;
-    tele_ii_rx(II_ANSIBLE_ADDR, d, 1);
+    /* tele_ii_rx(II_ANSIBLE_ADDR, d, 1); */
     tele_ii_rx(II_KR_ADDR, d, 1);
     tele_ii_rx(II_MP_ADDR, d, 1);
     tele_ii_rx(II_LV_ADDR, d, 1);
     tele_ii_rx(II_CY_ADDR, d, 1);
-    tele_ii_rx(ES, d, 1);
+    tele_ii_tx(II_MID_ADDR, d, 1);
+    tele_ii_tx(II_ARP_ADDR, d, 1);
+    /* tele_ii_rx(ES, d, 1); */
     cs_push(cs, d[0]);
 }
 
