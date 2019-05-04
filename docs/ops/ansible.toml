@@ -112,7 +112,7 @@ short = "advance the clock for channel `x` (channel must have teletype clocking 
 
 ["KR.PG"]
 prototype = "KR.PG"
-prototype = "KR.PG x"
+prototype_set = "KR.PG x"
 short = "get/set the active page"
 description = """
 Get or change the current parameter page. Numbering:
@@ -127,6 +127,14 @@ Get or change the current parameter page. Numbering:
  - `7` = TBD
  - `8` = scale
  - `9` = pattern
+"""
+
+["KR.CUE"]
+prototype = "KR.CUE"
+prototype_set = "KR.CUE x"
+short = "get/set the cued pattern"
+description = """
+Get or change the cued pattern. Numbered from 0.
 """
 
 ["ME.PRE"]

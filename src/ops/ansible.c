@@ -66,7 +66,10 @@ static void op_KR_PG_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
 static void op_KR_PG_set(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
-
+static void op_KR_CUE_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                          command_state_t *cs);
+static void op_KR_CUE_set(const void *data, scene_state_t *ss, exec_state_t *es,
+                          command_state_t *cs);
 static void op_ME_PRE_get(const void *data, scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs);
 static void op_ME_PRE_set(const void *data, scene_state_t *ss, exec_state_t *es,
@@ -176,6 +179,7 @@ const tele_op_t op_KR_MUTE     = MAKE_GET_SET_OP(KR.MUTE    , op_KR_MUTE_get    
 const tele_op_t op_KR_TMUTE    = MAKE_GET_OP    (KR.TMUTE   , op_KR_TMUTE_get                         , 1, false);
 const tele_op_t op_KR_CLK      = MAKE_GET_OP    (KR.CLK     , op_KR_CLK_get                           , 1, false);
 const tele_op_t op_KR_PG       = MAKE_GET_SET_OP(KR.PG      , op_KR_PG_get       , op_KR_PG_set       , 0, true);
+const tele_op_t op_KR_CUE      = MAKE_GET_SET_OP(KR.CUE     , op_KR_CUE_get      , op_KR_CUE_set      , 0, true);
 
 const tele_op_t op_ME_PRE      = MAKE_GET_SET_OP(ME.PRE     , op_ME_PRE_get      , op_ME_PRE_set      , 0, true);
 const tele_op_t op_ME_RES      = MAKE_GET_OP    (ME.RES     , op_ME_RES_get                           , 1, false);
@@ -557,6 +561,24 @@ static void op_KR_PG_set(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
     int16_t n = cs_pop(cs);
 
     uint8_t d[] = { II_KR_PAGE, n };
+    tele_ii_tx(II_KR_ADDR, d, 2);
+}
+
+static void op_KR_CUE_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+    uint8_t d[] = { II_KR_CUE | II_GET };
+    tele_ii_tx(II_KR_ADDR, d, 1);
+
+    d[0] = 0;
+    tele_ii_rx(II_KR_ADDR, d, 1);
+    cs_push(cs, (int8_t)d[0]);
+}
+
+static void op_KR_CUE_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
+    uint8_t pat = cs_pop(cs);
+
+    uint8_t d[] = { II_KR_CUE, pat };
     tele_ii_tx(II_KR_ADDR, d, 2);
 }
 

@@ -317,6 +317,7 @@
         "KR.TMUTE"    => { MATCH_OP(E_OP_KR_TMUTE); };
         "KR.CLK"      => { MATCH_OP(E_OP_KR_CLK); };
         "KR.PG"       => { MATCH_OP(E_OP_KR_PG); };
+        "KR.CUE"      => { MATCH_OP(E_OP_KR_CUE); };
         "ME.PRE"      => { MATCH_OP(E_OP_ME_PRE); };
         "ME.RES"      => { MATCH_OP(E_OP_ME_RES); };
         "ME.STOP"     => { MATCH_OP(E_OP_ME_STOP); };

@@ -274,6 +274,7 @@ typedef enum {
     E_OP_KR_TMUTE,
     E_OP_KR_CLK,
     E_OP_KR_PG,
+    E_OP_KR_CUE,
     E_OP_ME_PRE,
     E_OP_ME_RES,
     E_OP_ME_STOP,
