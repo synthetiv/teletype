@@ -18,6 +18,29 @@ http://monome.org/docs/modular/teletype
 
 See the [libavr32 repo][libavr32] for more detailed instructions. You will also need `ragel` installed and on the path, see below.
 
+Alternatively, if you have Docker installed, you can quickly get
+building with a [Docker image](https://github.com/Dewb/monome-build)
+that has all the dependencies set up:
+
+```bash
+git clone --recursive --config core.autocrlf=input https://github.com/monome/teletype
+docker run --rm -it -v"$(pwd)/teletype":/target dewb/monome-build bash
+make
+```
+
+The reasoning behind these options:
+
+```
+git
+  --recursive                   # clone libavr32 and unity submodules
+  --config core.autocrlf=input  # if on Windows, avoid adding CRLF line endings that can break compile scripts
+
+docker
+  --rm                          # delete the container after exiting it
+  -it                           # keep stdin attached, allocate tty
+  -v"$(pwd):/teletype":/target  # mount the ./teletype directory at /target inside the container
+```
+
 **Make sure that the `libavr32` submodule is correctly checked out**
 
 ```bash
@@ -36,6 +59,9 @@ cd tests
 make clean  # only needed if you've built the module code
 make test
 ```
+
+In the case of line ending issues `make test` may fail, in this case
+`make tests && ./tests` might work better.
 
 ## Ragel
 
