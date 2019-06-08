@@ -1,8 +1,7 @@
 #include "ops/controlflow.h"
 
-#include <stdlib.h>
-
 #include "helpers.h"
+#include "random.h"
 #include "teletype.h"
 #include "teletype_io.h"
 
@@ -48,6 +47,7 @@ static void op_SYNC_get(const void *data, scene_state_t *ss, exec_state_t *es,
                         command_state_t *cs);
 
 
+// clang-format off
 const tele_mod_t mod_PROB = MAKE_MOD(PROB, mod_PROB_func, 1);
 const tele_mod_t mod_IF = MAKE_MOD(IF, mod_IF_func, 1);
 const tele_mod_t mod_ELIF = MAKE_MOD(ELIF, mod_ELIF_func, 1);
@@ -58,24 +58,22 @@ const tele_mod_t mod_EVERY = MAKE_MOD(EVERY, mod_EVERY_func, 1);
 const tele_mod_t mod_SKIP = MAKE_MOD(SKIP, mod_SKIP_func, 1);
 const tele_mod_t mod_OTHER = MAKE_MOD(OTHER, mod_OTHER_func, 0);
 
-const tele_op_t op_SCRIPT =
-    MAKE_GET_SET_OP(SCRIPT, op_SCRIPT_get, op_SCRIPT_set, 0, true);
-const tele_op_t op_SYM_DOLLAR =
-    MAKE_ALIAS_OP($, op_SCRIPT_get, op_SCRIPT_set, 0, true);
+const tele_op_t op_SCRIPT = MAKE_GET_SET_OP(SCRIPT, op_SCRIPT_get, op_SCRIPT_set, 0, true);
+const tele_op_t op_SYM_DOLLAR = MAKE_ALIAS_OP($, op_SCRIPT_get, op_SCRIPT_set, 0, true);
 const tele_op_t op_KILL = MAKE_GET_OP(KILL, op_KILL_get, 0, false);
-const tele_op_t op_SCENE =
-    MAKE_GET_SET_OP(SCENE, op_SCENE_get, op_SCENE_set, 0, true);
+const tele_op_t op_SCENE = MAKE_GET_SET_OP(SCENE, op_SCENE_get, op_SCENE_set, 0, true);
 const tele_op_t op_BREAK = MAKE_GET_OP(BREAK, op_BREAK_get, 0, false);
 const tele_op_t op_BRK = MAKE_ALIAS_OP(BRK, op_BREAK_get, NULL, 0, false);
 const tele_op_t op_SYNC = MAKE_GET_OP(SYNC, op_SYNC_get, 1, false);
-
+// clang-format on
 
 static void mod_PROB_func(scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs,
                           const tele_command_t *post_command) {
     int16_t a = cs_pop(cs);
+    random_state_t *r = &ss->rand_states.s.prob.rand;
 
-    if (rand() % 101 < a) { process_command(ss, es, post_command); }
+    if (random_next(r) % 101 < a) { process_command(ss, es, post_command); }
 }
 
 static void mod_IF_func(scene_state_t *ss, exec_state_t *es,

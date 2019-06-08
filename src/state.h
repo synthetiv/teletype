@@ -7,6 +7,7 @@
 
 #include "command.h"
 #include "every.h"
+#include "random.h"
 #include "scale.h"
 #include "turtle.h"
 #include "types.h"
@@ -24,6 +25,7 @@
 #define SCRIPT_COUNT 11
 #define EXEC_DEPTH 8
 #define WHILE_DEPTH 10000
+#define RAND_STATES_COUNT 5
 
 #define GRID_GROUP_COUNT 64
 #define GRID_MAX_DIMENSION 16
@@ -96,7 +98,8 @@ typedef struct {
     uint8_t time_act;
     int16_t tr[TR_COUNT];
     int16_t tr_pol[TR_COUNT];
-    int16_t tr_time[TR_COUNT];
+	int16_t tr_time[TR_COUNT];
+	int16_t seed;
     scale_data_t in_range;
     scale_t in_scale;
     scale_data_t param_range;
@@ -195,6 +198,23 @@ typedef struct {
 } scene_grid_t;
 
 typedef struct {
+    random_state_t rand;
+    s16 seed;
+} tele_rand_t;
+
+typedef union {
+    struct {
+        tele_rand_t rand;
+        tele_rand_t prob;
+        tele_rand_t toss;
+        tele_rand_t pattern;
+        tele_rand_t drunk;
+    } s;
+
+    tele_rand_t a[RAND_STATES_COUNT];
+} scene_rand_t;
+
+typedef struct {
     bool initializing;
     scene_variables_t variables;
     scene_pattern_t patterns[PATTERN_COUNT];
@@ -205,6 +225,7 @@ typedef struct {
     scene_turtle_t turtle;
     bool every_last;
     scene_grid_t grid;
+    scene_rand_t rand_states;
     cal_data_t cal;
 } scene_state_t;
 
@@ -214,6 +235,7 @@ extern void ss_patterns_init(scene_state_t *ss);
 extern void ss_pattern_init(scene_state_t *ss, size_t pattern_no);
 extern void ss_grid_init(scene_state_t *ss);
 extern void ss_grid_common_init(grid_common_t *gc);
+extern void ss_rand_init(scene_state_t *ss);
 
 extern void ss_set_in(scene_state_t *ss, int16_t value);
 extern void ss_set_param(scene_state_t *ss, int16_t value);

@@ -523,6 +523,18 @@ typedef enum {
     E_OP_MA_PROW,
     E_OP_MA_CLR,
     E_OP_MA_PCLR,
+    E_OP_SEED,
+    E_OP_RAND_SEED,
+    E_OP_SYM_RAND_SD,
+    E_OP_SYM_R_SD,
+    E_OP_TOSS_SEED,
+    E_OP_SYM_TOSS_SD,
+    E_OP_PROB_SEED,
+    E_OP_SYM_PROB_SD,
+    E_OP_DRUNK_SEED,
+    E_OP_SYM_DRUNK_SD,
+    E_OP_P_SEED,
+    E_OP_SYM_P_SD,
     E_OP__LENGTH,
 } tele_op_idx_t;
 

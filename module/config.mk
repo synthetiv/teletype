@@ -107,6 +107,7 @@ CSRCS = \
 	../src/ops/whitewhale.c					\
 	../src/ops/wslash.c					\
 	../src/ops/turtle.c					\
+	../src/ops/seed.c					\
 	../libavr32/src/adc.c					\
 	../libavr32/src/events.c				\
 	../libavr32/src/euclidean/euclidean.c			\
@@ -131,6 +132,7 @@ CSRCS = \
 	../libavr32/src/usb/midi/uhi_midi.c			\
 	../libavr32/src/usb/midi/midi.c				\
 	../libavr32/src/usb/msc/msc.c				\
+	../libavr32/src/random.c			\
 	avr32/drivers/adc/adc.c					\
 	avr32/drivers/flashc/flashc.c				\
 	avr32/drivers/gpio/gpio.c				\

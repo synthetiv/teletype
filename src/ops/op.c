@@ -22,6 +22,7 @@
 #include "ops/orca.h"
 #include "ops/patterns.h"
 #include "ops/queue.h"
+#include "ops/seed.h"
 #include "ops/stack.h"
 #include "ops/telex.h"
 #include "ops/turtle.h"
@@ -205,7 +206,12 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     // matrixarchate
     &op_MA_SELECT, &op_MA_STEP, &op_MA_RESET, &op_MA_PGM, &op_MA_ON, &op_MA_PON,
     &op_MA_OFF, &op_MA_POFF, &op_MA_SET, &op_MA_PSET, &op_MA_COL, &op_MA_PCOL,
-    &op_MA_ROW, &op_MA_PROW, &op_MA_CLR, &op_MA_PCLR
+    &op_MA_ROW, &op_MA_PROW, &op_MA_CLR, &op_MA_PCLR,
+
+    // seed
+    &op_SEED, &op_RAND_SEED, &op_SYM_RAND_SD, &op_SYM_R_SD, &op_TOSS_SEED,
+    &op_SYM_TOSS_SD, &op_PROB_SEED, &op_SYM_PROB_SD, &op_DRUNK_SEED,
+    &op_SYM_DRUNK_SD, &op_P_SEED, &op_SYM_P_SD
 };
 
 /////////////////////////////////////////////////////////////////
