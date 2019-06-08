@@ -137,6 +137,14 @@ description = """
 Get or change the cued pattern. Numbered from 0.
 """
 
+["KR.DIR"]
+prototype = "KR.DIR"
+prototype_set = "KR.DIR x"
+short = "get/set the step direction"
+description = """
+Get or change the step direction. Numbered from 0.
+"""
+
 ["ME.PRE"]
 prototype = "ME.PRE"
 prototype_set = "ME.PRE x"
