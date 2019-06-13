@@ -240,6 +240,7 @@
         "$"           => { MATCH_OP(E_OP_SYM_DOLLAR); };
         "KILL"        => { MATCH_OP(E_OP_KILL); };
         "SCENE"       => { MATCH_OP(E_OP_SCENE); };
+        "SCENE.G"     => { MATCH_OP(E_OP_SCENE_G); };
         "BREAK"       => { MATCH_OP(E_OP_BREAK); };
         "BRK"         => { MATCH_OP(E_OP_BRK); };
         "SYNC"        => { MATCH_OP(E_OP_SYNC); };

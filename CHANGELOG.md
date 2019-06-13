@@ -10,6 +10,7 @@
 - **NEW**: new variables: J & K local script variables
 - **FIX**: [metro rate not updated after `INIT.SCENE`](https://github.com/monome/teletype/issues/174)
 - **NEW**: new ops: SEED, R.SEED, TOSS.SEED, DRUNK.SEED, P.SEED, PROB.SEED
+- **NEW**: new op: SCENE.G
 
 ## v3.0
 

@@ -53,17 +53,19 @@ void flash_prepare() {
         int confirm = 1;
         uint32_t counter = 0;
         int toggle = 0;
-        #define TIMEOUT 50000
-        while(confirm==1 && (++counter < TIMEOUT)) {
-          confirm = gpio_get_pin_value(NMI);
-          if((counter % 1000) == 0) {
-            if(++toggle % 2) gpio_set_pin_low(B11);
-            else gpio_set_pin_high(B11);
-          }
-          print_dbg_ulong(confirm);
+#define TIMEOUT 50000
+        while (confirm == 1 && (++counter < TIMEOUT)) {
+            confirm = gpio_get_pin_value(NMI);
+            if ((counter % 1000) == 0) {
+                if (++toggle % 2)
+                    gpio_set_pin_low(B11);
+                else
+                    gpio_set_pin_high(B11);
+            }
+            print_dbg_ulong(confirm);
         }
         gpio_set_pin_low(B11);
-        if(counter >= TIMEOUT) return;
+        if (counter >= TIMEOUT) return;
 
         print_dbg("\r\n:::: first run, clearing flash");
         print_dbg("\r\nflash size: ");
@@ -76,7 +78,9 @@ void flash_prepare() {
         char text[SCENE_TEXT_LINES][SCENE_TEXT_CHARS];
         memset(text, 0, SCENE_TEXT_LINES * SCENE_TEXT_CHARS);
 
-        for (uint8_t i = 0; i < SCENE_SLOTS; i++) { flash_write(i, &scene, &text); }
+        for (uint8_t i = 0; i < SCENE_SLOTS; i++) {
+            flash_write(i, &scene, &text);
+        }
 
         cal_data_t cal = { 0, 16383, 0, 16383 };
         flashc_memcpy((void *)&f.cal, &cal, sizeof(cal), true);
@@ -91,7 +95,6 @@ void flash_prepare() {
 
 void flash_write(uint8_t preset_no, scene_state_t *scene,
                  char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS]) {
-                     
     if (preset_no >= SCENE_SLOTS) return;
     flashc_memcpy((void *)&f.scenes[preset_no].scripts, ss_scripts_ptr(scene),
                   // Exclude TEMP script from flash storage by subtracting one
@@ -106,14 +109,17 @@ void flash_write(uint8_t preset_no, scene_state_t *scene,
 }
 
 void flash_read(uint8_t preset_no, scene_state_t *scene,
-                char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS]) {
+                char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS],
+                uint8_t init_grid) {
     memcpy(ss_scripts_ptr(scene), &f.scenes[preset_no].scripts,
            // Exclude size of TEMP script as above
            ss_scripts_size() - sizeof(scene_script_t));
     memcpy(ss_patterns_ptr(scene), &f.scenes[preset_no].patterns,
            ss_patterns_size());
-    memcpy(&grid_data, &f.scenes[preset_no].grid_data, sizeof(grid_data_t));
-    unpack_grid(scene);
+    if (init_grid) {
+        memcpy(&grid_data, &f.scenes[preset_no].grid_data, sizeof(grid_data_t));
+        unpack_grid(scene);
+    }
     memcpy(text, &f.scenes[preset_no].text,
            SCENE_TEXT_LINES * SCENE_TEXT_CHARS);
     // need to reset timestamps

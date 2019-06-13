@@ -324,7 +324,7 @@ void handler_Front(int32_t data) {
             ignore_front_press = 0;
             return;
         }
-        
+
         if (grid_connected) {
             grid_control_mode = !grid_control_mode;
             if (grid_control_mode && mode == M_HELP) set_mode(M_LIVE);
@@ -908,9 +908,10 @@ void tele_ii_rx(uint8_t addr, uint8_t* data, uint8_t l) {
     i2c_master_rx(addr, data, l);
 }
 
-void tele_scene(uint8_t i) {
+void tele_scene(uint8_t i, uint8_t init_grid) {
     preset_select = i;
-    flash_read(i, &scene_state, &scene_text);
+    flash_read(i, &scene_state, &scene_text, init_grid);
+    if (init_grid) scene_state.grid.scr_dirty = scene_state.grid.grid_dirty = 1;
 }
 
 void tele_kill() {
@@ -982,19 +983,19 @@ int main(void) {
         region_fill(&line[5], 0);
         font_string_region_clip(&line[5], s, 0, 0, 0x4, 0);
         region_draw(&line[5]);
-        
+
         strcpy(s, "PRESS TO CONFIRM");
         region_fill(&line[6], 0);
         font_string_region_clip(&line[6], s, 0, 0, 0x4, 0);
         region_draw(&line[6]);
-        
+
         strcpy(s, "DO NOT PRESS OTHERWISE!");
         region_fill(&line[7], 0);
         font_string_region_clip(&line[7], s, 0, 0, 0x4, 0);
         region_draw(&line[7]);
         ignore_front_press = 1;
     }
-    
+
     // prepare flash (if needed)
     flash_prepare();
 
@@ -1010,7 +1011,7 @@ int main(void) {
     // load preset from flash
     preset_select = flash_last_saved_scene();
     ss_set_scene(&scene_state, preset_select);
-    flash_read(preset_select, &scene_state, &scene_text);
+    flash_read(preset_select, &scene_state, &scene_text, 1);
 
     // setup daisy chain for two dacs
     spi_selectChip(DAC_SPI, DAC_SPI_NPCS);
