@@ -5,22 +5,22 @@
 #include "teletype_io.h"
 
 
-static void op_ANS_G_LED_get(const void* data, scene_state_t *ss, exec_state_t *es,
-                             command_state_t *cs);
-static void op_ANS_G_get(const void* data, scene_state_t *ss, exec_state_t *es,
+static void op_ANS_G_LED_get(const void *data, scene_state_t *ss,
+                             exec_state_t *es, command_state_t *cs);
+static void op_ANS_G_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
-static void op_ANS_G_set(const void* data, scene_state_t *ss, exec_state_t *es,
+static void op_ANS_G_set(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
-static void op_ANS_G_P_get(const void* data, scene_state_t *ss, exec_state_t *es,
-                           command_state_t *cs);
-static void op_ANS_A_LED_get(const void* data, scene_state_t *ss, exec_state_t *es,
-                             command_state_t *cs);
-static void op_ANS_A_get(const void* data, scene_state_t *ss, exec_state_t *es,
+static void op_ANS_G_P_get(const void *data, scene_state_t *ss,
+                           exec_state_t *es, command_state_t *cs);
+static void op_ANS_A_LED_get(const void *data, scene_state_t *ss,
+                             exec_state_t *es, command_state_t *cs);
+static void op_ANS_A_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
-static void op_ANS_APP_get(const void* data, scene_state_t *ss, exec_state_t *es,
-                           command_state_t *cs);
-static void op_ANS_APP_set(const void* data, scene_state_t *ss, exec_state_t *es,
-                           command_state_t *cs);
+static void op_ANS_APP_get(const void *data, scene_state_t *ss,
+                           exec_state_t *es, command_state_t *cs);
+static void op_ANS_APP_set(const void *data, scene_state_t *ss,
+                           exec_state_t *es, command_state_t *cs);
 
 static void op_KR_PRE_get(const void *data, scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs);
@@ -71,9 +71,9 @@ static void op_KR_CUE_get(const void *data, scene_state_t *ss, exec_state_t *es,
 static void op_KR_CUE_set(const void *data, scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs);
 static void op_KR_DIR_get(const void *data, scene_state_t *ss, exec_state_t *es,
-                         command_state_t *cs);
+                          command_state_t *cs);
 static void op_KR_DIR_set(const void *data, scene_state_t *ss, exec_state_t *es,
-                         command_state_t *cs);
+                          command_state_t *cs);
 static void op_ME_PRE_get(const void *data, scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs);
 static void op_ME_PRE_set(const void *data, scene_state_t *ss, exec_state_t *es,
@@ -224,7 +224,8 @@ const tele_op_t op_ARP_ER      = MAKE_GET_OP(ARP.ER         , op_ARP_ER_get     
 // clang-format on
 
 
-static void op_ANS_G_LED_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+static void op_ANS_G_LED_get(const void *NOTUSED(data),
+                             scene_state_t *NOTUSED(ss),
                              exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t x = cs_pop(cs);
     int16_t y = cs_pop(cs);
@@ -241,8 +242,8 @@ static void op_ANS_G_LED_get(const void *NOTUSED(data), scene_state_t *NOTUSED(s
     cs_push(cs, d[0]);
 }
 
-static void op_ANS_G_get(const void *data, scene_state_t *ss,
-                         exec_state_t *es, command_state_t *cs) {
+static void op_ANS_G_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                         command_state_t *cs) {
     int16_t x = cs_pop(cs);
     int16_t y = cs_pop(cs);
 
@@ -270,7 +271,8 @@ static void op_ANS_G_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     tele_ii_tx(ES, d, 4);
 }
 
-static void op_ANS_G_P_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+static void op_ANS_G_P_get(const void *NOTUSED(data),
+                           scene_state_t *NOTUSED(ss),
                            exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t x = cs_pop(cs);
     int16_t y = cs_pop(cs);
@@ -285,9 +287,9 @@ static void op_ANS_G_P_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss)
     tele_ii_tx(ES, d, 4);
 }
 
-static void op_ANS_A_LED_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
-                           exec_state_t *NOTUSED(es),
-                           command_state_t *cs) {
+static void op_ANS_A_LED_get(const void *NOTUSED(data),
+                             scene_state_t *NOTUSED(ss),
+                             exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t n = cs_pop(cs);
     int16_t i = cs_pop(cs);
 
@@ -310,9 +312,9 @@ static void op_ANS_A_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     tele_ii_tx(II_CY_ADDR, d, 3);
 }
 
-static void op_ANS_APP_get(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
-                           exec_state_t *NOTUSED(es),
-                           command_state_t *cs) {
+static void op_ANS_APP_get(const void *NOTUSED(data),
+                           scene_state_t *NOTUSED(ss),
+                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     uint8_t d[] = { II_ANSIBLE_APP | II_GET };
     tele_ii_tx(II_ANSIBLE_ADDR, d, 1);
     tele_ii_tx(II_LV_ADDR, d, 1);
@@ -335,9 +337,9 @@ static void op_ANS_APP_get(const void* NOTUSED(data), scene_state_t *NOTUSED(ss)
     cs_push(cs, d[0]);
 }
 
-static void op_ANS_APP_set(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
-                           exec_state_t *NOTUSED(es),
-                           command_state_t *cs) {
+static void op_ANS_APP_set(const void *NOTUSED(data),
+                           scene_state_t *NOTUSED(ss),
+                           exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t n = cs_pop(cs);
 
     uint8_t d[] = { II_ANSIBLE_APP, n };
@@ -549,9 +551,8 @@ static void op_KR_CLK_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
 }
 
 
-static void op_KR_PG_get(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
-                         exec_state_t *NOTUSED(es),
-                         command_state_t *cs) {
+static void op_KR_PG_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     uint8_t d[] = { II_KR_PAGE | II_GET };
     tele_ii_tx(II_KR_ADDR, d, 1);
 
@@ -560,9 +561,8 @@ static void op_KR_PG_get(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
     cs_push(cs, d[0]);
 }
 
-static void op_KR_PG_set(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
-                         exec_state_t *NOTUSED(es),
-                         command_state_t *cs) {
+static void op_KR_PG_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                         exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t n = cs_pop(cs);
 
     uint8_t d[] = { II_KR_PAGE, n };
@@ -587,9 +587,8 @@ static void op_KR_CUE_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
     tele_ii_tx(II_KR_ADDR, d, 2);
 }
 
-static void op_KR_DIR_get(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
-                         exec_state_t *NOTUSED(es),
-                         command_state_t *cs) {
+static void op_KR_DIR_get(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t n = cs_pop(cs);
     uint8_t d[] = { II_KR_DIR | II_GET, n };
     tele_ii_tx(II_KR_ADDR, d, 2);
@@ -599,9 +598,8 @@ static void op_KR_DIR_get(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
     cs_push(cs, d[0]);
 }
 
-static void op_KR_DIR_set(const void* NOTUSED(data), scene_state_t *NOTUSED(ss),
-                         exec_state_t *NOTUSED(es),
-                         command_state_t *cs) {
+static void op_KR_DIR_set(const void *NOTUSED(data), scene_state_t *NOTUSED(ss),
+                          exec_state_t *NOTUSED(es), command_state_t *cs) {
     int16_t n = cs_pop(cs);
     int16_t x = cs_pop(cs);
 
