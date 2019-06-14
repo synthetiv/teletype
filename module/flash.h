@@ -12,7 +12,8 @@
 u8 is_flash_fresh(void);
 void flash_prepare(void);
 void flash_read(uint8_t preset_no, scene_state_t *scene,
-                char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS]);
+                char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS],
+                uint8_t init_grid);
 void flash_write(uint8_t preset_no, scene_state_t *scene,
                  char (*text)[SCENE_TEXT_LINES][SCENE_TEXT_CHARS]);
 uint8_t flash_last_saved_scene(void);

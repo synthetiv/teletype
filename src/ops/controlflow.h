@@ -16,6 +16,7 @@ extern const tele_mod_t mod_OTHER;
 extern const tele_op_t op_SCRIPT;
 extern const tele_op_t op_KILL;
 extern const tele_op_t op_SCENE;
+extern const tele_op_t op_SCENE_G;
 extern const tele_op_t op_BREAK;
 extern const tele_op_t op_BRK;
 extern const tele_op_t op_SYNC;

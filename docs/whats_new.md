@@ -2,9 +2,23 @@
 
 ## Version 3.x
 
+### New operators
+
+DEVICE.FLIP
+DEL.X
+DEL.R
+J & K local script variables
+SEED, R.SEED, TOSS.SEED, DRUNK.SEED, P.SEED, PROB.SEED
+SCENE.G
+
+### Changes
+
+DELAY_SIZE increased to 16 from 8
+
 ### Bug fixes
 
 [some keyboards losing keystrokes](https://github.com/monome/teletype/issues/156)
+[metro rate not updated after `INIT.SCENE`](https://github.com/monome/teletype/issues/174)
 
 ## Version 3.0
 

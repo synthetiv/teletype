@@ -180,6 +180,15 @@ Will _not_ execute from the `I` script on scene load.  Will execute on subsequen
 **WARNING**: You will lose any unsaved changes to your scene.
 """
 
+[SCENE.G]
+prototype_set = "SCENE.G x"
+short = "load scene `x` (0-31) without loading grid control states"
+description = """
+Load scene `x` (0-31) without loading grid button and fader states.
+
+**WARNING**: You will lose any unsaved changes to your scene.
+"""
+
 [KILL]
 prototype = "KILL"
 short = "clears stack, clears delays, cancels pulses, cancels slews, disables metronome"

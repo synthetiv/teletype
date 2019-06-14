@@ -77,7 +77,7 @@ void tele_ii_rx(uint8_t addr, uint8_t *data, uint8_t l) {
     printf("\n");
 }
 
-void tele_scene(uint8_t i) {
+void tele_scene(uint8_t i, uint8_t init_grid) {
     printf("SCENE  i:%" PRIu8, i);
     printf("\n");
 }
