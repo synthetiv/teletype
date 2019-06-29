@@ -57,7 +57,7 @@
         "INIT.TR.ALL"     => { MATCH_OP(E_OP_INIT_TR_ALL); };
         "INIT.DATA"       => { MATCH_OP(E_OP_INIT_DATA); };
         "INIT.TIME"       => { MATCH_OP(E_OP_INIT_TIME); };
-        
+
         # turtle
         "@"           => { MATCH_OP(E_OP_TURTLE); };
         "@X"          => { MATCH_OP(E_OP_TURTLE_X); };
@@ -238,6 +238,8 @@
         # controlflow
         "SCRIPT"      => { MATCH_OP(E_OP_SCRIPT); };
         "$"           => { MATCH_OP(E_OP_SYM_DOLLAR); };
+        "SCRIPT.POL"  => { MATCH_OP(E_OP_SCRIPT_POL); };
+        "$.POL"       => { MATCH_OP(E_OP_SYM_DOLLAR_POL); };
         "KILL"        => { MATCH_OP(E_OP_KILL); };
         "SCENE"       => { MATCH_OP(E_OP_SCENE); };
         "SCENE.G"     => { MATCH_OP(E_OP_SCENE_G); };
@@ -406,8 +408,8 @@
         "TO.INIT"          => { MATCH_OP(E_OP_TO_INIT); };
 
         "TO.TR.P"          => { MATCH_OP(E_OP_TO_TR_P); };
-        "TO.TR.P.DIV"      => { MATCH_OP(E_OP_TO_TR_P_DIV); }; 
-        "TO.TR.P.MUTE"     => { MATCH_OP(E_OP_TO_TR_P_MUTE); };       
+        "TO.TR.P.DIV"      => { MATCH_OP(E_OP_TO_TR_P_DIV); };
+        "TO.TR.P.MUTE"     => { MATCH_OP(E_OP_TO_TR_P_MUTE); };
 
         "TO.OSC"           => { MATCH_OP(E_OP_TO_OSC); };
         "TO.OSC.SET"       => { MATCH_OP(E_OP_TO_OSC_SET); };

@@ -11,6 +11,7 @@
 - **FIX**: [metro rate not updated after `INIT.SCENE`](https://github.com/monome/teletype/issues/174)
 - **NEW**: new ops: SEED, R.SEED, TOSS.SEED, DRUNK.SEED, P.SEED, PROB.SEED
 - **NEW**: new op: SCENE.G
+- **NEW**: new op: SCRIPT.POL, alias $.POL
 
 ## v3.0
 
@@ -63,7 +64,7 @@
 - **FIX**: reduced latency of `IN` op
 
 ## v2.1
-- **BREAKING**: the `I` variable is now scoped to the `L` loop, and does not exist outside of an execution context.  Scripts using `I` as a general-purpose variable will be broken. 
+- **BREAKING**: the `I` variable is now scoped to the `L` loop, and does not exist outside of an execution context.  Scripts using `I` as a general-purpose variable will be broken.
 - **FIX**: `SCENE` will not run from `INIT` script during scene load.
 - **NEW**: Tracker data entry overhaul.  Type numbers, press enter to commit.
 - **NEW**: new op: `BPM` to get milliseconds per beat in given BPM

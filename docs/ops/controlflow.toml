@@ -167,6 +167,19 @@ Execute script `x` (1-8), recursion allowed.
 There is a limit of 8 for the maximum number of nested calls to `SCRIPT` to stop infinite loops from locking up the Teletype.
 """
 
+[SCRIPT.POL]
+prototype = "SCRIPT x"
+prototype_set = "SCRIPT x p"
+aliases = ["$.POL"]
+short = "get script x trigger polarity, or set polarity p (1 rising edge, 2 falling, 3 both)
+description = """
+Get or set the trigger polarity of script `x`, determining which trigger edges the script will fire on.
+
+1: rising edge (default)
+2: falling edge
+3: either edge
+"""
+
 [SCENE]
 prototype = "SCENE"
 prototype_set = "SCENE x"

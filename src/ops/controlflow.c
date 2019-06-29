@@ -41,6 +41,10 @@ static void op_SCRIPT_get(const void *data, scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs);
 static void op_SCRIPT_set(const void *data, scene_state_t *ss, exec_state_t *es,
                           command_state_t *cs);
+static void op_SCRIPT_POL_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                              command_state_t *cs);
+static void op_SCRIPT_POL_set(const void *data, scene_state_t *ss, exec_state_t *es,
+                              command_state_t *cs);
 static void op_KILL_get(const void *data, scene_state_t *ss, exec_state_t *es,
                         command_state_t *cs);
 static void op_BREAK_get(const void *data, scene_state_t *ss, exec_state_t *es,
@@ -62,6 +66,8 @@ const tele_mod_t mod_OTHER = MAKE_MOD(OTHER, mod_OTHER_func, 0);
 
 const tele_op_t op_SCRIPT = MAKE_GET_SET_OP(SCRIPT, op_SCRIPT_get, op_SCRIPT_set, 0, true);
 const tele_op_t op_SYM_DOLLAR = MAKE_ALIAS_OP($, op_SCRIPT_get, op_SCRIPT_set, 0, true);
+const tele_op_t op_SCRIPT_POL = MAKE_GET_SET_OP(SCRIPT.POL, op_SCRIPT_POL_get, op_SCRIPT_POL_set, 1, true);
+const tele_op_t op_SYM_DOLLAR_POL = MAKE_ALIAS_OP($.POL, op_SCRIPT_POL_get, op_SCRIPT_POL_set, 1, true);
 const tele_op_t op_KILL = MAKE_GET_OP(KILL, op_KILL_get, 0, false);
 const tele_op_t op_SCENE_G = MAKE_GET_OP(SCENE.G, op_SCENE_G_get, 1, false);
 const tele_op_t op_SCENE = MAKE_GET_SET_OP(SCENE, op_SCENE_get, op_SCENE_set, 0, true);
@@ -243,6 +249,24 @@ static void op_SCRIPT_set(const void *NOTUSED(data), scene_state_t *ss,
     // indicates a bad user script
     if (!es->overflow) run_script_with_exec_state(ss, es, a);
     es_pop(es);
+}
+
+static void op_SCRIPT_POL_get(const void *NOTUSED(data), scene_state_t *ss,
+                              exec_state_t *NOTUSED(es), command_state_t *cs) {
+    uint16_t a = cs_pop(cs) - 1;
+    if (a > TT_SCRIPT_8 || a < TT_SCRIPT_1) {
+        cs_push(cs, 0);
+        return;
+    }
+    cs_push(cs, ss_get_script_pol(ss, a));
+}
+
+static void op_SCRIPT_POL_set(const void *NOTUSED(data), scene_state_t *ss,
+                              exec_state_t *NOTUSED(es), command_state_t *cs) {
+    uint16_t a = cs_pop(cs) - 1;
+    uint16_t pol = cs_pop(cs);
+    if (a > TT_SCRIPT_8 || a < TT_SCRIPT_1 || pol > 3 || pol < 1) return;
+    ss_set_script_pol(ss, a, pol);
 }
 
 static void op_KILL_get(const void *NOTUSED(data), scene_state_t *ss,
