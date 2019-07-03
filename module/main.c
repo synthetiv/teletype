@@ -460,16 +460,15 @@ void handler_Trigger(int32_t data) {
     u8 input = device_config.flip ? 7 - data : data;
     if (!ss_get_mute(&scene_state, input)) {
         bool tr_state = gpio_get_pin_value(A00 + input);
-        switch (scene_state.variables.script_pol[input]) {
-        case 2:
-            if (!tr_state) run_script(&scene_state, input);
-            break;
-        case 3:
-            run_script(&scene_state, input);
-            break;
-        default:
-            if (tr_state) run_script(&scene_state, input);
-            break;
+        if (tr_state) {
+            if  (scene_state.variables.script_pol[input] & 1) {
+                run_script(&scene_state, input);
+            }
+        }
+        else {
+            if (scene_state.variables.script_pol[input] & 2) {
+                run_script(&scene_state, input);
+            }
         }
     }
 }

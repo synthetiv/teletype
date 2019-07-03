@@ -263,10 +263,20 @@ static void op_SCRIPT_POL_get(const void *NOTUSED(data), scene_state_t *ss,
 
 static void op_SCRIPT_POL_set(const void *NOTUSED(data), scene_state_t *ss,
                               exec_state_t *NOTUSED(es), command_state_t *cs) {
-    uint16_t a = cs_pop(cs) - 1;
-    uint16_t pol = cs_pop(cs);
-    if (a > TT_SCRIPT_8 || a < TT_SCRIPT_1 || pol > 3 || pol < 1) return;
-    ss_set_script_pol(ss, a, pol);
+    uint8_t a = cs_pop(cs);
+    uint8_t pol = cs_pop(cs);
+    if (pol > 3) return;
+    if (a == 0) {
+        for (uint8_t i = 0; i < 8; i++) {
+            ss_set_script_pol(ss, i, pol);
+        }
+    }
+    else {
+        uint8_t s = a - 1;
+        if (s >= TT_SCRIPT_1 && s <= TT_SCRIPT_8) {
+            ss_set_script_pol(ss, s, pol);
+        }
+    }
 }
 
 static void op_KILL_get(const void *NOTUSED(data), scene_state_t *ss,
