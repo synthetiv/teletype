@@ -86,7 +86,7 @@ For example, to find the first iterated power of 2 greater than 100:
 
 ```
 A 2
-W LT A 100: A * A A 
+W LT A 100: A * A A
 ```
 
 A will be 256.
@@ -171,7 +171,7 @@ There is a limit of 8 for the maximum number of nested calls to `SCRIPT` to stop
 prototype = "SCRIPT x"
 prototype_set = "SCRIPT x p"
 aliases = ["$.POL"]
-short = "get script x trigger polarity, or set polarity p (1 rising edge, 2 falling, 3 both)
+short = "get script x trigger polarity, or set polarity p (1 rising edge, 2 falling, 3 both)"
 description = """
 Get or set the trigger polarity of script `x`, determining which trigger edges the script will fire on.
 
@@ -232,7 +232,7 @@ prototype = "INIT.DATA"
 short = "clears all data held in all variables"
 description = """
 
-Clears the following variables and resets them to default values: A, B, C, D, CV slew, Drunk min/max, M, O, Q, R, T, TR. 
+Clears the following variables and resets them to default values: A, B, C, D, CV slew, Drunk min/max, M, O, Q, R, T, TR.
 Does not affect the CV input (IN) or the Parameter knob (PARAM) values.
 """
 
