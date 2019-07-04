@@ -60,6 +60,8 @@
 # \asf_license_stop
 #
 
+SHELL=bash
+
 # Makefile.avr32.in defines an unused variable build, which is used in the clean
 # target, it's probably there to list other build targets
 build += ../src/scanner.c ../src/match_token.c ../module/gitversion.c
@@ -79,4 +81,4 @@ include $(MAKEFILE_PATH)
 
 # Add the git commit id to a file for use when printing out the version
 ../module/gitversion.c: ../.git/HEAD ../.git/index
-	echo "const char *git_version = \"$(shell cut -d '-' -f 1 <<< $(shell git describe --tags | cut -c 2-)) $(shell git describe --always --dirty | tr '[a-z]' '[A-Z]')\";" > $@
+	echo "const char *git_version = \"$(shell cut -d '-' -f 1 <<< $(shell git describe --tags | cut -c 2-)) $(shell git describe --always --dirty --exclude '*' | tr '[a-z]' '[A-Z]')\";" > $@
