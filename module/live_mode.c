@@ -590,9 +590,7 @@ uint8_t screen_refresh_live(scene_state_t *ss) {
             size_t stagger = i % 2 ? 384 : 128;
             uint8_t mute_fg = ss_get_mute(&scene_state, i) ? 15 : 1;
             uint8_t script_pol = ss_get_script_pol(&scene_state, i);
-            if (script_pol & 1) {
-                line[0].data[87 + i + stagger] = mute_fg;
-            }
+            if (script_pol & 1) { line[0].data[87 + i + stagger] = mute_fg; }
             if (script_pol & 2) {
                 line[0].data[87 + i + stagger + 1] = mute_fg;
             }

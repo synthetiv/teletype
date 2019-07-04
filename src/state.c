@@ -157,7 +157,7 @@ uint8_t ss_get_script_pol(scene_state_t *ss, size_t idx) {
 
 void ss_set_script_pol(scene_state_t *ss, size_t idx, uint8_t value) {
     ss->variables.script_pol[idx] = value;
-    tele_mute(); // to redraw indicators
+    tele_mute();  // to redraw indicators
 }
 
 // mutes
