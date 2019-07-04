@@ -3,6 +3,13 @@
 
 #include "ops/op.h"
 
+extern const tele_op_t op_ANS_G_LED;
+extern const tele_op_t op_ANS_G;
+extern const tele_op_t op_ANS_G_P;
+extern const tele_op_t op_ANS_A;
+extern const tele_op_t op_ANS_A_LED;
+extern const tele_op_t op_ANS_APP;
+
 extern const tele_op_t op_KR_PRE;
 extern const tele_op_t op_KR_PAT;
 extern const tele_op_t op_KR_SCALE;
@@ -15,6 +22,9 @@ extern const tele_op_t op_KR_CV;
 extern const tele_op_t op_KR_MUTE;
 extern const tele_op_t op_KR_TMUTE;
 extern const tele_op_t op_KR_CLK;
+extern const tele_op_t op_KR_PG;
+extern const tele_op_t op_KR_CUE;
+extern const tele_op_t op_KR_DIR;
 
 extern const tele_op_t op_ME_PRE;
 extern const tele_op_t op_ME_RES;

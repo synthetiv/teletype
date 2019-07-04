@@ -12,6 +12,8 @@
 - **NEW**: new ops: SEED, R.SEED, TOSS.SEED, DRUNK.SEED, P.SEED, PROB.SEED
 - **NEW**: new op: SCENE.G
 - **NEW**: new op: SCRIPT.POL, alias $.POL
+- **NEW**: new ansible remote ops: ANS.G, ANS.G.P, ANS.G.LED, ANS.A, ANS.A.LED
+- **NEW**: new kria remote ops: KR.CUE, KR.PG
 
 ## v3.0
 
