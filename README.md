@@ -38,7 +38,7 @@ git
 docker
   --rm                          # delete the container after exiting it
   -it                           # keep stdin attached, allocate tty
-  -v"$(pwd):/teletype":/target  # mount the ./teletype directory at /target inside the container
+  -v"$(pwd)/teletype":/target  # mount the ./teletype directory at /target inside the container
 ```
 
 **Make sure that the `libavr32` submodule is correctly checked out**
