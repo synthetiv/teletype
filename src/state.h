@@ -94,6 +94,7 @@ typedef struct {
     int16_t r_min;
     int16_t r_max;
     int16_t scene;
+    uint8_t script_pol[8];
     int64_t time;
     uint8_t time_act;
     int16_t tr[TR_COUNT];
@@ -240,6 +241,8 @@ extern void ss_rand_init(scene_state_t *ss);
 extern void ss_set_in(scene_state_t *ss, int16_t value);
 extern void ss_set_param(scene_state_t *ss, int16_t value);
 extern void ss_set_scene(scene_state_t *ss, int16_t value);
+extern uint8_t ss_get_script_pol(scene_state_t *ss, size_t idx);
+extern void ss_set_script_pol(scene_state_t *ss, size_t idx, uint8_t pol);
 
 extern bool ss_get_mute(scene_state_t *ss, size_t idx);
 extern void ss_set_mute(scene_state_t *ss, size_t idx, bool value);
@@ -355,7 +358,9 @@ typedef struct {
     int16_t top;
 } command_state_stack_t;
 
-typedef struct { command_state_stack_t stack; } command_state_t;
+typedef struct {
+    command_state_stack_t stack;
+} command_state_t;
 
 extern void cs_init(command_state_t *cs);
 extern int16_t cs_stack_size(command_state_t *cs);

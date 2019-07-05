@@ -44,6 +44,7 @@ void ss_variables_init(scene_state_t *ss) {
         .q_n = 1,
         .r_min = 0,
         .r_max = 16383,
+        .script_pol = { 1, 1, 1, 1, 1, 1, 1, 1 },
         .time_act = 1,
         .tr_pol = { 1, 1, 1, 1 },
         .tr_time = { 100, 100, 100, 100 },
@@ -148,6 +149,15 @@ void ss_set_param(scene_state_t *ss, int16_t value) {
 
 void ss_set_scene(scene_state_t *ss, int16_t value) {
     ss->variables.scene = value;
+}
+
+uint8_t ss_get_script_pol(scene_state_t *ss, size_t idx) {
+    return ss->variables.script_pol[idx];
+}
+
+void ss_set_script_pol(scene_state_t *ss, size_t idx, uint8_t value) {
+    ss->variables.script_pol[idx] = value;
+    tele_mute();  // to redraw indicators
 }
 
 // mutes

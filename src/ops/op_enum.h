@@ -207,6 +207,8 @@ typedef enum {
     E_OP_S_L,
     E_OP_SCRIPT,
     E_OP_SYM_DOLLAR,
+    E_OP_SCRIPT_POL,
+    E_OP_SYM_DOLLAR_POL,
     E_OP_KILL,
     E_OP_SCENE,
     E_OP_SCENE_G,

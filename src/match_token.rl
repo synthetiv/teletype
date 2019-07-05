@@ -238,6 +238,8 @@
         # controlflow
         "SCRIPT"      => { MATCH_OP(E_OP_SCRIPT); };
         "$"           => { MATCH_OP(E_OP_SYM_DOLLAR); };
+        "SCRIPT.POL"  => { MATCH_OP(E_OP_SCRIPT_POL); };
+        "$.POL"       => { MATCH_OP(E_OP_SYM_DOLLAR_POL); };
         "KILL"        => { MATCH_OP(E_OP_KILL); };
         "SCENE"       => { MATCH_OP(E_OP_SCENE); };
         "SCENE.G"     => { MATCH_OP(E_OP_SCENE_G); };
