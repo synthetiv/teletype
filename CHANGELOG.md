@@ -1,6 +1,6 @@
 # Changelog
 
-## v3.x
+## v3.1.0
 
 - **NEW**: new op: DEVICE.FLIP
 - **FIX**: [some keyboards losing keystrokes](https://github.com/monome/teletype/issues/156)
@@ -15,7 +15,7 @@
 - **NEW**: new ansible remote ops: ANS.G, ANS.G.P, ANS.G.LED, ANS.A, ANS.A.LED
 - **NEW**: new kria remote ops: KR.CUE, KR.PG
 
-## v3.0
+## v3.0.0
 
 - **NEW**: grid integration / grid visualizer / grid control mode
 - **NEW**: multiline copy/paste and editing
