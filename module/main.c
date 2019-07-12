@@ -461,7 +461,7 @@ void handler_MscConnect(int32_t data) {
 void handler_Trigger(int32_t data) {
     u8 input = device_config.flip ? 7 - data : data;
     if (!ss_get_mute(&scene_state, input)) {
-        bool tr_state = gpio_get_pin_value(A00 + input);
+        bool tr_state = gpio_get_pin_value(A00 + data);
         if (tr_state) {
             if (scene_state.variables.script_pol[input] & 1) {
                 run_script(&scene_state, input);
