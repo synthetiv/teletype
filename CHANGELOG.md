@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.1.x
+
+- **FIX**: improve DAC latency when using `CV` ops
+
 ## v3.1.0
 
 - **NEW**: new op: DEVICE.FLIP
