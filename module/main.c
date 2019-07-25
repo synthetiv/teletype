@@ -894,7 +894,7 @@ void tele_cv(uint8_t i, int16_t v, uint8_t s) {
 
     aout[i].a = aout[i].now << 16;
 
-    timer_manual(&adcTimer);
+    timer_manual(&cvTimer);
 }
 
 void tele_cv_slew(uint8_t i, int16_t v) {
