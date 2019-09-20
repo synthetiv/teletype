@@ -4,6 +4,9 @@
 
 - **FIX**: improve DAC latency when using `CV` ops
 
+## v3.1.x
+- **NEW**: call metro / init with `SCRIPT 9` / `SCRIPT 10`
+
 ## v3.1.0
 
 - **NEW**: new op: DEVICE.FLIP

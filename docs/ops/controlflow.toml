@@ -160,9 +160,9 @@ short = "potentially execute command with probability `x` (0-100)"
 prototype = "SCRIPT"
 prototype_set = "SCRIPT x"
 aliases = ["$"]
-short = "get current script number, or execute script `x` (1-8), recursion allowed"
+short = "get current script number, or execute script `x` (1-10), recursion allowed"
 description = """
-Execute script `x` (1-8), recursion allowed.
+Execute script `x` (1-10, 9 = metro, 10 = init), recursion allowed.
 
 There is a limit of 8 for the maximum number of nested calls to `SCRIPT` to stop infinite loops from locking up the Teletype.
 """
