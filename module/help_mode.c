@@ -19,10 +19,12 @@
 
 #define HELP_PAGES 13
 
-#define HELP1_LENGTH 59
+#define HELP1_LENGTH 61
 const char* help1[HELP1_LENGTH] = { "1/13 HELP",
                                     "[ ] NAVIGATE HELP PAGES",
                                     "UP/DOWN TO SCROLL",
+                                    "CTRL-F  SEARCH FORWARD",
+                                    "CTRL-R  SEARCH REVERSE",
                                     " ",
                                     "TAB|EDIT/LIVE/PATTERN",
                                     "PRT SC|JUMP TO LIVE",
