@@ -12,6 +12,8 @@
 #include "conf_usb_host.h"  // needed in order to include "usb_protocol_hid.h"
 #include "usb_protocol_hid.h"
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Help text ///////////////////////////////////////////////////////////////////
 
@@ -852,17 +854,88 @@ const uint8_t help_length[HELP_PAGES] = {
 
 static uint8_t page_no;
 static uint8_t offset;
+static line_editor_t le;
+
+typedef struct {
+    int line;
+    int ch;
+} search_state_t;
+typedef enum {
+    SEARCH_MODE_NONE,
+    SEARCH_MODE_FWD,
+    SEARCH_MODE_REV,
+} search_mode_t;
+typedef enum {
+    SEARCH_RESULT_NONE,
+    SEARCH_RESULT_HIT,
+    SEARCH_RESULT_MISS,
+} search_result_t;
+static search_mode_t search_mode;
+static search_state_t search_state;
+static search_result_t search_result;
 
 static bool dirty;
 
+static bool text_search(search_state_t* state, search_mode_t mode,
+                        const char* needle,
+                        const char** haystack, int haystack_len);
+static bool text_search_forward(search_state_t* state,
+                                const char* needle,
+                                const char** haystack, int haystack_len);
+static bool text_search_reverse(search_state_t* state,
+                                const char* needle,
+                                const char** haystack, int haystack_len);
+
+
 void set_help_mode() {
+    search_mode = SEARCH_MODE_NONE;
+    search_result = SEARCH_RESULT_NONE;
     dirty = true;
+}
+
+bool text_search(search_state_t* state, search_mode_t mode,
+                 const char* needle,
+                 const char** haystack, int haystack_len) {
+    switch (mode) {
+        case SEARCH_MODE_FWD:
+            return text_search_forward(state, needle, haystack, haystack_len);
+        case SEARCH_MODE_REV:
+            return text_search_reverse(state, needle, haystack, haystack_len);
+        default:
+            return false;
+    }
+}
+
+bool text_search_forward(search_state_t* state,
+                 const char* needle,
+                 const char** haystack, int haystack_len) {
+    const int needle_len = strlen(needle);
+    for (; state->line < haystack_len; state->line++) {
+        const int haystack_line_len = strlen(haystack[state->line]);
+        for (state->ch = 0; state->ch < haystack_line_len - needle_len; state->ch++) {
+            if (!strncmp(needle, haystack[state->line] + state->ch, needle_len)) return true;
+        }
+    }
+    return false;
+}
+
+bool text_search_reverse(search_state_t* state,
+                 const char* needle,
+                 const char** haystack, int haystack_len) {
+    const int needle_len = strlen(needle);
+    for (; state->line > 0; state->line--) {
+        const int haystack_line_len = strlen(haystack[state->line]);
+        for (state->ch = haystack_line_len - needle_len; state->ch > 0; state->ch--) {
+            if (!strncmp(needle, haystack[state->line] + state->ch, needle_len)) return true;
+        }
+    }
+    return false;
 }
 
 void process_help_keys(uint8_t k, uint8_t m, bool is_held_key) {
     // <down> or C-n: line down
     if (match_no_mod(m, k, HID_DOWN) || match_ctrl(m, k, HID_N)) {
-        if (offset < help_length[page_no] - 8) {
+        if (offset < help_length[page_no] - (search_mode ? 7 : 8)) {
             offset++;
             dirty = true;
         }
@@ -874,22 +947,73 @@ void process_help_keys(uint8_t k, uint8_t m, bool is_held_key) {
             dirty = true;
         }
     }
-    // <left> or [: previous page
-    else if (match_no_mod(m, k, HID_LEFT) ||
-             match_no_mod(m, k, HID_OPEN_BRACKET)) {
-        if (page_no) {
-            offset = 0;
-            page_no--;
-            dirty = true;
+    // C-f or C-s: search forward
+    else if (match_ctrl(m, k, HID_F) || match_ctrl(m, k, HID_S)) {
+        search_result = SEARCH_RESULT_NONE;
+        if (search_mode == SEARCH_MODE_FWD) {
+            search_mode = SEARCH_MODE_NONE;
+        } else {
+            search_mode = SEARCH_MODE_FWD;
         }
+        dirty = true;
     }
-    // <right> or ]: next page
-    else if (match_no_mod(m, k, HID_RIGHT) ||
-             match_no_mod(m, k, HID_CLOSE_BRACKET)) {
-        if (page_no < HELP_PAGES - 1) {
-            offset = 0;
-            page_no++;
+    // C-r: search in reverse
+    else if (match_ctrl(m, k, HID_R)) {
+        search_result = SEARCH_RESULT_NONE;
+        if (search_mode == SEARCH_MODE_REV) {
+            search_mode = SEARCH_MODE_NONE;
+        } else {
+            search_mode = SEARCH_MODE_REV;
+        }
+        dirty = true;
+    }
+
+    if (search_mode != SEARCH_MODE_NONE) {
+        if (match_no_mod(m, k, HID_ENTER)) {
+            char* needle = line_editor_get(&le);
+            if (!strlen(needle)) return;
+            search_state.line = offset;
+            if (search_result == SEARCH_RESULT_HIT) {
+                if (search_mode == SEARCH_MODE_FWD) search_state.line++;
+                else if (search_mode == SEARCH_MODE_REV) search_state.line--;
+            }
+
+            for (uint8_t p = page_no; p < HELP_PAGES; p++) {
+                if (text_search(&search_state,
+                                search_mode,
+                                needle,
+                                help_pages[p], help_length[p])) {
+                    search_result = SEARCH_RESULT_HIT;
+                    page_no = p;
+                    offset = search_state.line;
+                    dirty = true;
+                    return;
+                }
+                search_state.line = 0;
+            }
+            search_result = SEARCH_RESULT_MISS;
             dirty = true;
+        } else {
+            dirty = line_editor_process_keys(&le, k, m, is_held_key);
+        }
+    } else {
+        // <left> or [: previous page
+        if (match_no_mod(m, k, HID_LEFT) ||
+            match_no_mod(m, k, HID_OPEN_BRACKET)) {
+            if (page_no) {
+                offset = 0;
+                page_no--;
+                dirty = true;
+            }
+        }
+    // <right> or ]: next page
+        else if (match_no_mod(m, k, HID_RIGHT) ||
+                 match_no_mod(m, k, HID_CLOSE_BRACKET)) {
+            if (page_no < HELP_PAGES - 1) {
+                offset = 0;
+                page_no++;
+                dirty = true;
+            }
         }
     }
 }
@@ -897,17 +1021,46 @@ void process_help_keys(uint8_t k, uint8_t m, bool is_held_key) {
 uint8_t screen_refresh_help() {
     if (!dirty) { return 0; }
 
+    uint8_t help_line_ct = 8;
+    if (search_mode != SEARCH_MODE_NONE) help_line_ct--;
+    if (search_result == SEARCH_RESULT_MISS) help_line_ct--;
+
     // clamp value of page_no
     if (page_no >= HELP_PAGES) page_no = HELP_PAGES - 1;
 
     // clamp value of offset
-    if (offset >= help_length[page_no] - 8) offset = help_length[page_no] - 8;
+    if (offset >= help_length[page_no] - help_line_ct) offset = help_length[page_no] - help_line_ct;
 
     const char** text = help_pages[page_no];
 
-    for (uint8_t y = 0; y < 8; y++) {
-        region_fill(&line[y], 0);
-        font_string_region_clip_tab(&line[y], text[y + offset], 2, 0, 0xa, 0);
+    for (uint8_t y = 0; y < help_line_ct; y++) {
+        if (search_result == SEARCH_RESULT_HIT
+         && (offset + y) == search_state.line) {
+            region_fill(&line[y], 2);
+            font_string_region_clip_tab(&line[y], text[y + offset], 2, 0, 0xa, 2);
+        } else {
+            region_fill(&line[y], 0);
+            font_string_region_clip_tab(&line[y], text[y + offset], 2, 0, 0xa, 0);
+        }
+    }
+
+    if (search_result == SEARCH_RESULT_MISS) {
+        char s[36];
+        strcpy(s, line_editor_get(&le));
+        strcat(s, ": NOT FOUND");
+        region_fill(&line[6], 0);
+        font_string_region_clip(&line[6], s, 0, 0, 0x4, 0);
+    }
+
+    switch (search_mode) {
+        case SEARCH_MODE_FWD:
+            line_editor_draw(&le, '>', &line[7]);
+            break;
+        case SEARCH_MODE_REV:
+            line_editor_draw(&le, '<', &line[7]);
+            break;
+        default:
+            break;
     }
 
     dirty = false;
