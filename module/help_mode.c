@@ -875,6 +875,7 @@ typedef enum {
 static search_mode_t search_mode;
 static search_state_t search_state;
 static search_result_t search_result;
+static int prev_hit;
 
 static bool dirty;
 
@@ -962,8 +963,14 @@ void process_help_keys(uint8_t k, uint8_t m, bool is_held_key) {
             switch (search_mode) {
                 case SEARCH_MODE_FWD: {
                     if (search_result == SEARCH_RESULT_HIT) {
+                        prev_hit = search_state.line;
                         if (search_state.line < help_length[page_no]) {
                             search_state.line++;
+                        }
+                        else {
+                            search_result = SEARCH_RESULT_MISS;
+                            dirty = true;
+                            return;
                         }
                     }
                     for (int p = page_no; p < HELP_PAGES; p++) {
@@ -978,14 +985,21 @@ void process_help_keys(uint8_t k, uint8_t m, bool is_held_key) {
                         }
                         search_state.line = 0;
                     }
+                    search_state.line = prev_hit;
                     search_result = SEARCH_RESULT_MISS;
                     dirty = true;
                     return;
                 }
                 case SEARCH_MODE_REV: {
                     if (search_result == SEARCH_RESULT_HIT) {
+                        prev_hit = search_state.line;
                         if (search_state.line > 0) {
                             search_state.line--;
+                        }
+                        else {
+                            search_result = SEARCH_RESULT_MISS;
+                            dirty = true;
+                            return;
                         }
                     }
                     for (int p = page_no; p >= 0; p--) {
@@ -1002,6 +1016,7 @@ void process_help_keys(uint8_t k, uint8_t m, bool is_held_key) {
                             search_state.line = help_length[p-1];
                         }
                     }
+                    search_state.line = prev_hit;
                     search_result = SEARCH_RESULT_MISS;
                     dirty = true;
                     return;
