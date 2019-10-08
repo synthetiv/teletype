@@ -1,4 +1,4 @@
-#include "help_mode.h"
+#include "help_mode.h"1
 
 // this
 #include "globals.h"
@@ -124,10 +124,10 @@ const char* help3[HELP3_LENGTH] = { "3/13 PARAMETERS",
                                     " ",
                                     "SCRIPT A|GET/RUN SCRIPT",
                                     "SCRIPT.POL",
-                                    "    GET/SET ACTIVE SCRIPT EDGES",
-                                    "    1 RISING, 2 FALLING, 3 BOTH",
+                                    "   GET/SET ACTIVE SCRIPT EDGES",
+                                    "   1 RISING, 2 FALLING, 3 BOTH",
                                     "SCENE|GET/SET SCENE #",
-                                    "SCENE.G|SET SCENE (EXCL GRID)",
+                                    "SCENE.G|SET SCENE, EXCL GRID",
                                     "LAST N|GET SCRIPT LAST RUN" };
 
 #define HELP4_LENGTH 11
