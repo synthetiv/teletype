@@ -1,4 +1,4 @@
-#include "help_mode.h"1
+#include "help_mode.h"
 
 // this
 #include "globals.h"
