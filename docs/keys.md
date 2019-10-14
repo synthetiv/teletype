@@ -147,10 +147,12 @@ The tracker mode clipboard is independent of text and code clipboard.
 
 ## Help mode
 
-| `Key`                    | Action        |
-|--------------------------|---------------|
-| **`<down>`** / **`C-n`** | line down     |
-| **`<up>`** / **`C-p`**   | line up       |
-| **`<left>`** / **`[`**   | previous page |
-| **`<right>`** / **`]`**  | next page     |
+| `Key`                    | Action          |
+|--------------------------|-----------------|
+| **`<down>`** / **`C-n`** | line down       |
+| **`<up>`** / **`C-p`**   | line up         |
+| **`<left>`** / **`[`**   | previous page   |
+| **`<right>`** / **`]`**  | next page       |
+| **`C-f`** / **`C-s`**    | search forward  |
+| **`C-r`**                | search backward |
 </div>
