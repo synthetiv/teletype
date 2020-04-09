@@ -9,6 +9,8 @@
 - **NEW**: `LSH` and `RSH` shift the opposite direction when passed a negative shift amount
 - **NEW**: new op: `SGN` (sign of argument)
 - **NEW**: new kria remote op: `KR.DUR`
+- **NEW**: new op: `NR` (binary math pattern generator)
+- **NEW**: new ops: `N.S, N.C, N.CS` (use western scales and chords to get values from `N` table)
 - **NEW**: new Tracker mode keybinding `alt-[ ]` semitone up, down
 - **NEW**: new Tracker mode keybinding `ctrl-[ ]` fifth up, down
 - **NEW**: new Tracker mode keybinding `shift-[ ]` octave up, down

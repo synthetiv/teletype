@@ -205,9 +205,13 @@
         "SCALE"       => { MATCH_OP(E_OP_SCALE); };
         "SCL"         => { MATCH_OP(E_OP_SCL); };
         "N"           => { MATCH_OP(E_OP_N); };
+        "N.S"         => { MATCH_OP(E_OP_N_S); };
+        "N.C"         => { MATCH_OP(E_OP_N_C); };
+        "N.CS"        => { MATCH_OP(E_OP_N_CS); };
         "V"           => { MATCH_OP(E_OP_V); };
         "VV"          => { MATCH_OP(E_OP_VV); };
         "ER"          => { MATCH_OP(E_OP_ER); };
+        "NR"          => { MATCH_OP(E_OP_NR); };
         "BPM"         => { MATCH_OP(E_OP_BPM);; };
         "|"           => { MATCH_OP(E_OP_BIT_OR);; };
         "&"           => { MATCH_OP(E_OP_BIT_AND);; };
@@ -598,19 +602,19 @@
         "WS.CUE"      => { MATCH_OP(E_OP_WS_CUE); };
         "WS.LOOP"     => { MATCH_OP(E_OP_WS_LOOP); };
 
-				# seed
+                # seed
         "SEED"        => { MATCH_OP(E_OP_SEED); };
-        "RAND.SEED"	  => { MATCH_OP(E_OP_RAND_SEED); };
-        "RAND.SD"	  => { MATCH_OP(E_OP_SYM_RAND_SD); };
-        "R.SD"		  => { MATCH_OP(E_OP_SYM_R_SD); };
+        "RAND.SEED"      => { MATCH_OP(E_OP_RAND_SEED); };
+        "RAND.SD"      => { MATCH_OP(E_OP_SYM_RAND_SD); };
+        "R.SD"          => { MATCH_OP(E_OP_SYM_R_SD); };
         "TOSS.SEED"   => { MATCH_OP(E_OP_TOSS_SEED); };
-        "TOSS.SD"	  => { MATCH_OP(E_OP_SYM_TOSS_SD); };
+        "TOSS.SD"      => { MATCH_OP(E_OP_SYM_TOSS_SD); };
         "PROB.SEED"   => { MATCH_OP(E_OP_PROB_SEED); };
-        "PROB.SD"	  => { MATCH_OP(E_OP_SYM_PROB_SD); };
+        "PROB.SD"      => { MATCH_OP(E_OP_SYM_PROB_SD); };
         "DRUNK.SEED"  => { MATCH_OP(E_OP_DRUNK_SEED); };
-        "DRUNK.SD"	  => { MATCH_OP(E_OP_SYM_DRUNK_SD); };
+        "DRUNK.SD"      => { MATCH_OP(E_OP_SYM_DRUNK_SD); };
         "P.SEED"      => { MATCH_OP(E_OP_P_SEED); };
-	    "P.SD"		  => { MATCH_OP(E_OP_SYM_P_SD); };
+        "P.SD"          => { MATCH_OP(E_OP_SYM_P_SD); };
 
         # MODS
         # controlflow
