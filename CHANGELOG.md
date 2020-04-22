@@ -1,6 +1,6 @@
 # Changelog
 
-## v3.1.x
+## v3.2.0
 
 - **FIX**: improve DAC latency when using `CV` ops
 - **NEW**: call metro / init with `SCRIPT 9` / `SCRIPT 10`
