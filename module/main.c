@@ -179,6 +179,7 @@ void timers_unset_monome(void);
 static void render_init(void);
 static void exit_screensaver(void);
 static void update_device_config(u8 refresh);
+static void tt_process_ii(uint8_t *data, uint8_t l);
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -827,6 +828,26 @@ void update_device_config(u8 refresh) {
     flash_update_device_config(&device_config);
 }
 
+static void tt_process_ii(uint8_t *data, uint8_t l) {
+    uint8_t command = data[0];
+    switch (command) {
+        case 0x0:  // tt.script(u8 script)
+            if (l != 2 || data[1] > 9) return;
+            run_script(&scene_state, data[1]);
+            break;
+        case 0x1:  // tt.script_i(u8 script, s16 i)
+        case 0x2:  // tt.script_v(u8 script, s16V i)
+            if (l != 4 || data[1] > 9) return;
+            int16_t i = (data[2] << 8) + data[3];
+            exec_state_t es;
+            es_init(&es);
+            es_push(&es);
+            es_variables(&es)->i = i;
+            run_script_with_exec_state(&scene_state, &es, data[1]);
+            break;
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // teletype_io.h
@@ -984,7 +1005,8 @@ int main(void) {
     // wait to allow for any i2c devices to fully initalise
     delay_ms(1500);
 
-    init_i2c_leader();
+    init_i2c_follower(0x80);
+    process_ii = &tt_process_ii;
 
     print_dbg("\r\n\r\n// teletype! //////////////////////////////// ");
 
