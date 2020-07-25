@@ -87,6 +87,7 @@ CSRCS = \
 	../src/ops/ansible.c					\
 	../src/ops/controlflow.c				\
 	../src/ops/delay.c					\
+	../src/ops/disting.c					\
 	../src/ops/earthsea.c					\
 	../src/ops/er301.c					\
 	../src/ops/fader.c					\

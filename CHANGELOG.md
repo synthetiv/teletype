@@ -7,6 +7,7 @@
 - **NEW**: generic i2c ops: `IIA`, `IIS..`, `IIQ..`, `IIB..`
 - **NEW**: exponential delay operator `DEL.G`
 - **NEW**: binary and hex format for numbers: `B...`, `X...`
+- **NEW**: Disting EX ops
 
 ## v3.2.0
 
