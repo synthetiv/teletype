@@ -687,6 +687,14 @@
         "EX.AO"       => { MATCH_OP(E_OP_EX_AO); };
         "EX.T"        => { MATCH_OP(E_OP_EX_T); };
         "EX.TV"       => { MATCH_OP(E_OP_EX_TV); };
+        "EX.LP.REC"   => { MATCH_OP(E_OP_EX_LP_REC); };
+        "EX.LP.PLAY"  => { MATCH_OP(E_OP_EX_LP_PLAY); };
+        "EX.LP.REV"   => { MATCH_OP(E_OP_EX_LP_REV); };
+        "EX.LP.DOWN"  => { MATCH_OP(E_OP_EX_LP_DOWN); };
+        "EX.LP.CLR"   => { MATCH_OP(E_OP_EX_LP_CLR); };
+        "EX.LP"       => { MATCH_OP(E_OP_EX_LP); };
+        "EX.LP.DOWN?" => { MATCH_OP(E_OP_EX_LP_DOWNQ); };
+        "EX.LP.REV?"  => { MATCH_OP(E_OP_EX_LP_REVQ); };
 
         # seed
         "SEED"        => { MATCH_OP(E_OP_SEED); };

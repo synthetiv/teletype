@@ -70,7 +70,8 @@ OPS_SECTIONS = [
     ("fader",         "Fader",         False),
     ("matrixarchate", "Matrixarchate", True),
     ("telex_i",       "TELEXi",        False),
-    ("telex_o",       "TELEXo",        False)
+    ("telex_o",       "TELEXo",        False),
+    ("disting",       "Disting EX",    False)
 ]
 
 
