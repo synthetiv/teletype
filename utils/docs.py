@@ -44,6 +44,7 @@ OPS_SECTIONS = [
     "seed",
     "turtle",
     "grid",
+    "midi_in",
     "i2c",
     "ansible",
     "whitewhale",
