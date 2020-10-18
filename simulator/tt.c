@@ -60,6 +60,11 @@ void tele_cv_off(uint8_t i, int16_t v) {
     printf("\n");
 }
 
+void tele_ii_follow() {
+    printf("II_follow");
+    printf("\n");
+}
+
 void tele_ii_tx(uint8_t addr, uint8_t *data, uint8_t l) {
     printf("II_tx  addr:%" PRIu8 " l:%" PRIu8, addr, l);
     printf("\n");
