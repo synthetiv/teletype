@@ -937,21 +937,21 @@ void tele_update_adc(u8 force) {
     ss_set_param(&scene_state, adc[1] << 2);
 }
 
+void tele_ii_lead() {
+    init_i2c_leader();
+}
+
 void tele_ii_follow() {
     init_i2c_follower(0x80);
     process_ii = &tt_process_ii;
 }
 
 void tele_ii_tx(uint8_t addr, uint8_t* data, uint8_t l) {
-    init_i2c_leader();
     i2c_leader_tx(addr, data, l);
-    tele_ii_follow();
 }
 
 void tele_ii_rx(uint8_t addr, uint8_t* data, uint8_t l) {
-    init_i2c_leader();
     i2c_leader_rx(addr, data, l);
-    tele_ii_follow();
 }
 
 void tele_scene(uint8_t i, uint8_t init_grid) {

@@ -60,6 +60,11 @@ void tele_cv_off(uint8_t i, int16_t v) {
     printf("\n");
 }
 
+void tele_ii_lead() {
+    printf("II_lead");
+    printf("\n");
+}
+
 void tele_ii_follow() {
     printf("II_follow");
     printf("\n");
