@@ -8,6 +8,7 @@
 #include "ops/ansible.h"
 #include "ops/controlflow.h"
 #include "ops/delay.h"
+#include "ops/disting.h"
 #include "ops/earthsea.h"
 #include "ops/er301.h"
 #include "ops/fader.h"
@@ -20,6 +21,7 @@
 #include "ops/matrixarchate.h"
 #include "ops/meadowphysics.h"
 #include "ops/metronome.h"
+#include "ops/midi.h"
 #include "ops/orca.h"
 #include "ops/patterns.h"
 #include "ops/queue.h"
@@ -81,18 +83,18 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     // maths
     &op_ADD, &op_SUB, &op_MUL, &op_DIV, &op_MOD, &op_RAND, &op_RND, &op_RRAND,
     &op_RRND, &op_R, &op_R_MIN, &op_R_MAX, &op_TOSS, &op_MIN, &op_MAX, &op_LIM,
-    &op_WRAP, &op_WRP, &op_QT, &op_AVG, &op_EQ, &op_NE, &op_LT, &op_GT, &op_LTE,
-    &op_GTE, &op_NZ, &op_EZ, &op_RSH, &op_LSH, &op_LROT, &op_RROT,
-    &op_EXP, &op_ABS, &op_SGN, &op_AND, &op_OR,
-    &op_JI, &op_SCALE, &op_SCL, &op_N, &op_N_S, &op_N_C, &op_N_CS, &op_V, &op_VV, &op_ER, &op_NR, &op_BPM,
-    &op_BIT_OR, &op_BIT_AND, &op_BIT_NOT, &op_BIT_XOR, &op_BSET, &op_BGET,
-    &op_BCLR, &op_XOR, &op_CHAOS, &op_CHAOS_R, &op_CHAOS_ALG, &op_SYM_PLUS,
-    &op_SYM_DASH, &op_SYM_STAR, &op_SYM_FORWARD_SLASH, &op_SYM_PERCENTAGE,
-    &op_SYM_EQUAL_x2, &op_SYM_EXCLAMATION_EQUAL, &op_SYM_LEFT_ANGLED,
-    &op_SYM_RIGHT_ANGLED, &op_SYM_LEFT_ANGLED_EQUAL, &op_SYM_RIGHT_ANGLED_EQUAL,
-    &op_SYM_EXCLAMATION, &op_SYM_LEFT_ANGLED_x2, &op_SYM_RIGHT_ANGLED_x2,
-    &op_SYM_LEFT_ANGLED_x3, &op_SYM_RIGHT_ANGLED_x3,
-    &op_SYM_AMPERSAND_x2, &op_SYM_PIPE_x2, &op_TIF,
+    &op_WRAP, &op_WRP, &op_QT, &op_QT_S, &op_QT_CS, &op_QT_B, &op_AVG, &op_EQ,
+    &op_NE, &op_LT, &op_GT, &op_LTE, &op_GTE, &op_NZ, &op_EZ, &op_RSH, &op_LSH,
+    &op_LROT, &op_RROT, &op_EXP, &op_ABS, &op_SGN, &op_AND, &op_OR, &op_JI,
+    &op_SCALE, &op_SCL, &op_N, &op_VN, &op_N_S, &op_N_C, &op_N_CS, &op_V,
+    &op_VV, &op_ER, &op_NR, &op_BPM, &op_BIT_OR, &op_BIT_AND, &op_BIT_NOT,
+    &op_BIT_XOR, &op_BSET, &op_BGET, &op_BCLR, &op_BTOG, &op_XOR, &op_CHAOS,
+    &op_CHAOS_R, &op_CHAOS_ALG, &op_SYM_PLUS, &op_SYM_DASH, &op_SYM_STAR,
+    &op_SYM_FORWARD_SLASH, &op_SYM_PERCENTAGE, &op_SYM_EQUAL_x2,
+    &op_SYM_EXCLAMATION_EQUAL, &op_SYM_LEFT_ANGLED, &op_SYM_RIGHT_ANGLED,
+    &op_SYM_LEFT_ANGLED_EQUAL, &op_SYM_RIGHT_ANGLED_EQUAL, &op_SYM_EXCLAMATION,
+    &op_SYM_LEFT_ANGLED_x2, &op_SYM_RIGHT_ANGLED_x2, &op_SYM_LEFT_ANGLED_x3,
+    &op_SYM_RIGHT_ANGLED_x3, &op_SYM_AMPERSAND_x2, &op_SYM_PIPE_x2, &op_TIF,
 
     // stack
     &op_S_ALL, &op_S_POP, &op_S_CLR, &op_S_L,
@@ -128,18 +130,16 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     &op_OR_ROTS, &op_OR_ROTW, &op_OR_GRST, &op_OR_CVA, &op_OR_CVB,
 
     // ansible
-    &op_ANS_G_LED, &op_ANS_G, &op_ANS_G_P,
-    &op_ANS_A_LED, &op_ANS_A,
-    &op_ANS_APP,
-    &op_KR_PRE, &op_KR_PAT, &op_KR_SCALE, &op_KR_PERIOD, &op_KR_POS,
-    &op_KR_L_ST, &op_KR_L_LEN, &op_KR_RES, &op_KR_CV, &op_KR_MUTE, &op_KR_TMUTE,
-    &op_KR_CLK, &op_KR_PG, &op_KR_CUE, &op_KR_DIR, &op_KR_DUR,
-    &op_ME_PRE, &op_ME_RES, &op_ME_STOP, &op_ME_SCALE,
-    &op_ME_PERIOD, &op_ME_CV, &op_LV_PRE, &op_LV_RES, &op_LV_POS, &op_LV_L_ST,
-    &op_LV_L_LEN, &op_LV_L_DIR, &op_LV_CV, &op_CY_PRE, &op_CY_RES, &op_CY_POS,
-    &op_CY_REV, &op_CY_CV, &op_MID_SHIFT, &op_MID_SLEW, &op_ARP_STY,
-    &op_ARP_HLD, &op_ARP_RPT, &op_ARP_GT, &op_ARP_DIV, &op_ARP_RES,
-    &op_ARP_SHIFT, &op_ARP_SLEW, &op_ARP_FIL, &op_ARP_ROT, &op_ARP_ER,
+    &op_ANS_G_LED, &op_ANS_G, &op_ANS_G_P, &op_ANS_A_LED, &op_ANS_A,
+    &op_ANS_APP, &op_KR_PRE, &op_KR_PAT, &op_KR_SCALE, &op_KR_PERIOD,
+    &op_KR_POS, &op_KR_L_ST, &op_KR_L_LEN, &op_KR_RES, &op_KR_CV, &op_KR_MUTE,
+    &op_KR_TMUTE, &op_KR_CLK, &op_KR_PG, &op_KR_CUE, &op_KR_DIR, &op_KR_DUR,
+    &op_ME_PRE, &op_ME_RES, &op_ME_STOP, &op_ME_SCALE, &op_ME_PERIOD, &op_ME_CV,
+    &op_LV_PRE, &op_LV_RES, &op_LV_POS, &op_LV_L_ST, &op_LV_L_LEN, &op_LV_L_DIR,
+    &op_LV_CV, &op_CY_PRE, &op_CY_RES, &op_CY_POS, &op_CY_REV, &op_CY_CV,
+    &op_MID_SHIFT, &op_MID_SLEW, &op_ARP_STY, &op_ARP_HLD, &op_ARP_RPT,
+    &op_ARP_GT, &op_ARP_DIV, &op_ARP_RES, &op_ARP_SHIFT, &op_ARP_SLEW,
+    &op_ARP_FIL, &op_ARP_ROT, &op_ARP_ER,
 
     // justfriends
     &op_JF_TR, &op_JF_RMODE, &op_JF_RUN, &op_JF_SHIFT, &op_JF_VTR, &op_JF_MODE,
@@ -194,7 +194,8 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
 
     // fader
     &op_FADER, &op_FADER_SCALE, &op_FADER_CAL_MIN, &op_FADER_CAL_MAX,
-    &op_FADER_CAL_RESET, &op_FB, &op_FB_S, &op_FB_C_MIN, &op_FB_C_MAX, &op_FB_C_R,
+    &op_FADER_CAL_RESET, &op_FB, &op_FB_S, &op_FB_C_MIN, &op_FB_C_MAX,
+    &op_FB_C_R,
 
     // ER301
     &op_SC_TR, &op_SC_TR_TOG, &op_SC_TR_PULSE, &op_SC_TR_TIME, &op_SC_TR_POL,
@@ -219,10 +220,30 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     &op_MA_OFF, &op_MA_POFF, &op_MA_SET, &op_MA_PSET, &op_MA_COL, &op_MA_PCOL,
     &op_MA_ROW, &op_MA_PROW, &op_MA_CLR, &op_MA_PCLR,
 
+    // disting ex
+    &op_EX, &op_EX_PRESET, &op_EX_PRE, &op_EX_SAVE, &op_EX_RESET, &op_EX_ALG,
+    &op_EX_A, &op_EX_CTRL, &op_EX_C, &op_EX_PARAM, &op_EX_P, &op_EX_PV,
+    &op_EX_MIN, &op_EX_MAX, &op_EX_REC, &op_EX_PLAY, &op_EX_AL_P, &op_EX_AL_CLK,
+    &op_EX_M_CH, &op_EX_M_N, &op_EX_M_NO, &op_EX_M_PB, &op_EX_M_CC,
+    &op_EX_M_PRG, &op_EX_M_CLK, &op_EX_M_START, &op_EX_M_STOP, &op_EX_M_CONT,
+    &op_EX_SB_CH, &op_EX_SB_N, &op_EX_SB_NO, &op_EX_SB_PB, &op_EX_SB_CC,
+    &op_EX_SB_PRG, &op_EX_SB_CLK, &op_EX_SB_START, &op_EX_SB_STOP,
+    &op_EX_SB_CONT, &op_EX_VOX_P, &op_EX_VP, &op_EX_VOX, &op_EX_V, &op_EX_VOX_O,
+    &op_EX_VO, &op_EX_NOTE, &op_EX_N, &op_EX_NOTE_O, &op_EX_NO, &op_EX_ALLOFF,
+    &op_EX_AO, &op_EX_T, &op_EX_TV, &op_EX_LP_REC, &op_EX_LP_PLAY,
+    &op_EX_LP_REV, &op_EX_LP_DOWN, &op_EX_LP_CLR, &op_EX_LP, &op_EX_LP_DOWNQ,
+    &op_EX_LP_REVQ,
+
     // seed
     &op_SEED, &op_RAND_SEED, &op_SYM_RAND_SD, &op_SYM_R_SD, &op_TOSS_SEED,
     &op_SYM_TOSS_SD, &op_PROB_SEED, &op_SYM_PROB_SD, &op_DRUNK_SEED,
-    &op_SYM_DRUNK_SD, &op_P_SEED, &op_SYM_P_SD
+    &op_SYM_DRUNK_SD, &op_P_SEED, &op_SYM_P_SD,
+
+    &op_MI_SYM_DOLLAR, &op_MI_LN, &op_MI_LNV, &op_MI_LV, &op_MI_LVV, &op_MI_LO,
+    &op_MI_LC, &op_MI_LCC, &op_MI_LCCV, &op_MI_NL, &op_MI_N, &op_MI_NV,
+    &op_MI_V, &op_MI_VV, &op_MI_OL, &op_MI_O, &op_MI_CL, &op_MI_C, &op_MI_CC,
+    &op_MI_CCV, &op_MI_LCH, &op_MI_NCH, &op_MI_OCH, &op_MI_CCH, &op_MI_LE,
+    &op_MI_CLKD, &op_MI_CLKR
 };
 
 /////////////////////////////////////////////////////////////////
@@ -234,14 +255,16 @@ const tele_mod_t *tele_mods[E_MOD__LENGTH] = {
     &mod_OTHER, &mod_PROB,
 
     // delay
-    &mod_DEL, &mod_DEL_X, &mod_DEL_R,
+    &mod_DEL, &mod_DEL_X, &mod_DEL_R, &mod_DEL_G, &mod_DEL_B,
 
     // pattern
     &mod_P_MAP, &mod_PN_MAP,
 
     // stack
-    &mod_S
+    &mod_S,
 
+    // disting ex
+    &mod_EX1, &mod_EX2, &mod_EX3, &mod_EX4
 };
 
 /////////////////////////////////////////////////////////////////

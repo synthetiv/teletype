@@ -1,13 +1,21 @@
 # Changelog
 
-## v3.2.x
-
-- **FIX**: `LAST SCRIPT` in live mode gives time since init script was run
-
 ## v3.2.1
 
+- **FIX**: `LAST SCRIPT` in live mode gives time since init script was run
 - **FIX**: negative pattern values are properly read from USB
+- **FIX**: delay when navigating to sections in docs
 - **NEW**: generic i2c ops: `IIA`, `IIS..`, `IIQ..`, `IIB..`
+- **NEW**: exponential delay operator `DEL.G`
+- **NEW**: binary and hex format for numbers: `B...`, `X...`
+- **NEW**: Disting EX ops
+- **FIX**: `LAST n` is broken for script 1
+- **NEW**: bitmasked delay and quantize: `DEL.B..`,  `QT.B..`
+- **NEW**: scale and chord quantize: `QT.S..`, `QT.CS..`
+- **NEW**: bit toggle OP: `BTOG..`
+- **NEW**: volts to semitones helper OP: `VN..`
+- **IMP**: DELAY_SIZE increased to 64 from 16
+- **FIX**: scale degree arguments 1-indexed: `N.S`, `N.CS`
 
 ## v3.2.0
 
