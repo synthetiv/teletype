@@ -162,6 +162,7 @@ static void handler_HidDisconnect(int32_t data);
 static void handler_HidTimer(int32_t data);
 static void handler_MscConnect(int32_t data);
 static void handler_Trigger(int32_t data);
+static void handler_II(int32_t data);
 static void handler_ScreenRefresh(int32_t data);
 static void handler_EventTimer(int32_t data);
 static void handler_AppCustom(int32_t data);
@@ -511,6 +512,16 @@ void handler_Trigger(int32_t data) {
     }
 }
 
+void handler_II(int32_t data) {
+    uint8_t script = data >> 16;
+    int16_t i = data;
+    exec_state_t es;
+    es_init(&es);
+    es_push(&es);
+    es_variables(&es)->i = i;
+    run_script_with_exec_state(&scene_state, &es, script);
+}
+
 void handler_ScreenRefresh(int32_t data) {
 #ifdef TELETYPE_PROFILE
     profile_update(&prof_ScreenRefresh);
@@ -717,6 +728,7 @@ void assign_main_event_handlers() {
     app_event_handlers[kEventHidTimer] = &handler_HidTimer;
     app_event_handlers[kEventMscConnect] = &handler_MscConnect;
     app_event_handlers[kEventTrigger] = &handler_Trigger;
+    app_event_handlers[kEventII] = &handler_II;
     app_event_handlers[kEventScreenRefresh] = &handler_ScreenRefresh;
     app_event_handlers[kEventTimer] = &handler_EventTimer;
     app_event_handlers[kEventAppCustom] = &handler_AppCustom;
@@ -955,23 +967,16 @@ void update_device_config(u8 refresh) {
 }
 
 static void tt_process_ii(uint8_t *data, uint8_t l) {
-    uint8_t command = data[0];
-    switch (command) {
-        case 0x0:  // tt.script(u8 script)
-            if (l != 2 || data[1] > 9) return;
-            run_script(&scene_state, data[1]);
-            break;
-        case 0x1:  // tt.script_i(u8 script, s16 i)
-        case 0x2:  // tt.script_v(u8 script, s16V i)
-            if (l != 4 || data[1] > 9) return;
-            int16_t i = (data[2] << 8) + data[3];
-            exec_state_t es;
-            es_init(&es);
-            es_push(&es);
-            es_variables(&es)->i = i;
-            run_script_with_exec_state(&scene_state, &es, data[1]);
-            break;
+    if (l > 4 ) return;
+    int32_t event_data = data[1] << 16;
+    if (l > 2) {
+        event_data |= (data[2] << 8) | data[3];
     }
+    event_t e = {
+        .type = kEventII,
+        .data = event_data
+    };
+    event_post(&e);
 }
 
 static void setup_midi(void) {
@@ -1076,21 +1081,31 @@ void tele_update_adc(u8 force) {
     ss_set_param(&scene_state, adc[1] << 2);
 }
 
-void tele_ii_lead() {
-    init_i2c_leader();
+int16_t tele_ii_follow() {
+    int16_t status = 0;
+    if ( ! i2c_wait_for_txcomp()) status = -910;
+    i2c_follow();
+    return 0;
 }
 
-void tele_ii_follow() {
-    init_i2c_follower(0x80);
-    process_ii = &tt_process_ii;
+int16_t tele_ii_interrupts() {
+    return i2c_read_interrupts();
 }
 
-void tele_ii_tx(uint8_t addr, uint8_t* data, uint8_t l) {
-    i2c_leader_tx(addr, data, l);
+int16_t tele_ii_itmask() {
+    return i2c_get_it_mask();
 }
 
-void tele_ii_rx(uint8_t addr, uint8_t* data, uint8_t l) {
-    i2c_leader_rx(addr, data, l);
+int16_t tele_ii_status() {
+    return i2c_read_status();
+}
+
+int16_t tele_ii_tx(uint8_t addr, uint8_t* data, uint8_t l) {
+    return i2c_cooperator_tx(addr, data, l);
+}
+
+int16_t tele_ii_rx(uint8_t addr, uint8_t* data, uint8_t l) {
+    return i2c_cooperator_rx(addr, data, l);
 }
 
 void tele_scene(uint8_t i, uint8_t init_grid) {
@@ -1158,7 +1173,8 @@ int main(void) {
     // wait to allow for any i2c devices to fully initalise
     delay_ms(1500);
 
-    tele_ii_follow();
+    init_i2c_cooperator(0x80);
+    process_ii = &tt_process_ii;
 
     print_dbg("\r\n\r\n// teletype! //////////////////////////////// ");
 
@@ -1246,6 +1262,7 @@ int main(void) {
 #endif
     while (true) {
         midi_read();
+        i2c_check_silence();
         check_events();
 #ifdef TELETYPE_PROFILE
         count = (count + 1) % (FCPU_HZ / 10);

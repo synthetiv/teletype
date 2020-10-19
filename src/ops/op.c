@@ -107,6 +107,7 @@ const tele_op_t *tele_ops[E_OP__LENGTH] = {
     &op_DEL_CLR,
 
     // i2c
+    &op_II_INTERRUPTS, &op_II_ITMASK, &op_II_STATUS, &op_II_FOLLOW,
     &op_IIA, &op_IIS, &op_IIS1, &op_IIS2, &op_IIS3, &op_IISB1, &op_IISB2,
     &op_IISB3, &op_IIQ, &op_IIQ1, &op_IIQ2, &op_IIQ3, &op_IIQB1, &op_IIQB2,
     &op_IIQB3, &op_IIB, &op_IIB1, &op_IIB2, &op_IIB3, &op_IIBB1, &op_IIBB2,

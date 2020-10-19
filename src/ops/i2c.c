@@ -3,6 +3,14 @@
 #include "helpers.h"
 #include "teletype_io.h"
 
+static void op_II_INTERRUPTS_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                                 command_state_t *cs);
+static void op_II_ITMASK_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                             command_state_t *cs);
+static void op_II_STATUS_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                             command_state_t *cs);
+static void op_II_FOLLOW_get(const void *data, scene_state_t *ss, exec_state_t *es,
+                             command_state_t *cs);
 static void op_IIA_get(const void *data, scene_state_t *ss, exec_state_t *es,
                        command_state_t *cs);
 static void op_IIA_set(const void *data, scene_state_t *ss, exec_state_t *es,
@@ -50,6 +58,10 @@ static void op_IIBB2_get(const void *data, scene_state_t *ss, exec_state_t *es,
 static void op_IIBB3_get(const void *data, scene_state_t *ss, exec_state_t *es,
                          command_state_t *cs);
 
+const tele_op_t op_II_INTERRUPTS = MAKE_GET_OP(II.INTERRUPTS, op_II_INTERRUPTS_get, 0, true);
+const tele_op_t op_II_ITMASK = MAKE_GET_OP(II.ITMASK, op_II_ITMASK_get, 0, true);
+const tele_op_t op_II_STATUS = MAKE_GET_OP(II.STATUS, op_II_STATUS_get, 0, true);
+const tele_op_t op_II_FOLLOW = MAKE_GET_OP(II.FOLLOW, op_II_FOLLOW_get, 0, true);
 const tele_op_t op_IIA = MAKE_GET_SET_OP(IIA, op_IIA_get, op_IIA_set, 0, true);
 const tele_op_t op_IIS = MAKE_GET_OP(IIS, op_IIS_get, 1, false);
 const tele_op_t op_IIS1 = MAKE_GET_OP(IIS1, op_IIS1_get, 2, false);
@@ -130,6 +142,26 @@ static void query_byte(scene_state_t *ss, command_state_t *cs) {
     tele_ii_rx(ss->i2c_op_address, buffer, 1);
     int16_t value = buffer[0];
     cs_push(cs, value);
+}
+
+static void op_II_INTERRUPTS_get(const void *NOTUSED(data), scene_state_t *ss,
+                                 exec_state_t *NOTUSED(es), command_state_t *cs) {
+    cs_push(cs, tele_ii_interrupts());
+}
+
+static void op_II_ITMASK_get(const void *NOTUSED(data), scene_state_t *ss,
+                             exec_state_t *NOTUSED(es), command_state_t *cs) {
+    cs_push(cs, tele_ii_itmask());
+}
+
+static void op_II_STATUS_get(const void *NOTUSED(data), scene_state_t *ss,
+                             exec_state_t *NOTUSED(es), command_state_t *cs) {
+    cs_push(cs, tele_ii_status());
+}
+
+static void op_II_FOLLOW_get(const void *NOTUSED(data), scene_state_t *ss,
+                             exec_state_t *NOTUSED(es), command_state_t *cs) {
+    cs_push(cs, tele_ii_follow());
 }
 
 static void op_IIA_get(const void *NOTUSED(data), scene_state_t *ss,

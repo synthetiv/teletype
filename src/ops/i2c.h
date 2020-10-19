@@ -3,6 +3,10 @@
 
 #include "ops/op.h"
 
+extern const tele_op_t op_II_INTERRUPTS;
+extern const tele_op_t op_II_ITMASK;
+extern const tele_op_t op_II_STATUS;
+extern const tele_op_t op_II_FOLLOW;
 extern const tele_op_t op_IIA;
 extern const tele_op_t op_IIS;
 extern const tele_op_t op_IIS1;

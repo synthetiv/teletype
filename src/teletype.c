@@ -148,8 +148,6 @@ process_result_t run_script_with_exec_state(scene_state_t *ss, exec_state_t *es,
     tele_profile_script(script_no);
 #endif
 
-    tele_ii_lead();
-
     process_result_t result = {.has_value = false, .value = 0 };
 
     es_set_script_number(es, script_no);
@@ -173,8 +171,6 @@ process_result_t run_script_with_exec_state(scene_state_t *ss, exec_state_t *es,
 
     es_variables(es)->breaking = false;
     ss_update_script_last(ss, script_no);
-
-    tele_ii_follow();
 
 #ifdef TELETYPE_PROFILE
     tele_profile_script(script_no);

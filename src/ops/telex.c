@@ -400,14 +400,21 @@ void ReceiveIt(uint8_t address, uint8_t port, command_state_t *cs) {
     cs_push(cs, value);
 }
 int16_t ReceiveValue(uint8_t address, uint8_t port) {
+    int16_t status;
     // tell the device what value you are going to query
     uint8_t buffer[2];
     buffer[0] = port;
-    tele_ii_tx(address, buffer, 1);
+    status = tele_ii_tx(address, buffer, 1);
+    if (status != 0) { // TWI_SUCCESS
+        return status;
+    }
     // now read the value
     buffer[0] = 0;
     buffer[1] = 0;
-    tele_ii_rx(address, buffer, 2);
+    status = tele_ii_rx(address, buffer, 2);
+    if (status != 0) { // TWI_SUCCESS
+        return status;
+    }
     int16_t value = (buffer[0] << 8) + buffer[1];
     return value;
 }

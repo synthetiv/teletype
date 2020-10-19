@@ -184,7 +184,7 @@
         "WRP"         => { MATCH_OP(E_OP_WRP); };
         "QT"          => { MATCH_OP(E_OP_QT); };
         "QT.S"        => { MATCH_OP(E_OP_QT_S); };
-        "QT.CS"       => { MATCH_OP(E_OP_QT_CS); };		
+        "QT.CS"       => { MATCH_OP(E_OP_QT_CS); };
         "QT.B"        => { MATCH_OP(E_OP_QT_B); };
         "AVG"         => { MATCH_OP(E_OP_AVG); };
         "EQ"          => { MATCH_OP(E_OP_EQ); };
@@ -271,6 +271,10 @@
         "DEL.CLR"     => { MATCH_OP(E_OP_DEL_CLR); };
 
         # i2c
+        "II.INTERRUPTS" => { MATCH_OP(E_OP_II_INTERRUPTS); };
+        "II.ITMASK"   => { MATCH_OP(E_OP_II_ITMASK); };
+        "II.STATUS"   => { MATCH_OP(E_OP_II_STATUS); };
+        "II.FOLLOW"   => { MATCH_OP(E_OP_II_FOLLOW); };
         "IIA"         => { MATCH_OP(E_OP_IIA); };
         "IIS"         => { MATCH_OP(E_OP_IIS); };
         "IIS1"        => { MATCH_OP(E_OP_IIS1); };

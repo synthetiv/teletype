@@ -23,10 +23,9 @@ void tele_update_adc(uint8_t force) {}
 void tele_has_delays(bool i) {}
 void tele_has_stack(bool i) {}
 void tele_cv_off(uint8_t i, int16_t v) {}
-void tele_ii_lead() {}
-void tele_ii_follow() {}
-void tele_ii_tx(uint8_t addr, uint8_t *data, uint8_t l) {}
-void tele_ii_rx(uint8_t addr, uint8_t *data, uint8_t l) {}
+int16_t tele_ii_follow(void) {}
+int16_t tele_ii_tx(uint8_t addr, uint8_t *data, uint8_t l) {}
+int16_t tele_ii_rx(uint8_t addr, uint8_t *data, uint8_t l) {}
 void tele_scene(uint8_t i, uint8_t init_grid) {}
 void tele_pattern_updated() {}
 void tele_kill() {}
