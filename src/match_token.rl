@@ -756,10 +756,10 @@
         # w/d
         "W/D.FBK"       => { MATCH_OP(E_OP_WS_D_FEEDBACK); };
         "W/D.MIX"       => { MATCH_OP(E_OP_WS_D_MIX ); };
-        "W/D.LPASS"     => { MATCH_OP(E_OP_WS_D_LOWPASS); };
+        "W/D.FILT"      => { MATCH_OP(E_OP_WS_D_LOWPASS); };
         "W/D.FREEZE"    => { MATCH_OP(E_OP_WS_D_FREEZE ); };
         "W/D.TIME"      => { MATCH_OP(E_OP_WS_D_TIME); };
-        "W/D.LNG"       => { MATCH_OP(E_OP_WS_D_LENGTH); };
+        "W/D.LEN"       => { MATCH_OP(E_OP_WS_D_LENGTH); };
         "W/D.POS"       => { MATCH_OP(E_OP_WS_D_POSITION); };
         "W/D.CUT"       => { MATCH_OP(E_OP_WS_D_CUT); };
         "W/D.FREQ.RNG"  => { MATCH_OP(E_OP_WS_D_FREQ_RANGE); };
@@ -777,10 +777,10 @@
         "W/T.REV"         => { MATCH_OP(E_OP_WS_T_REV); };
         "W/T.SPEED"       => { MATCH_OP(E_OP_WS_T_SPEED  ); };
         "W/T.FREQ"        => { MATCH_OP(E_OP_WS_T_FREQ  ); };
-        "W/T.PRE.LVL"     => { MATCH_OP(E_OP_WS_T_PRE_LEVEL ); };
+        "W/T.ERASE.LVL"   => { MATCH_OP(E_OP_WS_T_PRE_LEVEL ); };
         "W/T.MONITOR.LVL" => { MATCH_OP(E_OP_WS_T_MONITOR_LEVEL ); };
         "W/T.REC.LVL"     => { MATCH_OP(E_OP_WS_T_REC_LEVEL ); };
-        "W/T.HEAD.ORDER"  => { MATCH_OP(E_OP_WS_T_HEAD_ORDER ); };
+        "W/T.ECHOMODE"    => { MATCH_OP(E_OP_WS_T_HEAD_ORDER ); };
         "W/T.LOOP.START"  => { MATCH_OP(E_OP_WS_T_LOOP_START); };
         "W/T.LOOP.END"    => { MATCH_OP(E_OP_WS_T_LOOP_END ); };
         "W/T.LOOP.ACTIVE" => { MATCH_OP(E_OP_WS_T_LOOP_ACTIVE ); };
@@ -788,6 +788,7 @@
         "W/T.LOOP.NEXT"   => { MATCH_OP(E_OP_WS_T_LOOP_NEXT ); };
         "W/T.TIME"        => { MATCH_OP(E_OP_WS_T_TIMESTAMP  ); };
         "W/T.SEEK"        => { MATCH_OP(E_OP_WS_T_SEEK ); };
+        "W/T.CLEARTAPE"   => { MATCH_OP(E_OP_WS_T_CLEARTAPE ); };
 
         # seed
         "SEED"        => { MATCH_OP(E_OP_SEED); };

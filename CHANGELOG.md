@@ -23,6 +23,8 @@
 - **NEW**: `ES.CV` read earthsea CV values
 - **NEW**: added setter for `R`, sets R.MIN and R.MAX to same value, allowing R to be used as variable
 - **NEW**: v/oct to hz/v conversion op: `HZ`
+- **FIX**: W/2.0 ops added
+- **NEW**: W/2.0 ops documentation
 
 ## v3.2.0
 
